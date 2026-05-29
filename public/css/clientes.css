@@ -1,0 +1,352 @@
+/* =========================================
+RESET
+========================================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Aptos", Arial, sans-serif;
+}
+
+/* =========================================
+BODY
+========================================= */
+body{
+    background:#0f172a;
+    color:#f1f5f9;
+    overflow:hidden;
+    font-size:11px;
+}
+
+/* =========================================
+LAYOUT
+========================================= */
+.main-container{
+    display:flex;
+    width:100%;
+    height:100vh;
+}
+
+/* =========================================
+SIDEBAR
+========================================= */
+.sidebar{
+    width:240px;
+    background:#111827;
+    border-right:1px solid #1e293b;
+    padding:20px;
+    flex-shrink:0;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:600;
+    color:#60a5fa;
+    margin-bottom:30px;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.menu-item{
+    padding:10px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.2s;
+    color:#cbd5e1;
+    font-size:10px;
+}
+
+.menu-item:hover{
+    background:#1e293b;
+    color:white;
+}
+
+.menu-item.active{
+    background:#2563eb;
+    color:white;
+}
+
+/* =========================================
+CONTENT
+========================================= */
+.content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:14px;
+    overflow:hidden;
+}
+
+/* =========================================
+TOPBAR
+========================================= */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.page-title{
+    font-size:18px;
+    font-weight:600;
+}
+
+.user-info{
+    color:#94a3b8;
+    font-size:11px;
+    text-align:right;
+}
+
+/* =========================================
+PANEL
+========================================= */
+.panel{
+    background:#111827;
+    border:1px solid #1e293b;
+    border-radius:16px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    height:100%;
+}
+
+/* =========================================
+FILTROS
+========================================= */
+.filters-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
+    margin-bottom:10px;
+}
+
+/* =========================================
+FORMULARIO
+========================================= */
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
+    margin-bottom:10px;
+}
+
+.field-group{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+}
+
+.field-group label{
+    font-size:9px;
+    color:#94a3b8;
+    font-weight:600;
+}
+
+.field-group input,
+.field-group select{
+    width:100%;
+    height:26px;
+    padding:0 8px;
+    border:none;
+    border-radius:8px;
+    background:#1e293b;
+    color:white;
+    outline:none;
+    font-size:10px;
+}
+
+.field-group input:focus,
+.field-group select:focus{
+    border:1px solid #2563eb;
+}
+
+/* =========================================
+BOTONES
+========================================= */
+.buttons-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+}
+
+.action-btn{
+    height:30px;
+    padding:0 14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:600;
+    color:white;
+    transition:0.2s;
+}
+
+.btn-add{
+    background:#2563eb;
+}
+
+.btn-add:hover{
+    background:#1d4ed8;
+}
+
+.btn-edit{
+    background:#d97706;
+}
+
+.btn-edit:hover{
+    background:#b45309;
+}
+
+.btn-delete{
+    background:#dc2626;
+}
+
+.btn-delete:hover{
+    background:#b91c1c;
+}
+
+.btn-follow{
+    background:#059669;
+}
+
+.btn-follow:hover{
+    background:#047857;
+}
+
+/* =========================================
+TABLA
+========================================= */
+.table-container{
+    flex:1;
+    overflow:auto;
+    border-radius:12px;
+    border:1px solid #1e293b;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:10px;
+}
+
+thead{
+    background:#1e293b;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+th{
+    padding:7px;
+    text-align:left;
+    color:#cbd5e1;
+    font-size:9px;
+    border-bottom:1px solid #334155;
+}
+
+td{
+    padding:6px;
+    border-bottom:1px solid #1e293b;
+    vertical-align:top;
+    word-break:break-word;
+    font-size:10px;
+}
+
+tr{
+    transition:0.2s;
+    cursor:pointer;
+}
+
+tr:hover{
+    background:#172033;
+}
+
+/* =========================================
+DETALLE EXPANDIBLE
+========================================= */
+.detail-row{
+    background:#0f172a;
+}
+
+.detail-box{
+    padding:10px;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+}
+
+.detail-item{
+    background:#1e293b;
+    border-radius:8px;
+    padding:8px;
+}
+
+.detail-title{
+    font-size:8px;
+    color:#94a3b8;
+    margin-bottom:3px;
+}
+
+.detail-value{
+    font-size:10px;
+    color:white;
+    word-break:break-word;
+}
+
+.load-btn{
+    margin-top:6px;
+    background:#2563eb;
+    border:none;
+    color:white;
+    padding:6px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:9px;
+}
+
+/* =========================================
+SCROLL
+========================================= */
+::-webkit-scrollbar{
+    width:6px;
+    height:6px;
+}
+
+::-webkit-scrollbar-track{
+    background:#111827;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#334155;
+    border-radius:10px;
+}
+
+/* =========================================
+RESPONSIVE
+========================================= */
+@media(max-width:1400px){
+
+    .form-grid,
+    .filters-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:900px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .form-grid,
+    .filters-grid,
+    .detail-box{
+        grid-template-columns:1fr;
+    }
+}

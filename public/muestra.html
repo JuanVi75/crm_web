@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TABLA CLIENTE</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0b1220;
+            color: white;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 14px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
+            padding: 12px;
+        }
+
+        .logo {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+
+        .menu-item {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            color: #cbd5e1;
+        }
+
+        .menu-item:hover {
+            background: #1e293b;
+        }
+
+        .menu-item.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111827;
+            border: 1px solid #1e293b;
+            padding: 10px 14px;
+            border-radius: 12px;
+        }
+
+        .kpi {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-blue {
+            background: #2563eb;
+        }
+
+        .btn-green {
+            background: #16a34a;
+        }
+
+        .btn-orange {
+            background: #d97706;
+        }
+
+        /* =========================
+        MODAL SYSTEM
+        ========================= */
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal {
+            width: 520px;
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .modal-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid #1e293b;
+        }
+
+        .modal-card:hover {
+            background: #1e293b;
+        }
+
+        .form {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0b1220;
+            color: white;
+        }
+
+        .modal-footer {
+            margin-top: 10px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+            <div class="menu-item">🏠 INICIO</div>
+        </div>
+
+        <div class="content">
+
+            <div class="topbar">
+                <div>FICHA CLIENTE</div>
+            </div>
+
+            <div class="kpi"></div>
+
+            <div class="actions">
+
+                <button class="btn btn-green">SEGUIMIENTO</button>
+                <button class="btn btn-blue">COTIZACIÓN</button>
+                <button class="btn btn-orange">PEDIDO</button>
+
+                <!-- NUEVO -->
+                <button class="btn btn-blue" onclick="openModal()">
+                    SEDES / CONTACTOS
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =========================
+MODAL
+========================= -->
+
+    <div class="modal-overlay" id="modal">
+
+        <div class="modal">
+
+            <div class="modal-title">GESTIÓN CLIENTE</div>
+
+            <!-- MENU INICIAL -->
+            <div class="modal-actions" id="menuModal">
+
+                <div class="modal-card" onclick="showForm('sede')">
+                    ➕ Nueva Sede
+                </div>
+
+                <div class="modal-card" onclick="showForm('contacto')">
+                    ➕ Nuevo Contacto
+                </div>
+
+            </div>
+
+            <!-- FORM SEDE -->
+            <div class="form" id="formSede">
+
+                <input placeholder="Nombre sede">
+                <input placeholder="Ciudad">
+                <input placeholder="Dirección">
+                <input placeholder="Teléfono">
+                <input placeholder="Contacto principal">
+
+                <div class="modal-footer">
+                    <button class="btn btn-green">Guardar Sede</button>
+                    <button class="btn btn-orange" onclick="closeModal()">Cerrar</button>
+                </div>
+
+            </div>
+
+            <!-- FORM CONTACTO -->
+            <div class="form" id="formContacto">
+
+                <input placeholder="Nombre contacto">
+                <input placeholder="Cargo">
+                <input placeholder="Teléfono">
+                <input placeholder="Email">
+
+                <div class="modal-footer">
+                    <button class="btn btn-green">Guardar Contacto</button>
+                    <button class="btn btn-orange" onclick="closeModal()">Cerrar</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function openModal() {
+            document.getElementById("modal").style.display = "flex";
+            document.getElementById("menuModal").style.display = "grid";
+            document.getElementById("formSede").style.display = "none";
+            document.getElementById("formContacto").style.display = "none";
+        }
+
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+
+        function showForm(type) {
+
+            document.getElementById("menuModal").style.display = "none";
+
+            if (type === "sede") {
+                document.getElementById("formSede").style.display = "flex";
+            }
+
+            if (type === "contacto") {
+                document.getElementById("formContacto").style.display = "flex";
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

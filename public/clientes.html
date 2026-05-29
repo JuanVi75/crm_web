@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CRM WEB - CLIENTES</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+
+    <style>
+        /* =========================================
+            GLOBAL
+        ========================================= */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* =========================================
+            LAYOUT
+        ========================================= */
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 14px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* =========================================
+TOPBAR
+========================================= */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        /* =========================================
+PANELS
+========================================= */
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 12px;
+            flex-shrink: 0;
+            overflow: visible !important;
+        }
+
+        /* =========================================
+            FILTROS
+        ========================================= */
+        .filters-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap: 5px;
+            overflow: visible !important;
+
+        }
+
+        /* =========================================
+            FORMULARIO
+        ========================================= */
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        /* =========================================
+FIELDS
+========================================= */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .field label {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            height: 32px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 6px 10px;
+            color: white;
+            outline: none;
+            font-size: 11px;
+        }
+
+        /* =========================================
+BUTTONS
+========================================= */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            height: 32px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+        }
+
+        .btn-warning {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+
+        /* =========================================
+TABLA PANEL
+========================================= */
+        .table-panel {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* =========================================
+TABLA CONTAINER
+========================================= */
+        .table-container {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 4px;
+        }
+
+        /* =========================================
+TABLE HEAD
+========================================= */
+        .table-head {
+            display: grid;
+            grid-template-columns:
+                60px 1.6fr 1fr 1.5fr 1fr 1fr 1fr;
+
+            gap: 8px;
+
+            padding: 10px;
+
+            background: #0f172a;
+
+            border-radius: 10px;
+
+            color: #60a5fa;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 10;
+        }
+
+        /* =========================================
+CARD
+========================================= */
+        .client-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* =========================================
+HEADER
+========================================= */
+        .client-header {
+            display: grid;
+            grid-template-columns:
+                60px 1.6fr 1fr 1.5fr 1fr 1fr 1fr;
+
+            gap: 8px;
+
+            align-items: center;
+
+            padding: 10px;
+
+            cursor: pointer;
+
+            font-size: 11px;
+        }
+
+        .client-header:hover {
+            background: #273449;
+        }
+
+        /* =========================================
+DETAILS
+========================================= */
+        .client-details {
+            display: none;
+            background: #16202f;
+            border-top: 1px solid #334155;
+            padding: 12px;
+        }
+
+        .client-details.active {
+            display: block;
+        }
+
+        /* =========================================
+            DETAIL GRID
+        ========================================= */
+        .details-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .detail-title {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .detail-item div:last-child {
+            font-size: 11px;
+        }
+
+        /* =========================================
+LOAD BUTTON
+========================================= */
+        .load-btn {
+            margin-top: 10px;
+            border: none;
+            background: #334155;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .load-btn:hover {
+            background: #475569;
+        }
+
+        /* =========================================
+            AUTOCOMPLETE
+        ========================================= */
+        .autocomplete-box {
+            position: relative;
+            overflow: visible;
+
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            width: 100%;
+
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 8px;
+
+            max-height: 250px;
+            overflow-y: auto;
+
+            z-index: 99999;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+        }
+
+        .autocomplete-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .autocomplete-item:hover {
+            background: #1e293b;
+        }
+
+        /* =========================================
+SCROLL
+========================================= */
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        /* =========================================
+UTILS
+========================================= */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                🏠 INICIO
+            </div>
+            <div class="menu-item" onclick="window.location.href='clientes.html'">
+                👥 CLIENTES
+            </div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">
+                📅 SEGUIMIENTOS
+            </div>
+            <div class="menu-item" onclick="window.location.href='llamadas.html'">
+                📞 LLAMADAS
+            </div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">
+                📄 COTIZACIONES
+            </div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">
+                📦 PEDIDOS
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <main class="content">
+
+            <!-- TOPBAR -->
+            <div class="topbar">
+
+                <div class="page-title">
+                    Clientes
+                </div>
+
+                <div class="user-info" id="userInfo"></div>
+
+            </div>
+
+            <!-- FILTERS -->
+            <div class="panel">
+
+                <div class="filters-grid">
+
+                    <div class="field">
+                        <label>Ciudad</label>
+                        <select id="filterCiudad">
+                            <option value="">TODAS</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Sector</label>
+                        <select id="filterSector">
+                            <option value="">TODAS</option>
+
+                        </select>
+                    </div>
+
+                    <div class="field" id="asesorFilterBox">
+                        <label>Asesor</label>
+                        <select id="filterAsesor">
+                            <option value="">TODOS</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Buscar Cliente</label>
+
+                        <select id="filterClienteTabla">
+                            <option value="">TODOS</option>
+                        </select>
+                    </div>
+
+                    <div class="field autocomplete-box">
+                        <label>Seleccionar Cliente</label>
+                        <input type="text" id="filterCliente" autocomplete="off">
+                        <div class="autocomplete-list hidden" id="clienteList"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FORM -->
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>ID</label>
+                        <input type="text" id="id">
+                    </div>
+
+                    <div class="field">
+                        <label>Cliente</label>
+                        <input type="text" id="cliente">
+                    </div>
+
+                    <div class="field">
+                        <label>Dirección</label>
+                        <input type="text" id="direccion">
+                    </div>
+
+                    <div class="field">
+                        <label>Teléfono</label>
+                        <input type="text" id="telefono">
+                    </div>
+
+                    <div class="field autocomplete-box">
+
+                        <label>Ciudad</label>
+
+                        <input type="text" id="ciudad" autocomplete="off">
+
+                        <div class="autocomplete-list hidden" id="ciudadList"></div>
+
+                    </div>
+
+                    <div class="field">
+                        <label>Departamento</label>
+                        <input type="text" id="departamento" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" id="email">
+                    </div>
+
+                    <div class="field autocomplete-box">
+
+                        <label>Sector</label>
+
+                        <input type="text" id="sector" autocomplete="off">
+
+                        <div class="autocomplete-list hidden" id="sectorList"></div>
+
+                    </div>
+
+                    <div class="field">
+                        <label>Contacto</label>
+                        <input type="text" id="contacto">
+                    </div>
+
+                    <div class="field">
+                        <label>Tel. Contacto</label>
+                        <input type="text" id="tel_contacto">
+                    </div>
+
+                    <div class="field" id="asesorBox">
+                        <label>Asesor</label>
+                        <input type="text" id="asesor">
+                    </div>
+
+                    <div class="field">
+                        <label>Maneja Sucursales</label>
+
+                        <select id="maneja_sucursales">
+                            <option value="SI">SI</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <button class="btn btn-primary" onclick="guardarCliente()">
+                        AGREGAR
+                    </button>
+
+                    <button class="btn btn-warning" onclick="modificarCliente()">
+                        MODIFICAR
+                    </button>
+
+                    <button class="btn btn-danger" onclick="eliminarCliente()">
+                        ELIMINAR
+                    </button>
+
+                    <button class="btn btn-secondary" onclick="limpiarFormulario()">
+                        LIMPIAR
+                    </button>
+
+                    <button class="btn btn-secondary" onclick="irSeguimiento()">
+                        SEGUIMIENTO
+
+                    </button>
+
+                    <div class="pagination">
+
+                        <button class="page-btn" onclick="cambiarPagina(-1)">
+                            ❮
+                        </button>
+
+                        <span id="pageInfo">
+                            1 / 1
+                        </span>
+
+                        <button class="page-btn" onclick="cambiarPagina(1)">
+                            ❯
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="panel table-panel">
+
+                <div class="table-container">
+
+                    <div class="table-head">
+
+                        <div>ID</div>
+                        <div>CLIENTE</div>
+                        <div>CIUDAD</div>
+                        <div>EMAIL</div>
+                        <div>SECTOR</div>
+                        <div>CONTACTO</div>
+                        <div>TEL</div>
+
+                    </div>
+
+
+                    <div id="clientesContainer"></div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+
+        const API = "/api/clientes";
+
+        let clientes = [];
+        let clientesBusqueda = [];
+        let page = 1;
+        let limit = 100;
+        let ciudad_id = null;
+        let departamento_id = null;
+        let sector_id = null;
+
+        // =========================================
+        // USER INFO
+        // =========================================
+        const user =
+            localStorage.getItem("user") || "INVITADO";
+
+        const rol =
+            localStorage.getItem("rol") || "INVITADO";
+
+        document.getElementById("userInfo").innerHTML =
+            `
+${user}<br>${rol}
+`;
+
+        if (
+            rol === "ASESOR" ||
+            rol === "INVITADO"
+        ) {
+            asesorBox.style.display = "none";
+            asesorFilterBox.style.display = "none";
+        }
+
+        // =========================================
+        // LOAD CLIENTES
+        // =========================================
+        async function cargarClientes() {
+
+            const res = await fetch(`${API}?page=${page}&limit=${limit}`, {
+                headers: {
+                    Authorization:
+                        "Bearer " +
+                        localStorage.getItem("token")
+                }
+            });
+
+            const data = await res.json();
+
+            // soporta ambos formatos (por si backend cambia)
+            clientes = data.data || data;
+            totalPages = Math.ceil(data.total / limit);
+
+            renderClientes(clientes);
+            cargarFiltros();
+
+            actualizarPaginaUI();
+        }
+
+        // =========================================
+        // RENDER
+        // =========================================
+        function renderClientes(data) {
+
+            const container =
+                document.getElementById("clientesContainer");
+
+            if (!data.length) {
+
+                container.innerHTML =
+                    "<div>No hay clientes</div>";
+
+                return;
+            }
+
+            container.innerHTML = "";
+
+            data.forEach(cliente => {
+
+                container.innerHTML += `
+        <div class="client-card">
+
+            <div
+                class="client-header"
+                onclick="toggleDetails(${cliente.id})"
+            >
+
+                <div>${cliente.id || ""}</div>
+                <div>${cliente.cliente || ""}</div>
+                <div>${cliente.ciudad || ""}</div>
+                <div>${cliente.email || ""}</div>
+                <div>${cliente.sector || ""}</div>
+                <div>${cliente.contacto || ""}</div>
+                <div>${cliente.tel_contacto || ""}</div>
+
+            </div>
+
+            <div
+                class="client-details"
+                id="details-${cliente.id}"
+            >
+
+                <div class="details-grid">
+
+                    <div class="detail-item">
+                        <div class="detail-title">Dirección</div>
+                        <div>${cliente.direccion || ""}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-title">Teléfono</div>
+                        <div>${cliente.telefono || ""}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-title">Departamento</div>
+                        <div>${cliente.departamento || ""}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-title">Asesor</div>
+                        <div>${cliente.asesor || ""}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-title">Sucursales</div>
+                        <div>${cliente.maneja_sucursales || ""}</div>
+                    </div>
+
+                </div>
+
+                <button
+                    class="load-btn"
+                    onclick="cargarFormulario(${cliente.id})"
+                >
+                    CARGAR
+                </button>
+
+            </div>
+
+        </div>
+        `;
+            });
+        }
+
+        // =========================================
+        // DETAILS
+        // =========================================
+        function toggleDetails(id) {
+
+            const box =
+                document.getElementById(`details-${id}`);
+
+            box.classList.toggle("active");
+        }
+
+        // =========================================
+        // LOAD FORM
+        // =========================================
+        function cargarFormulario(id) {
+
+            const c =
+                clientes.find(x => x.id == id);
+
+            if (!c) return;
+
+            document.getElementById("id").value =
+                c.id || "";
+
+            document.getElementById("cliente").value =
+                c.cliente || "";
+
+            document.getElementById("direccion").value =
+                c.direccion || "";
+
+            document.getElementById("telefono").value =
+                c.telefono || "";
+
+            document.getElementById("ciudad").value =
+                c.ciudad || "";
+
+            document.getElementById("departamento").value =
+                c.departamento || "";
+
+            document.getElementById("email").value =
+                c.email || "";
+
+            document.getElementById("sector").value =
+                c.sector || "";
+
+            document.getElementById("contacto").value =
+                c.contacto || "";
+
+            document.getElementById("tel_contacto").value =
+                c.tel_contacto || "";
+
+            if (document.getElementById("asesor")) {
+                document.getElementById("asesor").value =
+                    c.asesor || "";
+            }
+
+            document.getElementById("maneja_sucursales").value =
+                c.maneja_sucursales || "NO";
+        }
+
+        // =========================================
+        // SAVE
+        // =========================================
+        async function guardarCliente() {
+
+            const body = {
+
+                id: id.value,
+                cliente: cliente.value,
+                direccion: direccion.value,
+                telefono: telefono.value,
+
+                ciudad: ciudad.value,
+                departamento: departamento.value,
+
+                ciudad_id,
+                departamento_id,
+
+                email: email.value,
+
+                sector: sector.value,
+                sector_id,
+
+                contacto: contacto.value,
+                tel_contacto: tel_contacto.value,
+
+                asesor:
+                    rol === "ASESOR"
+                        ? user
+                        : asesor.value,
+
+                maneja_sucursales:
+                    maneja_sucursales.value
+            };
+
+            const res = await fetch(API, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization:
+                        "Bearer " +
+                        localStorage.getItem("token")
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            alert(data.message);
+
+            cargarClientes();
+        }
+
+        // =========================================
+        // UPDATE
+        // =========================================
+        async function modificarCliente() {
+
+            const body = {
+
+                cliente: cliente.value,
+                direccion: direccion.value,
+                telefono: telefono.value,
+
+                ciudad: ciudad.value,
+                departamento: departamento.value,
+
+                ciudad_id,
+                departamento_id,
+
+                email: email.value,
+
+                sector: sector.value,
+                sector_id,
+
+                contacto: contacto.value,
+                tel_contacto: tel_contacto.value,
+
+                asesor:
+                    rol === "ASESOR"
+                        ? user
+                        : asesor.value,
+
+                maneja_sucursales:
+                    maneja_sucursales.value
+            };
+
+            const res = await fetch(
+                API + "/" + id.value,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization:
+                            "Bearer " +
+                            localStorage.getItem("token")
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
+
+            const data = await res.json();
+
+            alert(data.message);
+
+            cargarClientes();
+        }
+
+        // =========================================
+        // DELETE
+        // =========================================
+        async function eliminarCliente() {
+
+            if (!confirm("Eliminar cliente?")) {
+                return;
+            }
+
+            const res = await fetch(
+                API + "/" + id.value,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization:
+                            "Bearer " +
+                            localStorage.getItem("token")
+                    }
+                }
+            );
+
+            const data = await res.json();
+
+            alert(data.message);
+
+            cargarClientes();
+        }
+
+        function limpiarFormulario() {
+
+            id.value = "";
+            cliente.value = "";
+            direccion.value = "";
+            telefono.value = "";
+
+            ciudad.value = "";
+            departamento.value = "";
+
+            email.value = "";
+
+            sector.value = "";
+
+            contacto.value = "";
+            tel_contacto.value = "";
+
+            if (document.getElementById("asesor")) {
+                asesor.value = "";
+            }
+
+            maneja_sucursales.value = "NO";
+
+            ciudad_id = null;
+            departamento_id = null;
+            sector_id = null;
+        }
+
+        // =========================================
+        // CIUDADES
+        // =========================================
+        ciudad.addEventListener("input", async () => {
+
+            const q = ciudad.value.trim();
+
+            if (q.length < 1) {
+                ciudadList.classList.add("hidden");
+                return;
+            }
+
+            const res =
+                await fetch(
+                    `/api/catalogo/ciudades?q=${q}`
+                );
+
+            const data = await res.json();
+
+            ciudadList.innerHTML = "";
+
+            data.forEach(item => {
+
+                ciudadList.innerHTML += `
+        <div
+            class="autocomplete-item"
+            onclick='selectCiudad(${JSON.stringify(item)})'
+        >
+            ${item.municipio}
+        </div>
+        `;
+            });
+
+            ciudadList.classList.remove("hidden");
+        });
+
+        function selectCiudad(item) {
+
+            ciudad.value =
+                item.municipio;
+
+            departamento.value =
+                item.depto;
+
+            ciudad_id =
+                item.id;
+
+            departamento_id =
+                item.id_depto;
+
+            ciudadList.classList.add("hidden");
+        }
+
+        // =========================================
+        // SECTORES
+        // =========================================
+        sector.addEventListener("input", async () => {
+
+            const q = sector.value.trim();
+
+            if (q.length < 1) {
+                sectorList.classList.add("hidden");
+                return;
+            }
+
+            const res =
+                await fetch(
+                    `/api/catalogo/sectores?q=${q}`
+                );
+
+            const data = await res.json();
+
+            sectorList.innerHTML = "";
+
+            data.forEach(item => {
+
+                sectorList.innerHTML += `
+        <div
+            class="autocomplete-item"
+            onclick='selectSector(${JSON.stringify(item)})'
+        >
+            ${item.subcategoria}
+        </div>
+        `;
+            });
+
+            sectorList.classList.remove("hidden");
+        });
+
+        function selectSector(item) {
+
+            sector.value =
+                item.subcategoria;
+
+            sector_id =
+                item.id;
+
+            sectorList.classList.add("hidden");
+        }
+
+        // =========================================
+        // BUSCADOR CLIENTES
+        // =========================================
+
+        filterCliente.addEventListener("input", () => {
+
+            const q =
+                filterCliente.value
+                    .trim()
+                    .toLowerCase();
+
+            if (q.length < 2) {
+
+                clienteList.innerHTML = "";
+
+                clienteList.classList.add("hidden");
+
+                aplicarFiltros();
+
+                return;
+            }
+
+            filterClienteTabla.addEventListener("input", aplicarFiltros);
+
+            const encontrados =
+                clientesBusqueda
+                    .filter(c =>
+                        (c.cliente || "")
+                            .toLowerCase()
+                            .includes(q)
+                    )
+                    .slice(0, 20);
+
+            clienteList.innerHTML = "";
+
+            encontrados.forEach(c => {
+
+                clienteList.innerHTML += `
+            <div
+                class="autocomplete-item"
+                onclick="seleccionarClienteBusqueda('${c.id}')"
+            >
+                ${c.cliente}
+            </div>
+        `;
+            });
+
+            clienteList.classList.remove("hidden");
+        });
+
+        function seleccionarClienteBusqueda(idCliente) {
+
+            const cliente =
+                clientesBusqueda.find(
+                    c => c.id == idCliente
+                );
+
+            if (!cliente) return;
+
+            window.location.href =
+                "ficha_cliente.html?cliente=" +
+                idCliente;
+        }
+        // =========================================
+        // FILTERS
+        // =========================================
+        let filtroTimer;
+
+        filterCliente.addEventListener("input", () => {
+
+            clearTimeout(filtroTimer);
+
+            filtroTimer = setTimeout(() => {
+
+                aplicarFiltros();
+
+            }, 300);
+
+        });
+        filterCiudad.addEventListener("input", aplicarFiltros);
+        filterSector.addEventListener("input", aplicarFiltros);
+
+        if (filterAsesor) {
+            filterAsesor.addEventListener("input", aplicarFiltros);
+        }
+        function cargarFiltros() {
+
+            // =========================
+            // CLIENTES
+            // =========================
+            const clientesFiltro = [
+                ...new Set(
+                    clientes
+                        .map(c => c.cliente)
+                        .filter(Boolean)
+                )
+            ].sort();
+
+            filterClienteTabla.innerHTML =
+                `<option value="">TODOS</option>`;
+
+            clientesFiltro.forEach(nombre => {
+
+                filterClienteTabla.innerHTML += `
+        <option value="${nombre}">
+            ${nombre}
+        </option>
+    `;
+            });
+            // =========================
+            // CIUDADES
+            // =========================
+            const ciudades = [
+                ...new Set(
+                    clientes
+                        .map(c => c.ciudad)
+                        .filter(Boolean)
+                )
+            ].sort();
+
+            filterCiudad.innerHTML =
+                `<option value="">TODAS</option>`;
+
+
+            ciudades.forEach(ciudad => {
+
+                filterCiudad.innerHTML += `
+            <option value="${ciudad}">
+                ${ciudad}
+            </option>
+        `;
+            });
+
+            // =========================
+            // SECTORES
+            // =========================
+            const sectores = [
+                ...new Set(
+                    clientes
+                        .map(c => c.sector)
+                        .filter(Boolean)
+                )
+            ].sort();
+
+            filterSector.innerHTML = `
+                <option value="">TODOS</option>
+                <option value="__SIN_SECTOR__">
+                    SIN SECTOR
+                </option>
+            `;
+            sectores.forEach(sector => {
+
+                filterSector.innerHTML += `
+            <option value="${sector}">
+                ${sector}
+            </option>
+        `;
+            });
+
+            // =========================
+            // ASESORES
+            // =========================
+            if (filterAsesor) {
+
+                const asesores = [
+                    ...new Set(
+                        clientes
+                            .map(c => c.asesor)
+                            .filter(Boolean)
+                    )
+                ].sort();
+
+                filterAsesor.innerHTML =
+                    `<option value="">TODOS</option>`;
+
+                asesores.forEach(asesor => {
+
+                    filterAsesor.innerHTML += `
+                <option value="${asesor}">
+                    ${asesor}
+                </option>
+            `;
+                });
+            }
+        }
+        function cambiarPagina(valor) {
+            const nuevaPagina = page + valor;
+
+            // no bajar de 1
+            if (nuevaPagina < 1) return;
+
+            // no pasar del total
+            if (nuevaPagina > totalPages) return;
+
+            page = nuevaPagina;
+
+            cargarClientes();
+        }
+
+        let totalPages = 1; // temporal (lo calculamos después)
+
+        function actualizarPaginaUI() {
+
+            const el = document.getElementById("pageInfo");
+
+            if (!el) return;
+
+            el.innerText = `${page} / ${totalPages}`;
+        }
+
+        function aplicarFiltros() {
+
+            let temp = [...clientesBusqueda];
+
+            temp = temp.filter(c => {
+
+                // =========================
+                // CLIENTE TABLA
+                // =========================
+                const okClienteTabla =
+                    filterClienteTabla.value === ""
+                    ||
+                    (c.cliente || "")
+                        .toLowerCase() ===
+                    filterClienteTabla.value.toLowerCase();
+
+                // =========================
+                // CLIENTE
+                // =========================
+                const okCliente =
+                    (c.cliente || "")
+                        .toLowerCase()
+                        .includes(
+                            filterCliente.value.toLowerCase()
+                        );
+
+                // =========================
+                // CIUDAD
+                // =========================
+                const okCiudad =
+                    filterCiudad.value === ""
+                    ||
+                    (c.ciudad || "")
+                        .toLowerCase() ===
+                    filterCiudad.value.toLowerCase();
+
+                // =========================
+                // SECTOR
+                // =========================
+                let okSector = true;
+
+                if (filterSector.value === "__SIN_SECTOR__") {
+
+                    okSector =
+                        !c.sector ||
+                        c.sector.trim() === "";
+
+                } else {
+
+                    okSector =
+                        filterSector.value === ""
+                        ||
+                        (c.sector || "")
+                            .toLowerCase() ===
+                        filterSector.value.toLowerCase();
+                }
+
+                // =========================
+                // ASESOR
+                // =========================
+                let okAsesor = true;
+
+                if (filterAsesor) {
+
+                    okAsesor =
+                        filterAsesor.value === ""
+                        ||
+                        (c.asesor || "")
+                            .toLowerCase() ===
+                        filterAsesor.value.toLowerCase();
+                }
+
+                return (
+                    okCliente &&
+                    okClienteTabla &&
+                    okCiudad &&
+                    okSector &&
+                    okAsesor
+                );
+            });
+
+            temp = temp.slice(0, 100);
+
+            renderClientes(temp);
+        }
+
+        function irSeguimiento() {
+
+            const idCliente =
+                document.getElementById("id").value;
+
+            if (!idCliente) {
+
+                alert(
+                    "Debe cargar un cliente primero"
+                );
+
+                return;
+            }
+
+            localStorage.setItem(
+                "clienteSeguimiento",
+                JSON.stringify({
+                    id: id.value,
+                    cliente: cliente.value,
+                    contacto: contacto.value,
+                    telefono: tel_contacto.value
+                })
+            );
+
+            window.location.href =
+                "seguimientos.html";
+        }
+
+        // =========================================
+        // INIT
+        // =========================================
+        cargarClientes();
+
+        async function cargarClientesBusqueda() {
+
+            const res = await fetch(
+                `${API}?page=1&limit=5000`,
+                {
+                    headers: {
+                        Authorization:
+                            "Bearer " +
+                            localStorage.getItem("token")
+                    }
+                }
+            );
+
+            const data = await res.json();
+
+            clientesBusqueda =
+                data.data || data;
+        }
+
+        window.onload = async () => {
+
+            await cargarClientesBusqueda();
+
+            await cargarClientes();
+        };
+
+    </script>
+
+</body>
+
+</html>

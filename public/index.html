@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CRM WEB</title>
+
+    <!-- FULLCALENDAR -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+
+    <style>
+        /* =========================================
+            FUENTE
+        ========================================= */
+        * {
+            font-family: "Aptos", Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        /* =========================================
+            BODY
+        ========================================= */
+        body {
+
+            margin: 0;
+
+            background: #0f172a;
+
+            color: white;
+
+            overflow: hidden;
+
+            font-size: 14px;
+        }
+
+        /* =========================================
+            MAIN
+        ========================================= */
+        .main-container {
+
+            display: flex;
+
+            width: 100%;
+
+            height: 100vh;
+        }
+
+        /* =========================================
+SIDEBAR
+========================================= */
+        .sidebar {
+
+            width: 240px;
+
+            background: #111827;
+
+            border-right: 1px solid #1e293b;
+
+            padding: 20px;
+
+            flex-shrink: 0;
+        }
+
+        /* LOGO */
+        .logo {
+
+            font-size: 22px;
+
+            font-weight: 600;
+
+            color: #60a5fa;
+
+            margin-bottom: 40px;
+        }
+
+        /* MENU */
+        .menu {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .menu-item {
+
+            padding: 12px 14px;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+
+            background: #1e293b;
+
+            color: white;
+        }
+
+        .menu-item.active {
+
+            background: #2563eb;
+
+            color: white;
+        }
+
+        /* =========================================
+CONTENT
+========================================= */
+        .content {
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            padding: 20px;
+
+            overflow: hidden;
+
+            min-height: 0;
+        }
+
+        /* =========================================
+TOPBAR
+========================================= */
+        .topbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+
+            flex-shrink: 0;
+        }
+
+        .page-title {
+
+            font-size: 24px;
+
+            font-weight: 600;
+        }
+
+        .user-panel {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .user-info {
+
+            color: #94a3b8;
+
+            font-size: 11px;
+        }
+
+        .logout-btn {
+
+            background: #dc2626;
+
+            border: none;
+
+            color: white;
+
+            padding: 8px 14px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+
+            background: #b91c1c;
+        }
+
+        /* =========================================
+            KPI
+        ========================================= */
+        .kpi-container {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(200px, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+
+            flex-shrink: 0;
+        }
+
+        .kpi-card {
+
+            background: #111827;
+
+            border: 1px solid #1e293b;
+
+            border-radius: 18px;
+
+            padding: 18px;
+        }
+
+        .kpi-card1 {
+
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        .kpi-title {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .kpi-title1 {
+            color: #94a3b8;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+
+        .kpi-value {
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .kpi-value1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+
+        /* =========================================
+DASHBOARD BODY
+========================================= */
+        .dashboard-body {
+
+            display: grid;
+
+            grid-template-columns:
+                2fr 1fr;
+
+            gap: 20px;
+
+            flex: 1;
+
+            min-height: 0;
+
+            height: 100%;
+        }
+
+        /* =========================================
+PANELS
+========================================= */
+        .panel {
+
+            background: #111827;
+
+            border: 1px solid #1e293b;
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-height: 0;
+        }
+
+        .panel-title {
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            margin-bottom: 15px;
+
+            flex-shrink: 0;
+        }
+
+        /* =========================================
+TASKS
+========================================= */
+        .task-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+        .task-item {
+
+            background: #1e293b;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+CALENDAR
+========================================= */
+        #calendar {
+
+            width: 100%;
+
+            max-width: 100%;
+
+            flex: 1;
+
+            min-height: 0;
+
+            overflow: hidden;
+        }
+
+        /* =========================================
+FULLCALENDAR
+========================================= */
+        .fc {
+
+            font-size: 13px;
+
+            height: 100%;
+        }
+
+        .fc .fc-toolbar {
+
+            margin-bottom: 10px !important;
+        }
+
+        .fc .fc-toolbar-title {
+
+            font-size: 18px;
+        }
+
+        .fc .fc-button {
+
+            background: #2563eb !important;
+
+            border: none !important;
+
+            font-size: 12px !important;
+        }
+
+        .fc .fc-button:hover {
+
+            background: #1d4ed8 !important;
+        }
+
+        .fc-theme-standard td,
+        .fc-theme-standard th {
+
+            border: 1px solid #1e293b;
+        }
+
+        .fc-theme-standard .fc-scrollgrid {
+
+            border: 1px solid #1e293b;
+        }
+
+        .fc-col-header-cell {
+
+            background: white !important;
+
+            color: #111827 !important;
+
+            font-size: 12px;
+        }
+
+        .fc-daygrid-day-number {
+
+            color: white;
+
+            font-size: 12px;
+
+            padding: 6px;
+        }
+
+        .fc-event {
+
+            border: none;
+
+            font-size: 11px;
+
+            padding: 2px 4px;
+        }
+
+        .fc-timegrid-slot-label {
+
+            color: #cbd5e1;
+        }
+
+        .fc-scroller {
+
+            overflow-y: auto !important;
+
+            overflow-x: hidden !important;
+        }
+
+        /* =========================================
+LOGIN OVERLAY
+========================================= */
+        .login-overlay {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            background: rgba(15, 23, 42, 0.75);
+
+            backdrop-filter: blur(8px);
+
+            z-index: 9999;
+        }
+
+        /* =========================================
+LOGIN BOX
+========================================= */
+        .box {
+
+            width: 400px;
+
+            background: #111827;
+
+            border: 1px solid #334155;
+
+            border-radius: 22px;
+
+            padding: 35px;
+
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-title {
+
+            font-size: 28px;
+
+            font-weight: 600;
+
+            color: #60a5fa;
+
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+
+            color: #94a3b8;
+
+            margin-bottom: 25px;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+FORM
+========================================= */
+        .login-form {
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .login-form input,
+        .login-form select {
+
+            width: 100%;
+
+            padding: 13px;
+
+            margin-bottom: 14px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #1e293b;
+
+            color: white;
+
+            outline: none;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+PASSWORD
+========================================= */
+        .password-wrapper {
+
+            position: relative;
+        }
+
+        .password-wrapper input {
+
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+
+            position: absolute;
+
+            right: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            cursor: pointer;
+
+            color: #838286;
+        }
+
+        /* =========================================
+BUTTONS
+========================================= */
+        .login-btn {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            margin-top: 10px;
+
+            transition: 0.2s;
+
+            font-size: 13px;
+        }
+
+        .primary-btn {
+
+            background: #2563eb;
+
+            color: white;
+        }
+
+        .primary-btn:hover {
+
+            background: #1d4ed8;
+        }
+
+        .secondary-btn {
+
+            background: #475569;
+
+            color: white;
+        }
+
+        .secondary-btn:hover {
+
+            background: #334155;
+        }
+
+        /* =========================================
+LINKS
+========================================= */
+        .login-link {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #60a5fa;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+HIDDEN
+========================================= */
+        .hidden {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- DASHBOARD -->
+    <div class="main-container">
+
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                🏠 INICIO
+            </div>
+            <div class="menu-item" onclick="window.location.href='clientes.html'">
+                👥 CLIENTES
+            </div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">
+                📅 SEGUIMIENTOS
+            </div>
+            <div class="menu-item" onclick="window.location.href='llamadas.html'">
+                📞 LLAMADAS
+            </div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">
+                📄 COTIZACIONES
+            </div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">
+                📦 PEDIDOS
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <main class="content">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+
+                <div class="page-title">
+                    Dashboard CRM
+                </div>
+
+                <div class="user-panel">
+
+                    <div class="user-info" id="userInfo">
+                        No autenticado
+                    </div>
+
+                    <button class="logout-btn" onclick="logout()">
+                        Cerrar Sesión
+                    </button>
+
+                </div>
+
+            </header>
+
+            <!-- KPI -->
+            <section class="kpi-container">
+
+                <div class="kpi-card1">
+                    <div class="kpi-title1">Total Clientes</div>
+                    <div class="kpi-value1" id="totalClientes">0</div>
+
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">Seguimientos Hoy</div>
+                    <div class="kpi-value" id="seguimientosHoy">0</div>
+                    <div class="kpi-title">Seguimientos Pendientes</div>
+                    <div class="kpi-value" id="seguimientosPendientes">0</div>
+                </div>
+
+
+                <div class="kpi-card">
+                    <div class="kpi-title">Cotizaciones Hoy</div>
+                    <div class="kpi-value" id="cotizacionesHoy">0</div>
+                    <div class="kpi-title">Cotizaciones Mes</div>
+                    <div class="kpi-value" id="cotizacionesMes">0</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">Valor Cotizaciones Hoy</div>
+                    <div class="kpi-value" id="valorCotizacionesHoy">$0</div>
+                    <div class="kpi-title">Valor Cotizaciones Mes</div>
+                    <div class="kpi-value" id="valorCotizacionesMes">$0</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">Pedidos Hoy</div>
+                    <div class="kpi-value" id="pedidosHoy">0</div>
+                    <div class="kpi-title">Pedidos Mes</div>
+                    <div class="kpi-value" id="pedidosTotal">0</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">Valor Pedidos Hoy</div>
+                    <div class="kpi-value" id="valorPedidosHoy">$0</div>
+                    <div class="kpi-title">Valor Pedidos Mes</div>
+                    <div class="kpi-value" id="valorPedidos">$0</div>
+                </div>
+
+            </section>
+
+            <!-- BODY -->
+            <section class="dashboard-body">
+
+                <div class="panel">
+
+                    <div class="panel-title">
+                        Agenda Comercial
+                    </div>
+
+                    <div id="calendar"></div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-title">
+                        Tareas Pendientes
+                    </div>
+
+                    <div class="task-list">
+
+                        <div class="task-item">
+                            📞 Llamar cliente Panel Reyco - 9:00 AM
+                        </div>
+
+                        <div class="task-item">
+                            📄 Enviar cotización Colegio San Mateo
+                        </div>
+
+                        <div class="task-item">
+                            📦 Confirmar pedido Conjunto Mirador
+                        </div>
+
+                        <div class="task-item">
+                            📅 Seguimiento Universidad Nacional
+                        </div>
+
+                        <div class="task-item">
+                            💰 Revisar cotizaciones pendientes
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- LOGIN -->
+    <div class="login-overlay" id="loginOverlay">
+
+        <!-- LOGIN -->
+        <div class="box" id="loginBox">
+
+            <div class="login-title">
+                CRM WEB
+            </div>
+
+            <div class="login-subtitle">
+                Iniciar sesión
+            </div>
+
+            <div class="login-form">
+
+                <input type="text" id="loginUser" placeholder="Usuario" autocomplete="off">
+
+                <div class="password-wrapper">
+
+                    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="off">
+
+                    <span class="password-toggle" onclick="togglePass('loginPass', this)">
+                        👁
+                    </span>
+
+                </div>
+
+                <button class="login-btn primary-btn" onclick="login()">
+                    Ingresar
+                </button>
+
+                <button class="login-btn secondary-btn" onclick="guest()">
+                    Entrar como invitado
+                </button>
+
+                <div class="login-link" onclick="showRegister()">
+                    Registrarse
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- REGISTER -->
+        <div class="box hidden" id="registerBox">
+
+            <div class="login-title">
+                CRM WEB
+            </div>
+
+            <div class="login-subtitle">
+                Crear cuenta
+            </div>
+
+            <div class="login-form">
+
+                <input type="text" id="r_user" placeholder="Usuario">
+                <input type="text" id="r_name" placeholder="Nombre">
+                <input type="email" id="r_email" placeholder="Email">
+
+                <div class="password-wrapper">
+
+                    <input type="password" id="r_pass" placeholder="Contraseña">
+
+                    <span class="password-toggle" onclick="togglePass('r_pass', this)">
+                        👁
+                    </span>
+
+                </div>
+
+                <select id="r_rol">
+
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="ASESOR">ASESOR</option>
+                    <option value="SUPERVISOR">SUPERVISOR</option>
+
+                </select>
+
+                <button class="login-btn primary-btn" onclick="register()">
+                    Crear Cuenta
+                </button>
+
+                <div class="login-link" onclick="showLogin()">
+                    Volver al Login
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FULLCALENDAR -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <!-- CALENDAR -->
+    <script src="js/calendar.js"></script>
+
+    <script>
+
+        function clearLogin() {
+
+            loginUser.value = "";
+            loginPass.value = "";
+        }
+
+        function clearRegister() {
+
+            r_user.value = "";
+            r_name.value = "";
+            r_email.value = "";
+            r_pass.value = "";
+            r_rol.value = "ADMIN";
+        }
+
+        function showLogin() {
+
+            clearRegister();
+
+            registerBox.classList.add("hidden");
+
+            loginBox.classList.remove("hidden");
+        }
+
+        function showRegister() {
+
+            clearLogin();
+
+            loginBox.classList.add("hidden");
+
+            registerBox.classList.remove("hidden");
+        }
+
+        function togglePass(id, icon) {
+
+            const input =
+                document.getElementById(id);
+
+            if (input.type === "password") {
+
+                input.type = "text";
+
+                icon.textContent = "🙈";
+
+            } else {
+
+                input.type = "password";
+
+                icon.textContent = "👁";
+            }
+        }
+
+        function login() {
+            localStorage.setItem("auth", "true");
+            fetch("/api/auth/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    usuario: loginUser.value,
+
+                    password: loginPass.value
+                })
+            })
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    if (data.success) {
+
+                        localStorage.setItem("auth", "true");
+
+                        localStorage.setItem("token", data.token);
+                        localStorage.setItem("auth", "true");
+                        localStorage.setItem("user", data.user.nombre);
+                        localStorage.setItem("rol", data.user.rol);
+
+
+                        localStorage.setItem(
+                            "user",
+                            data.user.nombre
+                        );
+
+                        document.getElementById("userInfo").innerHTML =
+                            `
+                    Bienvenido<br>
+                    ${localStorage.getItem("user")}<br>
+                    ${localStorage.getItem("rol")}
+                `;
+
+
+                        //  userInfo.innerText =
+                        //"Bienvenido " + data.user.nombre + " | " + data.user.rol;
+
+                        loginOverlay.classList.add("hidden");
+
+                        clearLogin();
+
+                    } else {
+
+                        alert("Credenciales incorrectas");
+
+                        clearLogin();
+                    }
+                })
+
+                .catch(() => {
+
+                    alert("Error de servidor");
+
+                    clearLogin();
+                });
+        }
+
+        function register() {
+
+            fetch("/api/auth/register", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    usuario: r_user.value,
+
+                    nombre: r_name.value,
+
+                    email: r_email.value,
+
+                    password: r_pass.value,
+
+                    rol: r_rol.value
+                })
+            })
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    alert(data.message);
+
+                    clearRegister();
+
+                    showLogin();
+                })
+
+                .catch(() => {
+
+                    alert("Error en registro");
+                });
+        }
+
+        function guest() {
+
+            fetch("/api/auth/guest")
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    localStorage.setItem("auth", "true");
+                    alert(data.message);
+
+                    userInfo.innerText =
+                        "Modo Invitado";
+
+                    loginOverlay.classList.add("hidden");
+
+                    clearLogin();
+                });
+        }
+
+        function logout() {
+
+            userInfo.innerText =
+                "No autenticado";
+
+            loginOverlay.classList.remove("hidden");
+
+            showLogin();
+
+            clearLogin();
+
+            clearRegister();
+        }
+
+        window.onload = function () {
+
+            clearLogin();
+            clearRegister();
+
+            // verificar sesión activa
+            if (localStorage.getItem("auth") === "true") {
+
+                loginOverlay.classList.add("hidden");
+
+                document.getElementById("userInfo").innerHTML =
+                    `
+                Bienvenido<br>
+                ${localStorage.getItem("user")}<br>
+                ${localStorage.getItem("rol")}
+            `;
+
+                cargarKPIs(); // 👈 AQUÍ
+
+                //        userInfo.innerText =
+                //        localStorage.getItem("user") || "Usuario";
+
+            } else {
+
+                loginOverlay.classList.remove("hidden");
+
+                userInfo.innerText =
+                    "No autenticado";
+            }
+        };
+    </script>
+
+    <script>
+
+        const API = "/api/dashboard";
+
+        async function cargarKPIs() {
+
+            try {
+
+                const res = await fetch(API, {
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                const data = await res.json();
+
+                // =========================================
+                // CLIENTES
+                // =========================================
+                document.getElementById("totalClientes").innerText =
+                    data.totalClientes || 0;
+
+                document.getElementById("seguimientosHoy").innerText =
+                    data.seguimientosHoy || 0;
+
+                document.getElementById("seguimientosPendientes").innerText =
+                    data.seguimientosPendientes || 0;
+
+                //document.getElementById("clientesActivos").innerText =
+                //  data.clientesActivos || 0;
+
+                // =========================================
+                // COTIZACIONES
+                // =========================================
+                document.getElementById("cotizacionesMes").innerText =
+                    data.cotizacionesTotal || 0;
+
+                document.getElementById("valorCotizacionesMes").innerText =
+                    formatearCOP(data.valorCotizaciones || 0);
+
+                document.getElementById("cotizacionesHoy").innerText =
+                    data.cotizacionesHoy || 0;
+
+                document.getElementById("valorCotizacionesHoy").innerText =
+                    formatearCOP(data.valorCotizacionesHoy || 0);
+
+                // =========================================
+                // PEDIDOS
+                // =========================================
+                const pedidosTotalEl =
+                    document.getElementById("pedidosTotal");
+
+                const valorPedidosEl =
+                    document.getElementById("valorPedidos");
+
+                const pedidosHoyEl =
+                    document.getElementById("pedidosHoy");
+
+                const valorPedidosHoyEl =
+                    document.getElementById("valorPedidosHoy");
+
+                if (pedidosTotalEl) {
+                    pedidosTotalEl.innerText =
+                        data.pedidosTotal || 0;
+                }
+
+                if (valorPedidosEl) {
+                    valorPedidosEl.innerText =
+                        formatearCOP(data.valorPedidos || 0);
+                }
+
+                if (pedidosHoyEl) {
+                    pedidosHoyEl.innerText =
+                        data.pedidosHoy || 0;
+                }
+
+                if (valorPedidosHoyEl) {
+                    valorPedidosHoyEl.innerText =
+                        formatearCOP(data.valorPedidosHoy || 0);
+                }
+
+            } catch (err) {
+
+                console.error(err);
+
+                document.getElementById("totalClientes").innerText = 0;
+                document.getElementById("seguimientosHoy").innerText = 0;
+                document.getElementById("seguimientosPendientes").innerText = 0;
+                //document.getElementById("clientesActivos").innerText = 0;
+
+                document.getElementById("cotizacionesMes").innerText = 0;
+                document.getElementById("valorCotizacionesMes").innerText = "$0";
+
+                document.getElementById("cotizacionesHoy").innerText = 0;
+                document.getElementById("valorCotizacionesHoy").innerText = "$0";
+
+                const pedidosTotalEl =
+                    document.getElementById("pedidosTotal");
+
+                const valorPedidosEl =
+                    document.getElementById("valorPedidos");
+
+                const pedidosHoyEl =
+                    document.getElementById("pedidosHoy");
+
+                const valorPedidosHoyEl =
+                    document.getElementById("valorPedidosHoy");
+
+                if (pedidosTotalEl) pedidosTotalEl.innerText = 0;
+                if (valorPedidosEl) valorPedidosEl.innerText = "$0";
+                if (pedidosHoyEl) pedidosHoyEl.innerText = 0;
+                if (valorPedidosHoyEl) valorPedidosHoyEl.innerText = "$0";
+            }
+        }
+
+        function formatearCOP(valor) {
+
+            return new Intl.NumberFormat(
+                "es-CO",
+                {
+                    style: "currency",
+                    currency: "COP",
+                    maximumFractionDigits: 0
+                }
+            ).format(valor || 0);
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COTIZACIONES - CRM WEB</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
+        .btn-danger {
+            background: #dc2626
+        }
+
+
+        .suggestions {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: #111827;
+            border: 1px solid #334155;
+            z-index: 99999;
+            max-height: 180px;
+            overflow-y: auto;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .suggestions div {
+            padding: 10px;
+            font-size: 11px;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .suggestions div:hover {
+            background: #1e293b;
+        }
+
+        .field {
+            position: relative;
+        }
+
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 14px;
+            overflow: hidden;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .table-container {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .field label {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .field input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            height: 32px;
+            padding: 0 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+
+        .grid-6 {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+            font-size: 11px;
+        }
+
+        .grid-6.cols-6 {
+            grid-template-columns: 120px 1.5fr 120px 120px 120px 120px;
+        }
+
+        .grid-6.cols-5 {
+            grid-template-columns: 120px 1.5fr 120px 120px 120px;
+        }
+
+        .table-header {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .table-header.cols-6 {
+            grid-template-columns: 120px 1.5fr 120px 120px 120px 120px;
+        }
+
+        .table-header.cols-5 {
+            grid-template-columns: 120px 1.5fr 120px 120px 120px;
+        }
+
+        .client-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .client-header {
+            cursor: pointer;
+        }
+
+        .client-header:hover {
+            background: #273449;
+        }
+
+        .client-details {
+            display: none;
+            padding: 12px;
+            border-top: 1px solid #334155;
+            background: #16202f;
+            font-size: 11px;
+        }
+
+        .client-details.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                🏠 INICIO
+            </div>
+            <div class="menu-item" onclick="window.location.href='clientes.html'">
+                👥 CLIENTES
+            </div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">
+                📅 SEGUIMIENTOS
+            </div>
+            <div class="menu-item" onclick="window.location.href='llamadas.html'">
+                📞 LLAMADAS
+            </div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">
+                📄 COTIZACIONES
+            </div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">
+                📦 PEDIDOS
+            </div>
+        </div>
+
+        <main class="content">
+
+            <div class="topbar">
+                <div class="page-title">Cotizaciones</div>
+                <div class="user-info" id="userInfo"></div>
+            </div>
+
+            <!-- ================= FORMULARIO ================= -->
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Documento</label>
+                        <input id="doc" type="text" placeholder="2600XXX">
+                    </div>
+
+                    <div class="field">
+                        <label>Fecha</label>
+                        <input id="fecha" type="date">
+                    </div>
+
+                    <div class="field">
+                        <label>ID Cliente</label>
+                        <input id="id_cliente" type="text" READONLY>
+                    </div>
+
+                    <div class="field">
+                        <label>Cliente</label>
+                        <input id="cliente" type="text" autocomplete="off">
+                        <div id="suggestions" class="suggestions"></div>
+                    </div>
+
+                    <div class="field">
+                        <label>Descuento %</label>
+                        <input id="dcto" type="text">
+                    </div>
+
+                    <div class="field">
+                        <label>Venta Bruta</label>
+                        <input id="vta_bruta" type="text">
+                    </div>
+
+                    <div class="field">
+                        <label>Venta Neta</label>
+                        <input id="venta_neta" type="text" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label>IVA</label>
+                        <input id="iva" type="text" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label>Otros Impuestos</label>
+                        <input id="otros_imp" type="text" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label>Total</label>
+                        <input id="total" type="text" readonly>
+                    </div>
+
+                    <div class="field" id="asesorBox">
+                        <label>Asesor</label>
+                        <input id="asesor" type="text">
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="guardarCotizacion()">GUARDAR</button>
+                    <button class="btn btn-danger" onclick="eliminarCotizacion()">ELIMINAR</button>
+                    <button class="btn btn-secondary" onclick="limpiar()">LIMPIAR</button>
+                </div>
+
+            </div>
+
+            <!-- ================= TABLA ================= -->
+            <div class="panel table-container" id="cotizacionesContainer">
+                <div id="headerTable"></div>
+                Cargando cotizaciones...
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+
+        const API = "/api/cotizaciones";
+
+        const user = localStorage.getItem("user") || "INVITADO";
+        const rol = localStorage.getItem("rol") || "INVITADO";
+
+        document.getElementById("userInfo").innerHTML = `${user}<br>${rol}`;
+
+        let cotizaciones = [];
+        let clientes = [];
+
+        cliente.addEventListener("input", () => {
+
+            const val = cliente.value.toLowerCase();
+            const box = document.getElementById("suggestions");
+
+            if (!val) {
+                box.innerHTML = "";
+                return;
+            }
+
+            const matches = clientes
+                .filter(c => (c.cliente || "").toLowerCase().includes(val))
+                .slice(0, 8);
+
+            box.innerHTML = matches.map(c => `
+        <div onclick="selectCliente('${c.id}','${c.cliente.replace(/'/g, "\\'")}')">
+            ${c.cliente}
+        </div>
+    `).join("");
+        });
+
+        cliente.addEventListener("blur", () => {
+            setTimeout(() => {
+                document.getElementById("suggestions").innerHTML = "";
+            }, 200);
+        });
+
+        const isAsesor = rol === "ASESOR";
+
+        /* ================= FORMATO ================= */
+
+        function formatFecha(fecha) {
+            if (!fecha) return "";
+            const f = new Date(fecha);
+            return `${String(f.getDate()).padStart(2, "0")}.${String(f.getMonth() + 1).padStart(2, "0")}.${f.getFullYear()}`;
+        }
+
+        function formatCOP(v) {
+            return Number(v || 0).toLocaleString("es-CO", {
+                style: "currency",
+                currency: "COP",
+                minimumFractionDigits: 0
+            });
+        }
+
+        function parseNum(v) {
+            return Number(String(v).replace(/[^\d.-]/g, "")) || 0;
+        }
+
+        /* ================= FORM LOGIC ================= */
+
+        doc.addEventListener("blur", () => {
+            if (doc.value && !doc.value.startsWith("CZ BOG")) {
+                doc.value = "CZ BOG " + doc.value;
+            }
+        });
+
+        dcto.addEventListener("blur", () => {
+            let v = parseNum(dcto.value);
+            dcto.value = v + "%";
+            calcular();
+        });
+
+        vta_bruta.addEventListener("blur", () => {
+            let v = parseNum(vta_bruta.value);
+            vta_bruta.value = formatCOP(v);
+            calcular();
+        });
+
+        function calcular() {
+
+            const bruto = parseNum(vta_bruta.value);
+            const dctoVal = parseNum(dcto.value);
+
+            const neto = bruto - (bruto * dctoVal / 100);
+            const ivaVal = neto * 0.19;
+            const totalVal = neto + ivaVal;
+
+            // 🔥 SOLO VISUAL
+            venta_neta.value = formatCOP(neto);
+            iva.value = formatCOP(ivaVal);
+            otros_imp.value = formatCOP(0);
+            total.value = formatCOP(totalVal);
+        }
+
+        function parseNum(v) {
+            if (!v) return 0;
+            return Number(String(v).replace(/[^\d]/g, "")) || 0;
+        }
+
+        /* ================= FORM ================= */
+
+        function setFechaHoy() {
+            fecha.value = new Date().toISOString().split("T")[0];
+        }
+
+        function limpiar() {
+            doc.value = "";
+            setFechaHoy();
+            id_cliente.value = "";
+            cliente.value = "";
+            dcto.value = "";
+            vta_bruta.value = "";
+            venta_neta.value = "";
+            iva.value = "";
+            otros_imp.value = "";
+            total.value = "";
+            asesor.value = "";
+        }
+
+        /* ================= SAVE ================= */
+
+        async function guardarCotizacion() {
+
+            // 🔥 OBLIGATORIO: recalcular antes de guardar
+            calcular();
+
+            const bruto = parseNum(vta_bruta.value);
+            const dctoVal = parseNum(dcto.value);
+
+            const neto = bruto - (bruto * dctoVal / 100);
+            const ivaVal = neto * 0.19;
+            const totalVal = neto + ivaVal;
+
+            const body = {
+                doc: doc.value,
+                fecha: fecha.value,
+                id_cliente: id_cliente.value,
+                cliente: cliente.value,
+                dcto: dctoVal,
+                vta_bruta: bruto,
+                venta_neta: neto,
+                iva: ivaVal,
+                otros_imp: 0,
+                total: totalVal,
+                asesor: isAsesor ? user : asesor.value
+            };
+
+            await fetch(API, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                },
+                body: JSON.stringify(body)
+            });
+
+            limpiar();
+            cargar();
+        }
+
+        /* ================= LOAD + RENDER (SIN CAMBIOS) ================= */
+
+        function renderHeader() {
+
+            const h = document.getElementById("headerTable");
+
+            h.className = "table-header " + (isAsesor ? "cols-5" : "cols-6");
+
+            h.innerHTML = isAsesor ? `
+        <div>DOC</div>
+        <div>CLIENTE</div>
+        <div>FECHA</div>
+        <div>TOTAL</div>
+        <div>VENTA NETA</div>
+    ` : `
+        <div>DOC</div>
+        <div>CLIENTE</div>
+        <div>FECHA</div>
+        <div>TOTAL</div>
+        <div>VENTA NETA</div>
+        <div>ASESOR</div>
+    `;
+        }
+
+        function render(data) {
+
+            const c = document.getElementById("cotizacionesContainer");
+
+            let html = document.getElementById("headerTable").outerHTML;
+
+            data.forEach(x => {
+
+                const grid = isAsesor ? "grid-6 cols-5" : "grid-6 cols-6";
+
+                html += `
+            <div class="client-card" onclick='cargarCotizacionEnFormulario(${JSON.stringify(x)})'>
+            <div class="${grid} client-header">
+
+                <div>${x.doc}</div>
+                <div>${x.cliente}</div>
+                <div>${formatFecha(x.fecha)}</div>
+                <div>${formatCOP(x.total)}</div>
+                <div>${formatCOP(x.venta_neta)}</div>
+
+                ${!isAsesor ? `<div>${x.asesor || ""}</div>` : ""}
+
+            </div>
+
+            <div class="client-details">
+                <div>ID: ${x.id_cliente}</div>
+                <div>IVA: ${formatCOP(x.iva)}</div>
+                <div>Dcto: ${x.dcto}%</div>
+                <div>Otros: ${formatCOP(x.otros_imp)}</div>
+            </div>
+
+        </div>`;
+            });
+
+            c.innerHTML = html;
+        }
+
+        async function cargar() {
+
+            const r = await fetch(API, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+
+            const d = await r.json();
+
+            cotizaciones = d.data || d;
+
+            renderHeader();
+            render(cotizaciones);
+        }
+
+        window.onload = () => {
+            setFechaHoy();
+            if (isAsesor) document.getElementById("asesorBox").style.display = "none";
+
+            cargarClientes(); // 👈 NUEVO
+            cargar();         // ya existe
+        };
+
+        async function cargarClientes(q = "") {
+
+            const r = await fetch("/api/clientes?q=" + q + "&autocomplete=1", {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+
+            const d = await r.json();
+
+            clientes = d.data || [];
+        }
+
+        function selectCliente(id, nombre) {
+            cliente.value = nombre;
+            id_cliente.value = id;
+            document.getElementById("suggestions").innerHTML = "";
+        }
+
+        async function eliminarCotizacion() {
+
+            const docForm = doc.value.trim(); // 👈 viene del formulario
+
+            if (!docForm) {
+                alert("No hay documento seleccionado");
+                return;
+            }
+
+            if (!confirm("¿Seguro que deseas eliminar esta cotización?")) return;
+
+            await fetch("/api/cotizaciones/" + encodeURIComponent(docForm), {
+                method: "DELETE",
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+
+            limpiar();
+            cargar();
+        }
+        function seleccionarCotizacion(x) {
+
+            doc.value = x.doc;
+            fecha.value = x.fecha?.substring(0, 10);
+            id_cliente.value = x.id_cliente;
+            cliente.value = x.cliente;
+            dcto.value = x.dcto + "%";
+            vta_bruta.value = formatCOP(x.vta_bruta);
+
+            calcular();
+
+            // expandir detalles visuales si quieres
+        }
+
+        function toggleDetails(el) {
+            const box = el.parentElement.querySelector(".client-details");
+            box.classList.toggle("active");
+        }
+
+        function cargarCotizacionEnFormulario(c) {
+
+            doc.value = c.doc || "";
+            fecha.value = (c.fecha || "").substring(0, 10);
+
+            id_cliente.value = c.id_cliente || "";
+            cliente.value = c.cliente || "";
+
+            dcto.value = c.dcto || "";
+            vta_bruta.value = c.vta_bruta || "";
+
+            // recalcular para asegurar consistencia visual
+            calcular();
+
+            venta_neta.value = formatCOP(c.venta_neta || 0);
+            iva.value = formatCOP(c.iva || 0);
+            total.value = formatCOP(c.total || 0);
+
+            otros_imp.value = formatCOP(c.otros_imp || 0);
+
+            asesor.value = c.asesor || "";
+        }
+
+    </script>
+
+</body>
+
+</html>

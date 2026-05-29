@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM WEB - LLAMADAS</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #0b1220;
+            color: white;
+            font-family: Arial;
+        }
+
+        .panel.form-panel {
+            height: 150px;
+            /* ajusta a tu gusto */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
+            padding: 12px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+
+        .menu-item {
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .menu-item:hover {
+            background: #1e293b;
+        }
+
+        .content {
+            flex: 1;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111827;
+            border: 1px solid #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .page-title {
+            font-weight: bold;
+        }
+
+        .user-info {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* ===================== FILTROS ===================== */
+        .panel.filters-panel {
+            height: 80px;
+            max-height: 80px;
+            min-height: 80px;
+
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===================== FORMULARIO ===================== */
+        .panel1 {
+            height: 220px;
+            /* ocupa todo el resto de pantalla */
+
+            min-height: 220px;
+            max-height: 220px;
+
+            overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* FORM GRID NO AUTO EXPAND */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        /* ===================== BOTONES FIJOS ABAJO ===================== */
+        .actions {
+            margin-top: auto;
+            /* 🔥 esto los empuja abajo */
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ===================== TABLA ===================== */
+        .table-panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 12px;
+
+            overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+
+            flex: 1;
+            min-height: 0;
+        }
+
+        #tablaClientes {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 8px;
+            padding-right: 4px;
+        }
+
+        .table-head {
+            flex-shrink: 0;
+        }
+
+        .filters-grid,
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        label {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        input,
+        select,
+        textarea {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            color: white;
+        }
+
+        .btn-green {
+            background: #16a34a;
+        }
+
+        .btn-gray {
+            background: #475569;
+        }
+
+        /* ===================== TABLA CLIENTES (AGREGADA) ===================== */
+
+        .table-panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 12px;
+            overflow: hidden;
+        }
+
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .table-head,
+        .row {
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            font-size: 11px;
+        }
+
+        .table-head {
+            background: #0f172a;
+            color: #60a5fa;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .row {
+            background: #1e293b;
+            border-radius: 8px;
+            margin-top: 6px;
+            cursor: pointer;
+        }
+
+        .row:hover {
+            background: #273449;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <!-- SIDEBAR (NO TOCADO) -->
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">🏠 INICIO</div>
+            <div class="menu-item" onclick="window.location.href='clientes.html'">👥 CLIENTES</div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">📅 SEGUIMIENTOS</div>
+            <div class="menu-item">📞 LLAMADAS</div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">📄 COTIZACIONES</div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">📦 PEDIDOS</div>
+        </div>
+
+        <div class="content">
+
+            <!-- TOPBAR -->
+            <div class="topbar">
+                <div class="page-title">LLAMADAS</div>
+                <div class="user-info" id="userInfo"></div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="panel filters-panel">
+                <div class="filters-grid">
+
+                    <div class="field">
+                        <label>SECTOR</label>
+                        <select id="filtroSector" onchange="filtrarSector()">
+                            <option>TODOS</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>COTIZADOS</label>
+                        <select id="filtroCotizacion" onchange="filtrarCotizacion()">
+                            <option value="TODOS">TODOS</option>
+                            <option value="CON">CON COTIZACIÓN</option>
+                            <option value="SIN">SIN COTIZACIÓN</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO (NO SE TOCA) -->
+            <div class="panel1">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Fecha</label>
+                        <input id="fecha" type="date">
+                    </div>
+
+                    <div class="field">
+                        <label>ID Cliente</label>
+                        <input id="cliente_id" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label>Cliente</label>
+                        <input id="cliente_nombre" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label>Contacto</label>
+                        <input id="contacto">
+                    </div>
+
+                    <div class="field">
+                        <label>Teléfono</label>
+                        <input id="tel_contacto">
+                    </div>
+
+                    <div class="field">
+                        <label>Tipo</label>
+                        <select id="tipo">
+                            <option>LLAMADA</option>
+                            <option>WHATSAPP</option>
+                            <option>VISITA</option>
+                            <option>EMAIL</option>
+                            <option>COTIZACION</option>
+                            <option>OTRO</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Fecha Próxima</label>
+                        <input type="date" id="fecha_proxima">
+                    </div>
+
+                    <div class="field">
+                        <label>Próxima Acción</label>
+                        <input id="proxima_accion">
+                    </div>
+
+                    <div class="field" style="grid-column:1/-1">
+                        <label>Nota</label>
+                        <textarea id="nota"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-green" onclick="guardarSeguimiento()">AGREGAR</button>
+                    <button class="btn btn-gray" onclick="limpiar()">LIMPIAR</button>
+                </div>
+
+            </div>
+
+            <!-- ===================== TABLA CLIENTES (AGREGADA) ===================== -->
+            <div class="table-panel">
+
+                <div class="table-head">
+                    <div>ID</div>
+                    <div>CLIENTE</div>
+                    <div>CIUDAD</div>
+                    <div>SECTOR</div>
+                    <div>CONTACTO</div>
+                    <div>TEL</div>
+                </div>
+
+                <div id="tablaClientes"></div>
+
+                <div class="actions" style="justify-content:flex-end; margin-top:10px;">
+
+                    <button class="btn btn-gray" onclick="cambiarPagina(-1)">❮</button>
+
+                    <span id="pageInfo">1 / 1</span>
+
+                    <button class="btn btn-gray" onclick="cambiarPagina(1)">❯</button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        const API_CLIENTES = "/api/clientes";
+
+        let clientesFull = [];   // TODOS los clientes
+        let clientes = [];       // los que se muestranlet cotizaciones = [];
+        let cotizacionesMap = {};
+        let page = 1;
+        let limit = 40;
+        let totalPages = 1;
+
+        let clienteExpandido = null;
+        let sectorFiltro = "TODOS";
+
+        let filtroCotizacion = "TODOS";
+        let soloConCotizaciones = false;
+
+        /* ================= USER ================= */
+        document.getElementById("userInfo").innerText =
+            (localStorage.getItem("user") || "INVITADO") +
+            " / " +
+            (localStorage.getItem("rol") || "ROL");
+
+
+        /* ================= GUARDAR ================= */
+        async function guardarSeguimiento() {
+
+            const body = {
+
+                fecha: fecha.value || new Date().toISOString().split("T")[0],
+                cliente_id: cliente_id.value,
+                tipo: tipo.value,
+                nota: nota.value,
+                proxima_accion: proxima_accion.value,
+                fecha_proxima: fecha_proxima.value || null,
+                asesor: localStorage.getItem("user")
+            };
+
+            const res = await fetch("/api/seguimientos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+            alert(data.message || "Llamada registrada");
+
+            limpiar();
+        }
+
+
+        /* ================= LIMPIAR ================= */
+        function limpiar() {
+            cliente_id.value = "";
+            cliente_nombre.value = "";
+            contacto.value = "";
+            tel_contacto.value = "";
+            tipo.value = "LLAMADA";
+            nota.value = "";
+            proxima_accion.value = "";
+            fecha_proxima.value = "";
+        }
+
+
+        /* ================= CARGAR CLIENTES ================= */
+        async function cargarClientes() {
+
+            const res = await fetch(`/api/clientes?limit=5000`, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+
+            const data = await res.json();
+
+            clientesFull = data.data || [];
+
+            aplicarFiltros(); // 👈 CLAVE
+            llenarFiltroSectores();
+        }
+
+        function aplicarFiltros() {
+
+            let data = [...clientesFull];
+
+            // SECTOR
+            if (sectorFiltro !== "TODOS") {
+                data = data.filter(c => c.sector === sectorFiltro);
+            }
+
+            // COTIZACIONES
+            const val = document.getElementById("filtroCotizacion").value;
+
+            if (val === "CON") {
+                data = data.filter(c => clienteTieneCotizacion(c.id));
+            }
+
+            if (val === "SIN") {
+                data = data.filter(c => !clienteTieneCotizacion(c.id));
+            }
+
+            clientes = data;
+
+            page = 1;
+
+            renderClientes();
+            actualizarPaginacion();
+        }
+
+        /* ================= SELECCIONAR CLIENTE ================= */
+        function seleccionarCliente(id) {
+
+            const c = clientes.find(x => x.id == id);
+            if (!c) return;
+
+            clienteExpandido = (clienteExpandido === id) ? null : id;
+
+            cliente_id.value = c.id;
+            cliente_nombre.value = c.cliente;
+            contacto.value = c.contacto || "";
+            tel_contacto.value = c.tel_contacto || "";
+
+            renderClientes();
+        }
+
+
+        /* ================= RENDER TABLA ================= */
+        function renderClientes() {
+
+            const cont = document.getElementById("tablaClientes");
+            cont.innerHTML = "";
+
+            const inicio = (page - 1) * limit;
+            const fin = inicio + limit;
+
+            const dataPagina = clientes.slice(inicio, fin);
+
+            totalPages = Math.ceil(clientes.length / limit);
+
+            dataPagina.forEach(c => {
+
+                const expandido = clienteExpandido == c.id;
+                const tieneCot = clienteTieneCotizacion(c.id);
+
+                cont.innerHTML += `
+        <div class="row" onclick="seleccionarCliente('${c.id}')">
+
+            <div>${c.id}</div>
+            <div>${c.cliente} ${tieneCot ? "📄" : ""}</div>
+            <div>${c.ciudad || ""}</div>
+            <div>${c.sector || ""}</div>
+            <div>${c.contacto || ""}</div>
+            <div>${c.tel_contacto || ""}</div>
+
+        </div>
+
+        ${expandido ? `
+        <div style="background:#0f172a;padding:10px;margin-top:4px;border-radius:8px;font-size:11px;color:#cbd5e1;">
+            <b>DETALLE CLIENTE</b><br>
+            Dirección: ${c.direccion || ""}<br>
+            Email: ${c.email || ""}<br>
+            Ciudad: ${c.ciudad || ""}<br>
+            Sector: ${c.sector || ""}<br>
+            Contacto: ${c.contacto || ""}<br>
+            Tel: ${c.tel_contacto || ""}
+        </div>
+        ` : ""}
+
+        `;
+            });
+        }
+
+        /* ================= PAGINACIÓN ================= */
+        function cambiarPagina(valor) {
+
+            const nueva = page + valor;
+
+            if (nueva < 1 || nueva > totalPages) return;
+
+            page = nueva;
+            renderClientes();
+        }
+
+        function actualizarPaginacion() {
+
+            const el = document.getElementById("pageInfo");
+
+            if (!el) return;
+
+            el.innerText = `${page} / ${totalPages}`;
+        }
+
+
+        /* ================= FILTRO SECTOR ================= */
+        function filtrarSector() {
+            sectorFiltro = document.getElementById("filtroSector").value;
+            aplicarFiltros();
+        }
+
+        function filtrarCotizacion() {
+
+            const val = document.getElementById("filtroCotizacion").value;
+
+            if (val === "CON") {
+                soloConCotizaciones = true;
+            } else if (val === "SIN") {
+                soloConCotizaciones = false;
+                clientes = clientesFull.filter(c => !clienteTieneCotizacion(c.id));
+            } else {
+                soloConCotizaciones = false;
+            }
+
+            aplicarFiltros();
+        }
+
+
+        /* ================= LLENAR FILTRO ================= */
+        function llenarFiltroSectores() {
+
+            const select = document.getElementById("filtroSector");
+
+            const sectores = [...new Set(clientes.map(c => c.sector).filter(Boolean))];
+
+            select.innerHTML = `<option value="TODOS">TODOS</option>`;
+
+            sectores.forEach(s => {
+                select.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+        }
+
+
+        /* ================= INIT ================= */
+        window.onload = () => {
+
+            const c = JSON.parse(localStorage.getItem("clienteSeguimiento"));
+
+            if (c) {
+                cliente_id.value = c.id;
+                cliente_nombre.value = c.cliente;
+                contacto.value = c.contacto;
+                tel_contacto.value = c.telefono;
+            }
+
+            cargarClientes();
+            cargarCotizaciones(); // 👈 IMPORTANTE
+        };
+
+
+        function filtrarCotizacion() {
+
+            soloConCotizaciones = document.getElementById("filtroCotizacion").value === "SI";
+
+            renderClientes();
+        }
+
+        async function cargarCotizaciones() {
+
+            const res = await fetch("/api/cotizaciones", {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+
+            const data = await res.json();
+
+            cotizaciones = data.data || [];
+            cotizacionesMap = {};
+
+            cotizaciones.forEach(c => {
+                cotizacionesMap[String(c.id_cliente)] = true; // 🔥 importante string
+            });
+
+            aplicarFiltros(); // 🔥 clave para refrescar tabla
+        }
+
+        function clienteTieneCotizacion(id) {
+            return !!cotizacionesMap[id];
+        }
+
+    </script>
+
+</body>
+
+</html>

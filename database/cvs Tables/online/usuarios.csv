@@ -1,0 +1,4 @@
+"id";"usuario";"nombre";"email";"password";"rol";"estado";"fecha_creacion"
+1;"Admin";"ADMINISTRADOR DEL SISTEMA";"ventas4@reycosas.com";"Admin";"ADMIN";"ACTIVO";"2026-05-20 07:59:20"
+2;"JuanP";"JUAN VICENTE PAEZ OSPINA";"juanvpaezo@gmail.com";"Rolito75.";"ASESOR";"ACTIVO";"2026-05-20 11:33:20"
+3;"KarolB";"YEHISMY KAROL BECERRA CORREDOR";"dircomercial@reycosas.com";"0897";"ASESOR";"ACTIVO";"2026-05-25 10:25:19"

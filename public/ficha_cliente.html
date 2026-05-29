@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TABLA CLIENTE</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        /* =========================
+   BASE
+========================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0b1220;
+            color: white;
+        }
+
+        /* =========================
+   LAYOUT GENERAL
+========================= */
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* CONTENT (IMPORTANTE: NO BLOQUEA SCROLL GLOBAL) */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 14px;
+
+            /* CLAVE: mismo comportamiento que clientes */
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* =========================
+   SIDEBAR
+========================= */
+
+        .sidebar {
+            width: 220px;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
+            padding: 12px;
+        }
+
+        .logo {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+
+        .menu-item {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            color: #cbd5e1;
+        }
+
+        .menu-item:hover {
+            background: #1e293b;
+        }
+
+        .menu-item.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =========================
+   TOPBAR
+========================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111827;
+            border: 1px solid #1e293b;
+            padding: 10px 14px;
+            border-radius: 12px;
+        }
+
+        .page-title {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 12px;
+            line-height: 1.2;
+            color: #cbd5e1;
+        }
+
+        /* =========================
+   KPI
+========================= */
+
+        .kpi {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* =========================
+   BOTONES
+========================= */
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-blue {
+            background: #2563eb;
+        }
+
+        .btn-green {
+            background: #16a34a;
+        }
+
+        .btn-red {
+            background: #dc2626;
+        }
+
+        .btn-orange {
+            background: #d97706;
+        }
+
+        .btn-gray {
+            background: #475569;
+        }
+
+        /* =========================
+   FORMULARIO (NO SE ROMPE)
+========================= */
+
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+
+            height: auto;
+            overflow: visible;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 5px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        /* =========================
+   TABS SYSTEM (ESTABLE)
+========================= */
+
+        .cotizaciones-head {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+
+            background: #0f172a;
+            color: #60a5fa;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .tabs-wrapper {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            color: #cbd5e1;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* IMPORTANTE: NO FLEX 1 */
+        .tab-content {
+            display: none;
+            padding: 14px;
+
+            /* CLAVE: igual que clientes */
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* =========================
+   TABLAS (SCROLL CONTROLADO SOLO AQUÍ)
+========================= */
+
+        .table-wrapper {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .table-head {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+
+            background: #0f172a;
+            color: #60a5fa;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .table-body {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        /* FILAS */
+        .crm-row {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+            font-size: 11px;
+            border-bottom: 1px solid #334155;
+            align-items: center;
+            background: #1e293b;
+        }
+
+        .crm-row:hover {
+            background: #273449;
+        }
+
+        /* =========================
+   CLIENT HEADER
+========================= */
+
+        .client-header {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        /* =========================
+   UTIL
+========================= */
+
+        .box {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 14px;
+            min-height: 200px;
+        }
+
+        .title {
+            font-size: 12px;
+            color: #60a5fa;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                🏠 INICIO
+            </div>
+            <div class="menu-item" onclick="window.location.href='clientes.html'">
+                👥 CLIENTES
+            </div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">
+                📅 SEGUIMIENTOS
+            </div>
+            <div class="menu-item" onclick="window.location.href='llamadas.html'">
+                📞 LLAMADAS
+            </div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">
+                📄 COTIZACIONES
+            </div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">
+                📦 PEDIDOS
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- TOPBAR -->
+            <div class="topbar">
+                <div id="clienteTitulo">TABLA CLIENTE - CLIENTE CARGADO</div>
+                <div class="user-info" id="userInfo"></div>
+            </div>
+
+            <div class="kpi">
+                <div class="kpi-card">Seguimientos <b id="kpiSeguimientos">0</b></div>
+                <div class="kpi-card">Cotizaciones <b id="kpiCotizaciones">0</b></div>
+                <div class="kpi-card">Pedidos <b id="kpiPedidos">0</b></div>
+                <div class="kpi-card">Vr Cotizado <b id="kpiVrCotizado">$0</b></div>
+                <div class="kpi-card">Vr Pedidos <b id="kpiVrPedidos">$0</b></div>
+            </div>
+
+            <!-- CLIENT HEADER -->
+            <div class="client-header">
+                <div class="client-title"></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
+            <!-- FORM -->
+            <div class="panel">
+                <div class="form-grid">
+
+                    <div class="field"><label>DIRECCIÓN</label><input></div>
+                    <div class="field"><label>CONTACTO</label><input></div>
+                    <div class="field"><label>TEL. CONTACTO</label><input></div>
+                    <div class="field"><label>CIUDAD</label><input></div>
+
+                    <div class="field"><label>DEPARTAMENTO</label><input></div>
+                    <div class="field"><label>SECTOR</label><input></div>
+                    <div class="field"><label>SUCRSALES / CONTACTOS</label><input></div>
+                    <div class="field"><label>ESTADO</label><input></div>
+
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="actions">
+                <button class="btn btn-green">EDITAR</button>
+                <button class="btn btn-blue">ACTUALIZAR</button>
+                <button class="btn btn-red">SEGUIMIENTOS</button>
+                <button class="btn btn-orange">COTIZACIONES</button>
+                <button class="btn btn-green">PEDIDOS</button>
+            </div>
+
+
+            <!-- BOTTOM -->
+            <div class="tabs-wrapper">
+
+                <div class="tabs">
+                    <button class="tab active" onclick="mostrarTab('seguimientos')">Seguimientos</button>
+                    <button class="tab" onclick="mostrarTab('cotizaciones')">Cotizaciones</button>
+                    <button class="tab" onclick="mostrarTab('pedidos')">Pedidos</button>
+                    <button class="tab" onclick="mostrarTab('sucursales')">Sucursales</button>
+                </div>
+
+                <div class="tabs-wrapper">
+
+                    <!-- SEGUIMIENTOS -->
+                    <div id="seguimientos" class="tab-content active">
+
+                        <div class="table-wrapper">
+
+                            <div class="table-head" style="grid-template-columns: 160px 120px 1.5fr 160px 160px 140px;">
+                                <div>FECHA</div>
+                                <div>TIPO</div>
+                                <div>NOTA</div>
+                                <div>PRÓXIMA ACCIÓN</div>
+                                <div>FECHA PRÓXIMA</div>
+                                <div>ASESOR</div>
+                            </div>
+
+                            <div id="tablaSeguimientosBody" class="table-body"></div>
+
+                        </div>
+                    </div>
+
+                    <!-- COTIZACIONES -->
+                    <div id="cotizaciones" class="tab-content">
+
+                        <div class="table-wrapper">
+
+                            <div class="cotizaciones-head">
+                                <div>#</div>
+                                <div>DOC</div>
+                                <div>FECHA</div>
+                                <div>CLIENTE</div>
+                                <div>VENTA NETA</div>
+                                <div id="col-asesor-head">ASESOR</div>
+                            </div>
+
+                            <div id="tablaCotizacionesBody" class="table-body"></div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- PEDIDOS -->
+                    <div id="pedidos" class="tab-content">
+
+                        <div class="table-wrapper">
+
+                            <div class="table-head" style="grid-template-columns: 1fr 1.5fr 1fr 120px 120px;">
+                                <div>DOC</div>
+                                <div>CLIENTE</div>
+                                <div>COTIZACIÓN</div>
+                                <div>FECHA</div>
+                                <div>TOTAL</div>
+                            </div>
+
+                            <div id="tablaPedidosBody" class="table-body"></div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SUCURSALES -->
+                    <div id="sucursales" class="tab-content">
+
+                        <div class="table-wrapper">
+
+                            <div class="table-head" style="grid-template-columns: 1fr;">
+                                <div>SUCURSALES / CONTACTOS</div>
+                            </div>
+
+                            <div class="table-body">
+                                LISTADO DE SUCURSALES / CONTACTOS
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <script>
+            /*----------------------------------------------------------
+                VARIABLES GLOBALES
+            -----------------------------------------------------------*/
+
+            const params = new URLSearchParams(window.location.search);
+            const clienteId = params.get("cliente");
+
+            const user = localStorage.getItem("user") || "INVITADO";
+            const rol = localStorage.getItem("rol") || "INVITADO";
+
+            /*----------------------------------------------------------
+                INICIO SEGURO (CLAVE)
+            -----------------------------------------------------------*/
+
+            window.addEventListener("load", () => {
+
+                document.getElementById("userInfo").innerHTML =
+                    `${user}<br>${rol}`;
+
+                if (!clienteId) {
+                    alert("No se recibió ID de cliente en la URL");
+                    return;
+                }
+
+                cargarCliente();
+                document.getElementById("seguimientos").classList.add("active");
+
+                // 🔥 carga con delay para asegurar DOM listo
+                setTimeout(() => {
+                    if (clienteId) {
+                        loadSeguimientos(clienteId);
+                    }
+                }, 300);
+
+            });
+
+            /*----------------------------------------------------------
+                CARGAR CLIENTE
+            -----------------------------------------------------------*/
+
+            async function cargarCliente() {
+
+                try {
+
+                    const res = await fetch("/api/clientes/" + clienteId, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    // 🔥 soporte por si viene como {data: {...}}
+                    const c = data.data || data;
+
+                    pintarCliente(c);
+                    loadSeguimientos(c.id);
+                    loadCotizaciones(c.id);
+                    loadPedidos(c.id);
+                    loadKpis(c.id);
+
+                } catch (error) {
+                    console.error("ERROR CARGANDO CLIENTE:", error);
+                    alert("Error cargando cliente");
+                }
+            }
+
+            /*----------------------------------------------------------
+                PINTAR CLIENTE
+            -----------------------------------------------------------*/
+
+            function pintarCliente(c) {
+
+                if (!c) {
+                    console.error("Cliente vacío");
+                    return;
+                }
+
+                document.querySelector(".client-title").textContent = c.cliente || "";
+
+                document.querySelector(".client-header").children[1].textContent =
+                    "NIT: " + (c.id || "");
+
+                document.querySelector(".client-header").children[2].textContent =
+                    "TEL: " + (c.telefono || "");
+
+                document.querySelector(".client-header").children[3].textContent =
+                    "EMAIL: " + (c.email || "");
+
+                const inputs = document.querySelectorAll(".form-grid input");
+
+                if (inputs.length >= 8) {
+                    inputs[0].value = c.direccion || "";
+                    inputs[1].value = c.contacto || "";
+                    inputs[2].value = c.tel_contacto || "";
+                    inputs[3].value = c.ciudad || "";
+                    inputs[4].value = c.departamento || "";
+                    inputs[5].value = c.sector || "";
+                    inputs[6].value = c.maneja_sucursales || "";
+                    inputs[7].value = c.estado || "";
+                }
+
+                const titulo = document.getElementById("clienteTitulo");
+
+                if (titulo) {
+                    titulo.textContent = "TABLA CLIENTE - " + (c.cliente || "");
+                }
+
+                document.title = "TABLA CLIENTE - " + (c.cliente || "");
+
+                document.getElementById("clienteTitulo").textContent =
+                    "TABLA CLIENTE - " + (c.cliente || "");
+
+                // 🔥 AQUÍ VA LO IMPORTANTE
+                loadSeguimientos(c.id);
+            }
+
+
+            function formatearFecha(fecha) {
+                if (!fecha) return "";
+
+                const f = new Date(fecha);
+
+                const dia = String(f.getDate()).padStart(2, '0');
+                const mes = String(f.getMonth() + 1).padStart(2, '0');
+                const anio = f.getFullYear();
+
+                return `${dia}-${mes}-${anio}`;
+            }
+
+            function formatearCOP(valor) {
+
+                if (valor === null || valor === undefined || valor === "") {
+                    return "$ 0";
+                }
+
+                const num = Number(valor);
+
+                if (isNaN(num)) return "$ 0";
+
+                return new Intl.NumberFormat("es-CO", {
+                    style: "currency",
+                    currency: "COP",
+                    minimumFractionDigits: 0
+                }).format(num);
+            }
+
+            async function loadSeguimientos(clienteId) {
+
+                const container = document.getElementById("tablaSeguimientosBody");
+
+                container.innerHTML = `
+        <div style="text-align:center; padding:15px; color:#94a3b8;">
+            Cargando seguimientos...
+        </div>
+    `;
+
+                try {
+
+                    const res = await fetch(`/api/seguimientos?cliente_id=${clienteId}`);
+                    const response = await res.json();
+
+                    let data = response.data || response || [];
+
+                    if (!Array.isArray(data) || !data.length) {
+                        container.innerHTML = `
+                <div style="text-align:center; padding:15px; color:#94a3b8;">
+                    No hay seguimientos registrados
+                </div>
+            `;
+                        return;
+                    }
+
+                    container.innerHTML = data.map(item => `
+            <div class="crm-row"
+                style="grid-template-columns: 160px 120px 1.5fr 160px 160px 140px;">
+
+                <div>${formatearFecha(item.fecha)}</div>
+                <div>${item.tipo || ""}</div>
+                <div>${item.nota || ""}</div>
+                <div>${item.proxima_accion || ""}</div>
+                <div>${formatearFecha(item.fecha_proxima)}</div>
+                <div>${item.asesor || ""}</div>
+
+            </div>
+        `).join("");
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    container.innerHTML = `
+            <div style="text-align:center; padding:15px; color:#ef4444;">
+                Error cargando seguimientos
+            </div>
+        `;
+                }
+            }
+            function mostrarTab(tabId) {
+
+                document.querySelectorAll(".tab-content")
+                    .forEach(t => t.classList.remove("active"));
+
+                document.querySelectorAll(".tab")
+                    .forEach(t => t.classList.remove("active"));
+
+                const tab = document.getElementById(tabId);
+
+                if (!tab) {
+                    console.error("TAB NO EXISTE:", tabId);
+                    return;
+                }
+
+                tab.classList.add("active");
+
+                // activar botón correcto
+                document.querySelectorAll(".tab").forEach(btn => {
+                    if (btn.getAttribute("onclick").includes(tabId)) {
+                        btn.classList.add("active");
+                    }
+                });
+            }
+
+            async function loadKpis(clienteId) {
+
+                try {
+
+                    const res = await fetch(`/api/seguimientos?cliente_id=${clienteId}`);
+                    const response = await res.json();
+
+                    let data = response.data || response;
+
+                    if (!Array.isArray(data)) {
+                        console.error("Respuesta inválida KPI:", data);
+                        return;
+                    }
+
+                    // 📊 KPIs seguimientos
+                    const totalSeguimientos = data.length;
+
+                    // 📅 último seguimiento
+                    const ultimo = data
+                        .map(x => new Date(x.fecha))
+                        .sort((a, b) => b - a)[0];
+
+                    // 📅 próximos
+                    const hoy = new Date();
+
+                    const proximos = data.filter(x =>
+                        x.fecha_proxima && new Date(x.fecha_proxima) >= hoy
+                    ).length;
+
+                    // =========================================
+                    // 🔥 KPI COTIZACIONES
+                    // =========================================
+                    let totalCotizaciones = 0;
+                    let valorCotizaciones = 0;
+
+                    try {
+                        const resCot = await fetch(`/api/cotizaciones/cliente?cliente_id=${clienteId}`);
+                        const cotResponse = await resCot.json();
+
+                        const cotData = cotResponse.data || cotResponse;
+
+                        if (Array.isArray(cotData)) {
+
+                            totalCotizaciones = cotData.length;
+
+                            valorCotizaciones = cotData.reduce((sum, c) => {
+                                return sum + (Number(c.venta_neta) || 0);
+                            }, 0);
+
+                        }
+
+                    } catch (err) {
+                        console.error("Error cotizaciones KPI:", err);
+                    }
+
+                    // =========================================
+                    // 🔥 KPI PEDIDOS
+                    // =========================================
+                    let totalPedidos = 0;
+                    let valorPedidos = 0;
+
+                    try {
+                        const resPed = await fetch(`/api/pedidos?cliente_id=${clienteId}`);
+                        const pedResponse = await resPed.json();
+
+                        const pedData = pedResponse.data || pedResponse;
+
+                        if (Array.isArray(pedData)) {
+
+                            totalPedidos = pedData.length;
+
+                            valorPedidos = pedData.reduce((sum, p) => {
+                                return sum + (Number(p.venta_neta || p.total) || 0);
+                            }, 0);
+
+                        }
+
+                    } catch (err) {
+                        console.error("Error pedidos KPI:", err);
+                    }
+
+                    // 💥 pintar KPIs
+                    document.getElementById("kpiSeguimientos").innerText = totalSeguimientos;
+
+                    document.getElementById("kpiCotizaciones").innerText = totalCotizaciones;
+
+                    document.getElementById("kpiPedidos").innerText = totalPedidos;
+
+                    document.getElementById("kpiVrCotizado").innerText = formatearCOP(valorCotizaciones);
+
+                    document.getElementById("kpiVrPedidos").innerText = formatearCOP(valorPedidos);
+
+                } catch (err) {
+                    console.error("Error KPIs:", err);
+                }
+            }
+
+            async function loadCotizaciones(clienteId) {
+
+                const container = document.getElementById("tablaCotizacionesBody");
+
+                container.innerHTML = `
+                    <div style="padding:15px; text-align:center; color:#94a3b8;">
+                        Cargando cotizaciones...
+                    </div>
+                `;
+
+                try {
+
+                    const res = await fetch(`/api/cotizaciones/cliente?cliente_id=${clienteId}`);
+
+                    const response = await res.json();
+
+                    let data = response.data || response || [];
+
+                    // =========================================
+                    // AJUSTAR ENCABEZADO SIEMPRE
+                    // =========================================
+                    const rol = localStorage.getItem("rol") || "INVITADO";
+
+                    const head = document.getElementById("col-asesor-head");
+
+                    if (head) {
+                        head.style.display = (rol === "ASESOR") ? "none" : "block";
+                    }
+
+                    const headContainer = document.querySelector(".cotizaciones-head");
+
+                    if (headContainer) {
+
+                        if (rol === "ASESOR") {
+
+                            headContainer.style.gridTemplateColumns =
+                                "60px 1.5fr 120px 1.5fr 120px";
+
+                        } else {
+
+                            headContainer.style.gridTemplateColumns =
+                                "60px 1.5fr 120px 1.5fr 120px 140px";
+
+                        }
+                    }
+
+                    // =========================================
+                    // SIN COTIZACIONES
+                    // =========================================
+                    if (!Array.isArray(data) || !data.length) {
+
+                        container.innerHTML = `
+                            <div style="padding:15px; text-align:center; color:#94a3b8;">
+                                No hay cotizaciones sin pedido
+                            </div>
+                        `;
+
+                        return;
+                    }
+
+                    // =========================================
+                    // COLUMNAS FILAS
+                    // =========================================
+                    let columnas = "60px 1.5fr 120px 1.5fr 120px";
+
+                    if (rol !== "ASESOR") {
+                        columnas += " 140px";
+                    }
+
+                    // =========================================
+                    // RENDER
+                    // =========================================
+                    container.innerHTML = data.map((c, i) => `
+                        <div class="crm-row" style="grid-template-columns:${columnas};">
+
+                            <div>${i + 1}</div>
+                            <div>${c.doc || ""}</div>
+                            <div>${formatearFecha(c.fecha)}</div>
+                            <div>${c.cliente || ""}</div>
+                            <div>${formatearCOP(c.venta_neta)}</div>
+
+                            ${rol !== "ASESOR"
+                            ? `<div>${c.asesor || ""}</div>`
+                            : ""
+                        }
+
+                        </div>
+                    `).join("");
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    container.innerHTML = `
+            <div style="padding:15px; text-align:center; color:#ef4444;">
+                Error cargando cotizaciones
+            </div>
+        `;
+                }
+            }
+
+            async function loadPedidos(clienteId) {
+
+                const container = document.getElementById("tablaPedidosBody");
+
+                container.innerHTML = `
+                    <div style="padding:15px; text-align:center; color:#94a3b8;">
+                        Cargando pedidos...
+                    </div>
+                `;
+
+                try {
+
+                    const res = await fetch(`/api/pedidos?cliente_id=${clienteId}`);
+                    const response = await res.json();
+
+                    let data = response.data || response || [];
+
+                    if (!Array.isArray(data) || !data.length) {
+                        container.innerHTML = `
+                            <div style="padding:15px; text-align:center; color:#94a3b8;">
+                                No hay pedidos registrados
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const rol = localStorage.getItem("rol") || "INVITADO";
+
+                    let columnas = "1fr 1.5fr 1fr 120px 120px";
+                    if (rol !== "ASESOR") columnas += " 140px";
+
+                    container.innerHTML = data.map(p => `
+                    <div class="crm-row" style="grid-template-columns:${columnas};">
+
+                        <div>${p.doc || ""}</div>
+                        <div>${p.cliente || ""}</div>
+                        <div>${p.cot_no || ""}</div>
+                        <div>${formatearFecha(p.fecha)}</div>
+                        <div>${formatearCOP(p.total)}</div>
+
+                        ${rol !== "ASESOR" ? `<div>${p.asesor || ""}</div>` : ""}
+                    </div>
+                `).join("");
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    container.innerHTML = `
+                        <div style="padding:15px; text-align:center; color:#ef4444;">
+                            Error cargando pedidos
+                        </div>
+                    `;
+                }
+            }
+
+            function clienteTieneCotizacion(clienteId) {
+
+                return cotizaciones.some(c => c.cliente_id == clienteId);
+            }
+
+        </script>
+</body>
+
+</html>
