@@ -551,22 +551,25 @@ UTILS
                     </button>
 
                     <div class="pagination">
-
                         <button class="page-btn" onclick="cambiarPagina(-1)">
                             ❮
                         </button>
-
                         <span id="pageInfo">
                             1 / 1
                         </span>
-
+                        <input 
+                            type="number"
+                            id="paginaInput"
+                            class="page-input"
+                            min="1"
+                        >
+                        <button class="page-btn" onclick="irPagina()">
+                            IR
+                        </button>
                         <button class="page-btn" onclick="cambiarPagina(1)">
                             ❯
                         </button>
-
                     </div>
-                </div>
-
             </div>
 
             <!-- TABLE -->
@@ -1419,6 +1422,23 @@ ${user}<br>${rol}
 
             await cargarClientes();
         };
+
+        function irPagina() {
+
+            const p = Number(
+                document.getElementById("paginaInput").value
+            );
+
+            if (!p) return;
+
+            if (p < 1) return;
+
+            if (p > totalPages) return;
+
+            page = p;
+
+            cargarClientes();
+        }
 
     </script>
 
