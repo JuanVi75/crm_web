@@ -75,8 +75,8 @@ const getClientes = (req, res) => {
 
     const isAutocomplete = req.query.autocomplete === "1";
 
-    let limit = parseInt(req.query.limit) || 100;
-    if (isAutocomplete) limit = 2000;
+    let limit = parseInt(req.query.limit) || 3000;
+    if (isAutocomplete) limit = 3000;
 
     const offset = (page - 1) * limit;
 
@@ -135,7 +135,7 @@ const getClientes = (req, res) => {
         const total = countResult[0].total;
 
         sql += `
-            
+            ORDER BY c.fecha_creacion DESC
             LIMIT ? OFFSET ?
         `;
 
