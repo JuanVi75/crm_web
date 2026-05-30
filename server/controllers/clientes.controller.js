@@ -135,7 +135,7 @@ const getClientes = (req, res) => {
         const total = countResult[0].total;
 
         sql += `
-            ORDER BY c.fecha_creacion DESC
+            
             LIMIT ? OFFSET ?
         `;
 
