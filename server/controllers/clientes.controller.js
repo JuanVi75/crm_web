@@ -218,7 +218,7 @@ const createCliente = (req, res) => {
 
         return res.json({
             success: true,
-            message: "Cliente creado"
+            message: "Cliente Creado"
         });
     });
 };
@@ -279,7 +279,7 @@ const updateCliente = (req, res) => {
             });
         }
 
-        return res.json({ success: true });
+        return res.json({ success: true, message: "Cliente Actualizado" });
     });
 };
 
@@ -300,7 +300,7 @@ const deleteCliente = (req, res) => {
                 return res.status(500).json({ success: false });
             }
 
-            return res.json({ success: true });
+            return res.json({ success: true, message: "Cliente Eliminado" });
         }
     );
 };
