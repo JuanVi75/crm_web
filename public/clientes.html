@@ -1133,17 +1133,79 @@ ${user}<br>${rol}
 
         function seleccionarClienteBusqueda(idCliente) {
 
-            const cliente =
-                clientesBusqueda.find(
-                    c => c.id == idCliente
-                );
+        const index =
+            clientesBusqueda.findIndex(
+            c => c.id == idCliente
+        );
 
-            if (!cliente) return;
+        if (index === -1) {
 
-            window.location.href =
-                "ficha_cliente.html?cliente=" +
-                idCliente;
+        alert("Cliente no encontrado");
+
+        return;
         }
+
+    // =========================
+    // CALCULAR PAGINA
+    // =========================
+    const paginaCliente =
+        Math.floor(index / limit) + 1;
+
+    // =========================
+    // IR A PAGINA
+    // =========================
+    page = paginaCliente;
+
+    // =========================
+    // CARGAR PAGINA
+    // =========================
+    cargarClientes().then(() => {
+
+        // buscar cliente ya cargado
+        const cliente =
+            clientes.find(
+                c => c.id == idCliente
+            );
+
+        if (!cliente) {
+
+            alert(
+                "Cliente encontrado en página " +
+                paginaCliente
+            );
+
+            return;
+        }
+
+        // abrir detalle
+        toggleDetails(cliente.id);
+
+        // cargar formulario
+        cargarFormulario(cliente.id);
+
+        // scroll visual
+        const el =
+            document.getElementById(
+                `details-${cliente.id}`
+            );
+
+        if (el) {
+
+            el.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+
+        // mostrar pagina
+        alert(
+            `Cliente encontrado en página ${paginaCliente}`
+        );
+
+    });
+
+    clienteList.classList.add("hidden");
+}
         // =========================================
         // FILTERS
         // =========================================
