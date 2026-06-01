@@ -29,7 +29,7 @@ router.get("/", authMiddleware, getClientes);
 
 router.post("/", authMiddleware, createCliente);
 
-router.get("/:id/contactos", authMiddleware, getContactosCliente);
+//router.get("/:id/contactos", authMiddleware, getContactosCliente);
 
 router.put("/:id", authMiddleware, updateCliente);
 
