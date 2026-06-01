@@ -104,6 +104,8 @@ const createSeguimiento = (req, res) => {
         INSERT INTO seguimientos
         (
             cliente_id,
+            contacto,
+            tel_contacto,
             tipo,
             nota,
             proxima_accion,
