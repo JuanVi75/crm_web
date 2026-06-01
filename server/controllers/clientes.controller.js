@@ -327,6 +327,127 @@ const getClienteById = (req, res) => {
     );
 };
 
+const guardarContacto = (req, res) => {
+
+    const {
+        cliente_id,
+        nombre,
+        cargo,
+        telefono,
+        email,
+        tipo
+    } = req.body;
+
+    if (!cliente_id || !nombre) {
+
+        return res.status(400).json({
+            message: "cliente_id y nombre son obligatorios"
+        });
+    }
+
+    const sql = `
+        INSERT INTO cliente_contactos
+        (
+            cliente_id,
+            nombre,
+            cargo,
+            telefono,
+            email,
+            tipo
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [
+            cliente_id,
+            nombre,
+            cargo || "",
+            telefono || "",
+            email || "",
+            tipo || "COMPRADOR"
+        ],
+        (err, result) => {
+
+            if (err) {
+
+                console.error(err);
+
+                return res.status(500).json({
+                    message: "Error guardando contacto"
+                });
+            }
+
+            res.json({
+                message: "Contacto guardado correctamente",
+                id: result.insertId
+            });
+        }
+    );
+};
+
+const guardarSucursal = (req, res) => {
+
+    const {
+        cliente_id,
+        nombre,
+        ciudad,
+        direccion,
+        telefono,
+        contacto
+    } = req.body;
+
+    if (!cliente_id || !nombre) {
+
+        return res.status(400).json({
+            message: "cliente_id y nombre son obligatorios"
+        });
+    }
+
+    const sql = `
+        INSERT INTO cliente_sucursales
+        (
+            cliente_id,
+            nombre,
+            ciudad,
+            direccion,
+            telefono,
+            contacto
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [
+            cliente_id,
+            nombre,
+            ciudad || "",
+            direccion || "",
+            telefono || "",
+            contacto || ""
+        ],
+        (err, result) => {
+
+            if (err) {
+
+                console.error(err);
+
+                return res.status(500).json({
+                    message: "Error guardando sucursal"
+                });
+            }
+
+            res.json({
+                message: "Sucursal guardada correctamente",
+                id: result.insertId
+            });
+        }
+    );
+};
+
+
 // =========================================
 // EXPORTS
 // =========================================
@@ -338,5 +459,7 @@ module.exports = {
     getClienteById,
     buscarCiudades,
     buscarSectores,
+    guardarContacto,
+    guardarSucursal,
     getKpisCliente: require("./getKpisCliente").getKpisCliente
 };
