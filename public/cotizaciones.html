@@ -564,12 +564,26 @@
 
         window.onload = () => {
             setFechaHoy();
-            if (isAsesor) document.getElementById("asesorBox").style.display = "none";
+
+            if (isAsesor) {
+                document.getElementById("asesorBox").style.display = "none";
+            }
+
+            // 🔥 PRE-CARGA CLIENTE DESDE CLIENTES.HTML
+            const pre = localStorage.getItem("clienteCotizacion");
+
+            if (pre) {
+                const data = JSON.parse(pre);
+
+                id_cliente.value = data.id_cliente || "";
+                cliente.value = data.cliente || "";
+
+                localStorage.removeItem("clienteCotizacion");
+            }
 
             cargarClientes(); // 👈 NUEVO
             cargar();         // ya existe
         };
-
         async function cargarClientes(q = "") {
 
             const r = await fetch("/api/clientes?q=" + q + "&autocomplete=1", {
