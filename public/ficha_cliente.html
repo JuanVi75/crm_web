@@ -1748,7 +1748,7 @@ MODAL NUEVO CONTACTO
                 }
 
                 const payload = {
-                    id: clienteActual.id,
+                    id_cliente: clienteActual.id || "",   // 🔥 CORREGIDO
                     cliente: clienteActual.cliente || "",
                     contacto: clienteActual.contacto || "",
                     telefono: clienteActual.tel_contacto || clienteActual.telefono || ""
