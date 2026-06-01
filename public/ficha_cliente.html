@@ -909,19 +909,14 @@ MODAL NUEVO CONTACTO
             const user = localStorage.getItem("user") || "INVITADO";
             const rol = localStorage.getItem("rol") || "INVITADO";
 
-            let clienteActual = null;
-
             /*----------------------------------------------------------
-                INICIO SEGURO
+                INICIO SEGURO (CLAVE)
             -----------------------------------------------------------*/
 
             window.addEventListener("load", () => {
 
-                const userInfo = document.getElementById("userInfo");
-
-                if (userInfo) {
-                    userInfo.innerHTML = `${user}<br>${rol}`;
-                }
+                document.getElementById("userInfo").innerHTML =
+                    `${user}<br>${rol}`;
 
                 if (!clienteId) {
                     alert("No se recibió ID de cliente en la URL");
@@ -929,61 +924,43 @@ MODAL NUEVO CONTACTO
                 }
 
                 cargarCliente();
+                document.getElementById("seguimientos").classList.add("active");
 
-                const seg = document.getElementById("seguimientos");
-                if (seg) seg.classList.add("active");
-
+                // 🔥 carga con delay para asegurar DOM listo
                 setTimeout(() => {
-                    loadSeguimientos(clienteId);
+                    if (clienteId) {
+                        loadSeguimientos(clienteId);
+                    }
                 }, 300);
 
-                // 🔥 EVENTO SEGURO (YA NO SE ROMPE SI EL DOM NO EXISTE)
-                const selectSucursales = document.getElementById("manejaSucursales");
-
-                if (selectSucursales) {
-                    selectSucursales.addEventListener("change", () => {
-                        if (selectSucursales.value === "SI") {
-                            const modal = document.getElementById("modalSucursales");
-                            if (modal) modal.style.display = "flex";
-                        }
-                    });
-                }
             });
-
-            /*----------------------------------------------------------
-                MODALES
-            -----------------------------------------------------------*/
 
             function abrirSucursal() {
 
                 cerrarModalSucursales();
 
-                const modal = document.getElementById("modalNuevaSucursal");
-                if (modal) modal.style.display = "flex";
+                document.getElementById("modalNuevaSucursal")
+                    .style.display = "flex";
 
-                const c = document.getElementById("edit_cliente");
+                document.getElementById("sucursal_cliente").value =
+                    document.getElementById("edit_cliente").value;
 
-                if (c) {
-                    document.getElementById("sucursal_cliente").value = c.value;
-                }
-
-                document.getElementById("sucursal_cliente_id").value = clienteId;
+                document.getElementById("sucursal_cliente_id").value =
+                    clienteId;
             }
 
             function abrirContacto() {
 
                 cerrarModalSucursales();
 
-                const modal = document.getElementById("modalNuevoContacto");
-                if (modal) modal.style.display = "flex";
+                document.getElementById("modalNuevoContacto")
+                    .style.display = "flex";
 
-                const c = document.getElementById("edit_cliente");
+                document.getElementById("contacto_cliente").value =
+                    document.getElementById("edit_cliente").value;
 
-                if (c) {
-                    document.getElementById("contacto_cliente").value = c.value;
-                }
-
-                document.getElementById("contacto_cliente_id").value = clienteId;
+                document.getElementById("contacto_cliente_id").value =
+                    clienteId;
             }
 
             /*----------------------------------------------------------
@@ -1001,10 +978,11 @@ MODAL NUEVO CONTACTO
                     });
 
                     const data = await res.json();
+
+                    // 🔥 soporte por si viene como {data: {...}}
                     const c = data.data || data;
 
                     pintarCliente(c);
-
                     loadSeguimientos(c.id);
                     loadCotizaciones(c.id);
                     loadPedidos(c.id);
@@ -1017,27 +995,28 @@ MODAL NUEVO CONTACTO
             }
 
             /*----------------------------------------------------------
-                PINTAR CLIENTE (ÚNICA VERSIÓN)
+                PINTAR CLIENTE
             -----------------------------------------------------------*/
 
             function pintarCliente(c) {
 
-                if (!c) return;
-
-                clienteActual = c;
-
-                const title = document.querySelector(".client-title");
-                if (title) title.textContent = c.cliente || "";
-
-                const header = document.querySelector(".client-header");
-
-                if (header) {
-                    header.children[1].textContent = "NIT: " + (c.id || "");
-                    header.children[2].textContent = "TEL: " + (c.telefono || "");
-                    header.children[3].textContent = "EMAIL: " + (c.email || "");
+                if (!c) {
+                    console.error("Cliente vacío");
+                    return;
                 }
 
-                const inputs = document.querySelectorAll(".panel .form-grid input");
+                document.querySelector(".client-title").textContent = c.cliente || "";
+
+                document.querySelector(".client-header").children[1].textContent =
+                    "NIT: " + (c.id || "");
+
+                document.querySelector(".client-header").children[2].textContent =
+                    "TEL: " + (c.telefono || "");
+
+                document.querySelector(".client-header").children[3].textContent =
+                    "EMAIL: " + (c.email || "");
+
+                const inputs = document.querySelectorAll(".form-grid input");
 
                 if (inputs.length >= 8) {
                     inputs[0].value = c.direccion || "";
@@ -1051,15 +1030,101 @@ MODAL NUEVO CONTACTO
                 }
 
                 const titulo = document.getElementById("clienteTitulo");
-                if (titulo) titulo.textContent = "TABLA CLIENTE - " + (c.cliente || "");
+
+                if (titulo) {
+                    titulo.textContent = "TABLA CLIENTE - " + (c.cliente || "");
+                }
 
                 document.title = "TABLA CLIENTE - " + (c.cliente || "");
+
+                document.getElementById("clienteTitulo").textContent =
+                    "TABLA CLIENTE - " + (c.cliente || "");
+
+                // 🔥 AQUÍ VA LO IMPORTANTE
+                loadSeguimientos(c.id);
             }
 
-            /*----------------------------------------------------------
-                TAB CONTROL
-            -----------------------------------------------------------*/
 
+            function formatearFecha(fecha) {
+                if (!fecha) return "";
+
+                const f = new Date(fecha);
+
+                const dia = String(f.getDate()).padStart(2, '0');
+                const mes = String(f.getMonth() + 1).padStart(2, '0');
+                const anio = f.getFullYear();
+
+                return `${dia}-${mes}-${anio}`;
+            }
+
+            function formatearCOP(valor) {
+
+                if (valor === null || valor === undefined || valor === "") {
+                    return "$ 0";
+                }
+
+                const num = Number(valor);
+
+                if (isNaN(num)) return "$ 0";
+
+                return new Intl.NumberFormat("es-CO", {
+                    style: "currency",
+                    currency: "COP",
+                    minimumFractionDigits: 0
+                }).format(num);
+            }
+
+            async function loadSeguimientos(clienteId) {
+
+                const container = document.getElementById("tablaSeguimientosBody");
+
+                container.innerHTML = `
+        <div style="text-align:center; padding:15px; color:#94a3b8;">
+            Cargando seguimientos...
+        </div>
+    `;
+
+                try {
+
+                    const res = await fetch(`/api/seguimientos?cliente_id=${clienteId}`);
+                    const response = await res.json();
+
+                    let data = response.data || response || [];
+
+                    if (!Array.isArray(data) || !data.length) {
+                        container.innerHTML = `
+                <div style="text-align:center; padding:15px; color:#94a3b8;">
+                    No hay seguimientos registrados
+                </div>
+            `;
+                        return;
+                    }
+
+                    container.innerHTML = data.map(item => `
+            <div class="crm-row"
+                style="grid-template-columns: 160px 120px 1.5fr 160px 160px 140px;">
+
+                <div>${formatearFecha(item.fecha)}</div>
+                <div>${item.tipo || ""}</div>
+                <div>${item.nota || ""}</div>
+                <div>${item.proxima_accion || ""}</div>
+                <div>${formatearFecha(item.fecha_proxima)}</div>
+                <div>${item.asesor || ""}</div>
+
+            </div>
+        `).join("");
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    container.innerHTML = `
+            <div style="text-align:center; padding:15px; color:#ef4444;">
+                Error cargando seguimientos
+            </div>
+        `;
+                }
+            }
             function mostrarTab(tabId) {
 
                 document.querySelectorAll(".tab-content")
@@ -1070,110 +1135,503 @@ MODAL NUEVO CONTACTO
 
                 const tab = document.getElementById(tabId);
 
-                if (!tab) return;
+                if (!tab) {
+                    console.error("TAB NO EXISTE:", tabId);
+                    return;
+                }
 
                 tab.classList.add("active");
 
+                // activar botón correcto
                 document.querySelectorAll(".tab").forEach(btn => {
-                    if (btn.getAttribute("onclick")?.includes(tabId)) {
+                    if (btn.getAttribute("onclick").includes(tabId)) {
                         btn.classList.add("active");
                     }
                 });
             }
 
-            /*----------------------------------------------------------
-                MODAL EDITAR
-            -----------------------------------------------------------*/
+            async function loadKpis(clienteId) {
+
+                try {
+
+                    const res = await fetch(`/api/seguimientos?cliente_id=${clienteId}`);
+                    const response = await res.json();
+
+                    let data = response.data || response;
+
+                    if (!Array.isArray(data)) {
+                        console.error("Respuesta inválida KPI:", data);
+                        return;
+                    }
+
+                    // 📊 KPIs seguimientos
+                    const totalSeguimientos = data.length;
+
+                    // 📅 último seguimiento
+                    const ultimo = data
+                        .map(x => new Date(x.fecha))
+                        .sort((a, b) => b - a)[0];
+
+                    // 📅 próximos
+                    const hoy = new Date();
+
+                    const proximos = data.filter(x =>
+                        x.fecha_proxima && new Date(x.fecha_proxima) >= hoy
+                    ).length;
+
+                    // =========================================
+                    // 🔥 KPI COTIZACIONES
+                    // =========================================
+                    let totalCotizaciones = 0;
+                    let valorCotizaciones = 0;
+
+                    try {
+                        const resCot = await fetch(`/api/cotizaciones/cliente?cliente_id=${clienteId}`);
+                        const cotResponse = await resCot.json();
+
+                        const cotData = cotResponse.data || cotResponse;
+
+                        if (Array.isArray(cotData)) {
+
+                            totalCotizaciones = cotData.length;
+
+                            valorCotizaciones = cotData.reduce((sum, c) => {
+                                return sum + (Number(c.venta_neta) || 0);
+                            }, 0);
+
+                        }
+
+                    } catch (err) {
+                        console.error("Error cotizaciones KPI:", err);
+                    }
+
+                    // =========================================
+                    // 🔥 KPI PEDIDOS
+                    // =========================================
+                    let totalPedidos = 0;
+                    let valorPedidos = 0;
+
+                    try {
+                        const resPed = await fetch(`/api/pedidos?cliente_id=${clienteId}`);
+                        const pedResponse = await resPed.json();
+
+                        const pedData = pedResponse.data || pedResponse;
+
+                        if (Array.isArray(pedData)) {
+
+                            totalPedidos = pedData.length;
+
+                            valorPedidos = pedData.reduce((sum, p) => {
+                                return sum + (Number(p.venta_neta || p.total) || 0);
+                            }, 0);
+
+                        }
+
+                    } catch (err) {
+                        console.error("Error pedidos KPI:", err);
+                    }
+
+                    // 💥 pintar KPIs
+                    document.getElementById("kpiSeguimientos").innerText = totalSeguimientos;
+
+                    document.getElementById("kpiCotizaciones").innerText = totalCotizaciones;
+
+                    document.getElementById("kpiPedidos").innerText = totalPedidos;
+
+                    document.getElementById("kpiVrCotizado").innerText = formatearCOP(valorCotizaciones);
+
+                    document.getElementById("kpiVrPedidos").innerText = formatearCOP(valorPedidos);
+
+                } catch (err) {
+                    console.error("Error KPIs:", err);
+                }
+            }
+
+            async function loadCotizaciones(clienteId) {
+
+                const container = document.getElementById("tablaCotizacionesBody");
+
+                container.innerHTML = `
+                    <div style="padding:15px; text-align:center; color:#94a3b8;">
+                        Cargando cotizaciones...
+                    </div>
+                `;
+
+                try {
+
+                    const res = await fetch(`/api/cotizaciones/cliente?cliente_id=${clienteId}`);
+
+                    const response = await res.json();
+
+                    let data = response.data || response || [];
+
+                    // =========================================
+                    // AJUSTAR ENCABEZADO SIEMPRE
+                    // =========================================
+                    const rol = localStorage.getItem("rol") || "INVITADO";
+
+                    const head = document.getElementById("col-asesor-head");
+
+                    if (head) {
+                        head.style.display = (rol === "ASESOR") ? "none" : "block";
+                    }
+
+                    const headContainer = document.querySelector(".cotizaciones-head");
+
+                    if (headContainer) {
+
+                        if (rol === "ASESOR") {
+
+                            headContainer.style.gridTemplateColumns =
+                                "60px 1.5fr 120px 1.5fr 120px";
+
+                        } else {
+
+                            headContainer.style.gridTemplateColumns =
+                                "60px 1.5fr 120px 1.5fr 120px 140px";
+
+                        }
+                    }
+
+                    // =========================================
+                    // SIN COTIZACIONES
+                    // =========================================
+                    if (!Array.isArray(data) || !data.length) {
+
+                        container.innerHTML = `
+                            <div style="padding:15px; text-align:center; color:#94a3b8;">
+                                No hay cotizaciones sin pedido
+                            </div>
+                        `;
+
+                        return;
+                    }
+
+                    // =========================================
+                    // COLUMNAS FILAS
+                    // =========================================
+                    let columnas = "60px 1.5fr 120px 1.5fr 120px";
+
+                    if (rol !== "ASESOR") {
+                        columnas += " 140px";
+                    }
+
+                    // =========================================
+                    // RENDER
+                    // =========================================
+                    container.innerHTML = data.map((c, i) => `
+                        <div class="crm-row" style="grid-template-columns:${columnas};">
+
+                            <div>${i + 1}</div>
+                            <div>${c.doc || ""}</div>
+                            <div>${formatearFecha(c.fecha)}</div>
+                            <div>${c.cliente || ""}</div>
+                            <div>${formatearCOP(c.venta_neta)}</div>
+
+                            ${rol !== "ASESOR"
+                            ? `<div>${c.asesor || ""}</div>`
+                            : ""
+                        }
+
+                        </div>
+                    `).join("");
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    container.innerHTML = `
+            <div style="padding:15px; text-align:center; color:#ef4444;">
+                Error cargando cotizaciones
+            </div>
+        `;
+                }
+            }
+
+            async function loadPedidos(clienteId) {
+
+                const container = document.getElementById("tablaPedidosBody");
+
+                container.innerHTML = `
+                    <div style="padding:15px; text-align:center; color:#94a3b8;">
+                        Cargando pedidos...
+                    </div>
+                `;
+
+                try {
+
+                    const res = await fetch(`/api/pedidos?cliente_id=${clienteId}`);
+                    const response = await res.json();
+
+                    let data = response.data || response || [];
+
+                    if (!Array.isArray(data) || !data.length) {
+                        container.innerHTML = `
+                            <div style="padding:15px; text-align:center; color:#94a3b8;">
+                                No hay pedidos registrados
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const rol = localStorage.getItem("rol") || "INVITADO";
+
+                    let columnas = "1fr 1.5fr 1fr 120px 120px";
+                    if (rol !== "ASESOR") columnas += " 140px";
+
+                    container.innerHTML = data.map(p => `
+                    <div class="crm-row" style="grid-template-columns:${columnas};">
+
+                        <div>${p.doc || ""}</div>
+                        <div>${p.cliente || ""}</div>
+                        <div>${p.cot_no || ""}</div>
+                        <div>${formatearFecha(p.fecha)}</div>
+                        <div>${formatearCOP(p.total)}</div>
+
+                        ${rol !== "ASESOR" ? `<div>${p.asesor || ""}</div>` : ""}
+                    </div>
+                `).join("");
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    container.innerHTML = `
+                        <div style="padding:15px; text-align:center; color:#ef4444;">
+                            Error cargando pedidos
+                        </div>
+                    `;
+                }
+            }
+
+            function clienteTieneCotizacion(clienteId) {
+
+                return cotizaciones.some(c => c.cliente_id == clienteId);
+            }
+
+            /* ======================================================
+                ABRIR MODAL
+            ====================================================== */
+            let clienteActual = null;
+
+            function pintarCliente(c) {
+
+                if (!c) {
+                    console.error("Cliente vacío");
+                    return;
+                }
+
+                // 🔥 GUARDAR CLIENTE GLOBAL
+                clienteActual = c;
+
+                document.querySelector(".client-title").textContent = c.cliente || "";
+
+                document.querySelector(".client-header").children[1].textContent =
+                    "NIT: " + (c.id || "");
+
+                document.querySelector(".client-header").children[2].textContent =
+                    "TEL: " + (c.telefono || "");
+
+                document.querySelector(".client-header").children[3].textContent =
+                    "EMAIL: " + (c.email || "");
+
+                const inputs = document.querySelectorAll(".panel .form-grid input");
+
+                if (inputs.length >= 8) {
+
+                    inputs[0].value = c.direccion || "";
+                    inputs[1].value = c.contacto || "";
+                    inputs[2].value = c.tel_contacto || "";
+                    inputs[3].value = c.ciudad || "";
+                    inputs[4].value = c.departamento || "";
+                    inputs[5].value = c.sector || "";
+                    inputs[6].value = c.maneja_sucursales || "";
+                    inputs[7].value = c.estado || "";
+                }
+
+                document.getElementById("clienteTitulo").textContent =
+                    "TABLA CLIENTE - " + (c.cliente || "");
+
+                document.title =
+                    "TABLA CLIENTE - " + (c.cliente || "");
+            }
 
             function abrirModalEditar() {
 
-                if (!clienteActual) return alert("Cliente no cargado");
+                if (!clienteActual) {
+                    alert("Cliente no cargado");
+                    return;
+                }
 
                 document.getElementById("modalEditar").style.display = "flex";
 
-                document.getElementById("edit_cliente").value = clienteActual.cliente || "";
-                document.getElementById("edit_direccion").value = clienteActual.direccion || "";
-                document.getElementById("edit_telefono").value = clienteActual.telefono || "";
-                document.getElementById("edit_ciudad").value = clienteActual.ciudad || "";
-                document.getElementById("edit_departamento").value = clienteActual.departamento || "";
-                document.getElementById("edit_email").value = clienteActual.email || "";
-                document.getElementById("edit_sector").value = clienteActual.sector || "";
-                document.getElementById("edit_contacto").value = clienteActual.contacto || "";
-                document.getElementById("edit_tel_contacto").value = clienteActual.tel_contacto || "";
-                document.getElementById("edit_asesor").value = clienteActual.asesor || "";
-                document.getElementById("manejaSucursales").value = clienteActual.maneja_sucursales || "NO";
-                document.getElementById("edit_estado").value = clienteActual.estado || "";
+                document.getElementById("edit_cliente").value =
+                    clienteActual.cliente || "";
+
+                document.getElementById("edit_direccion").value =
+                    clienteActual.direccion || "";
+
+                document.getElementById("edit_telefono").value =
+                    clienteActual.telefono || "";
+
+                document.getElementById("edit_ciudad").value =
+                    clienteActual.ciudad || "";
+
+                document.getElementById("edit_departamento").value =
+                    clienteActual.departamento || "";
+
+                document.getElementById("edit_email").value =
+                    clienteActual.email || "";
+
+                document.getElementById("edit_sector").value =
+                    clienteActual.sector || "";
+
+                document.getElementById("edit_contacto").value =
+                    clienteActual.contacto || "";
+
+                document.getElementById("edit_tel_contacto").value =
+                    clienteActual.tel_contacto || "";
+
+                document.getElementById("edit_asesor").value =
+                    clienteActual.asesor || "";
+
+                document.getElementById("manejaSucursales").value =
+                    clienteActual.maneja_sucursales || "NO";
+
+                document.getElementById("edit_estado").value =
+                    clienteActual.estado || "";
             }
+            /* ======================================================
+                CERRAR MODAL
+            ====================================================== */
 
             function cerrarModalEditar() {
+
                 document.getElementById("modalEditar").style.display = "none";
             }
 
-            /*----------------------------------------------------------
-                CERRAR MODALES
-            -----------------------------------------------------------*/
-
-            function cerrarModalSucursales() {
-                document.getElementById("modalSucursales").style.display = "none";
-            }
-
-            function cerrarModalNuevaSucursal() {
-                document.getElementById("modalNuevaSucursal").style.display = "none";
-            }
-
-            function cerrarModalNuevoContacto() {
-                document.getElementById("modalNuevoContacto").style.display = "none";
-            }
-
-            /*----------------------------------------------------------
-                GUARDAR CLIENTE
-            -----------------------------------------------------------*/
+            /* ======================================================
+            GUARDAR
+            ====================================================== */
 
             async function guardarEdicionCliente() {
 
-                if (document.getElementById("manejaSucursales").value === "SI") {
+                if (
+                    document.getElementById("manejaSucursales").value === "SI"
+                ) {
+
                     document.getElementById("modalSucursales").style.display = "flex";
                     return;
                 }
 
                 const body = {
-                    cliente: document.getElementById("edit_cliente").value,
-                    direccion: document.getElementById("edit_direccion").value,
-                    telefono: document.getElementById("edit_telefono").value,
-                    ciudad: document.getElementById("edit_ciudad").value,
-                    departamento: document.getElementById("edit_departamento").value,
-                    email: document.getElementById("edit_email").value,
-                    sector: document.getElementById("edit_sector").value,
-                    contacto: document.getElementById("edit_contacto").value,
-                    tel_contacto: document.getElementById("edit_tel_contacto").value,
-                    asesor: document.getElementById("edit_asesor").value,
-                    maneja_sucursales: document.getElementById("manejaSucursales").value,
-                    estado: document.getElementById("edit_estado").value
+
+                    cliente:
+                        document.getElementById("edit_cliente").value,
+
+                    direccion:
+                        document.getElementById("edit_direccion").value,
+
+                    telefono:
+                        document.getElementById("edit_telefono").value,
+
+                    ciudad:
+                        document.getElementById("edit_ciudad").value,
+
+                    departamento:
+                        document.getElementById("edit_departamento").value,
+
+                    email:
+                        document.getElementById("edit_email").value,
+
+                    sector:
+                        document.getElementById("edit_sector").value,
+
+                    contacto:
+                        document.getElementById("edit_contacto").value,
+
+                    tel_contacto:
+                        document.getElementById("edit_tel_contacto").value,
+
+                    asesor:
+                        document.getElementById("edit_asesor").value,
+
+                    maneja_sucursales:
+                        document.getElementById("manejaSucursales").value,
+
+                    estado:
+                        document.getElementById("edit_estado").value
                 };
 
                 try {
 
-                    const res = await fetch("/api/clientes/" + clienteId, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: "Bearer " + localStorage.getItem("token")
-                        },
-                        body: JSON.stringify(body)
-                    });
+                    const res = await fetch(
+                        "/api/clientes/" + clienteId,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization:
+                                    "Bearer " +
+                                    localStorage.getItem("token")
+                            },
+                            body: JSON.stringify(body)
+                        }
+                    );
 
                     const data = await res.json();
 
                     alert(data.message || "Cliente actualizado");
 
                     cerrarModalEditar();
+
                     cargarCliente();
 
                 } catch (err) {
+
                     console.error(err);
+
                     alert("Error actualizando cliente");
                 }
             }
+
+            /* ======================================================
+            MODAL SUCURSALES
+            ====================================================== */
+
+            function cerrarModalSucursales() {
+
+                document.getElementById("modalSucursales").style.display = "none";
+            }
+
+            const selectSucursales =
+                document.getElementById("manejaSucursales");
+
+            if (selectSucursales) {
+
+                selectSucursales.addEventListener("change", () => {
+
+                    if (selectSucursales.value === "SI") {
+
+                        document.getElementById("modalSucursales")
+                            .style.display = "flex";
+                    }
+
+                });
+            }
+
+            function cerrarModalNuevaSucursal() {
+
+                document.getElementById("modalNuevaSucursal")
+                    .style.display = "none";
+            }
+
+            function cerrarModalNuevoContacto() {
+
+                document.getElementById("modalNuevoContacto")
+                    .style.display = "none";
+            }
+
         </script>
 </body>
 
