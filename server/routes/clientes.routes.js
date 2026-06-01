@@ -11,10 +11,9 @@ const {
     deleteCliente,
     getClienteById,
     getKpisCliente,
-
     guardarContacto,
-    guardarSucursal
-
+    guardarSucursal,
+    getContactosCliente   // 🔥 FALTABA ESTO
 } = require("../controllers/clientes.controller");
 
 // =========================================
@@ -40,27 +39,23 @@ router.get("/:id", authMiddleware, getClienteById);
 router.get("/kpis/:id", authMiddleware, getKpisCliente);
 
 // =========================================
-// CONTACTOS (NUEVO - FRONTEND COMPATIBLE)
+// CONTACTOS
 // =========================================
 router.post("/contactos", authMiddleware, guardarContacto);
 
-// Compatibilidad con tu sistema antiguo (opcional)
 router.post("/:id/contacto", authMiddleware, (req, res) => {
     req.body.cliente_id = req.params.id;
     return guardarContacto(req, res);
 });
 
 // =========================================
-// SUCURSALES (NUEVO - FRONTEND COMPATIBLE)
+// SUCURSALES
 // =========================================
 router.post("/sucursales", authMiddleware, guardarSucursal);
 
-// Compatibilidad sistema antiguo
 router.post("/:id/sucursal", authMiddleware, (req, res) => {
     req.body.cliente_id = req.params.id;
     return guardarSucursal(req, res);
 });
-
-
 
 module.exports = router;
