@@ -12,7 +12,6 @@ const {
     getClienteById,
     getKpisCliente,
 
-    // 🔥 NUEVOS
     guardarContacto,
     guardarSucursal
 
@@ -24,67 +23,40 @@ const {
 const authMiddleware = require("../middlewares/auth.middleware");
 
 // =========================================
-// RUTAS
+// CLIENTES
 // =========================================
+router.get("/", authMiddleware, getClientes);
 
-// CLIENTES LISTA
-router.get(
-    "/",
-    authMiddleware,
-    getClientes
-);
+router.post("/", authMiddleware, createCliente);
 
-// CREAR CLIENTE
-router.post(
-    "/",
-    authMiddleware,
-    createCliente
-);
+router.put("/:id", authMiddleware, updateCliente);
 
-// ACTUALIZAR CLIENTE
-router.put(
-    "/:id",
-    authMiddleware,
-    updateCliente
-);
+router.delete("/:id", authMiddleware, deleteCliente);
 
-// ELIMINAR CLIENTE
-router.delete(
-    "/:id",
-    authMiddleware,
-    deleteCliente
-);
+router.get("/:id", authMiddleware, getClienteById);
 
-// CLIENTE POR ID
-router.get(
-    "/:id",
-    authMiddleware,
-    getClienteById
-);
-
-// KPI CLIENTE
-router.get(
-    "/kpis/:id",
-    authMiddleware,
-    getKpisCliente
-);
+router.get("/kpis/:id", authMiddleware, getKpisCliente);
 
 // =========================================
-// 🔥 NUEVAS RUTAS
+// CONTACTOS (NUEVO - FRONTEND COMPATIBLE)
 // =========================================
+router.post("/contactos", authMiddleware, guardarContacto);
 
-// GUARDAR CONTACTO
-router.post(
-    "/:id/contacto",
-    authMiddleware,
-    guardarContacto
-);
+// Compatibilidad con tu sistema antiguo (opcional)
+router.post("/:id/contacto", authMiddleware, (req, res) => {
+    req.body.cliente_id = req.params.id;
+    return guardarContacto(req, res);
+});
 
-// GUARDAR SUCURSAL
-router.post(
-    "/:id/sucursal",
-    authMiddleware,
-    guardarSucursal
-);
+// =========================================
+// SUCURSALES (NUEVO - FRONTEND COMPATIBLE)
+// =========================================
+router.post("/sucursales", authMiddleware, guardarSucursal);
+
+// Compatibilidad sistema antiguo
+router.post("/:id/sucursal", authMiddleware, (req, res) => {
+    req.body.cliente_id = req.params.id;
+    return guardarSucursal(req, res);
+});
 
 module.exports = router;
