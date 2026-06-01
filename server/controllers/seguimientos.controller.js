@@ -325,11 +325,68 @@ const getReporteSeguimientos = (req, res) => {
     });
 };
 
+// =========================================
+// TAREAS HOY
+// =========================================
+const getTareasHoy = (req, res) => {
+
+    const user = req.user || {
+        rol: "INVITADO",
+        nombre: ""
+    };
+
+    const hoy = new Date().toISOString().slice(0, 10);
+
+    let sql = `
+        SELECT
+            s.id,
+            s.fecha_proxima,
+            s.proxima_accion,
+            c.cliente,
+            s.contacto,
+            s.tel_contacto,
+            c.ciudad,
+            c.sector,
+            s.asesor
+        FROM seguimientos s
+        LEFT JOIN clientes c ON c.id = s.cliente_id
+        WHERE DATE(s.fecha_proxima) = ?
+    `;
+
+    let params = [hoy];
+
+    // 🔥 FILTRO POR ROL
+    if (user.rol === "ASESOR") {
+        sql += " AND s.asesor = ?";
+        params.push(user.nombre);
+    }
+
+    sql += " ORDER BY s.fecha_proxima ASC";
+
+    db.query(sql, params, (err, rows) => {
+
+        if (err) {
+            console.error(err);
+            return res.status(500).json({
+                success: false,
+                message: "Error cargando tareas"
+            });
+        }
+
+        return res.json({
+            success: true,
+            total: rows.length,
+            data: rows
+        });
+    });
+};
+
 module.exports = {
     getSeguimientos,
     createSeguimiento,
     updateSeguimiento,
     deleteSeguimiento,
     getSeguimientoById,
-    getReporteSeguimientos
+    getReporteSeguimientos,
+    getTareasHoy
 };
