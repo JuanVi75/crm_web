@@ -771,51 +771,59 @@ ${user}<br>${rol}
         // =========================================
         // LOAD FORM
         // =========================================
-        function cargarFormulario(id) {
+function cargarFormulario(id) {
 
-            const c =
-                clientes.find(x => x.id == id);
+    const c =
+        clientesBusqueda.find(
+            x => x.id == id
+        );
 
-            if (!c) return;
+    if (!c) {
 
-            document.getElementById("id").value =
-                c.id || "";
+        alert("Cliente no encontrado");
 
-            document.getElementById("cliente").value =
-                c.cliente || "";
+        return;
+    }
 
-            document.getElementById("direccion").value =
-                c.direccion || "";
+    document.getElementById("id").value =
+        c.id || "";
 
-            document.getElementById("telefono").value =
-                c.telefono || "";
+    document.getElementById("cliente").value =
+        c.cliente || "";
 
-            document.getElementById("ciudad").value =
-                c.ciudad || "";
+    document.getElementById("direccion").value =
+        c.direccion || "";
 
-            document.getElementById("departamento").value =
-                c.departamento || "";
+    document.getElementById("telefono").value =
+        c.telefono || "";
 
-            document.getElementById("email").value =
-                c.email || "";
+    document.getElementById("ciudad").value =
+        c.ciudad || "";
 
-            document.getElementById("sector").value =
-                c.sector || "";
+    document.getElementById("departamento").value =
+        c.departamento || "";
 
-            document.getElementById("contacto").value =
-                c.contacto || "";
+    document.getElementById("email").value =
+        c.email || "";
 
-            document.getElementById("tel_contacto").value =
-                c.tel_contacto || "";
+    document.getElementById("sector").value =
+        c.sector || "";
 
-            if (document.getElementById("asesor")) {
-                document.getElementById("asesor").value =
-                    c.asesor || "";
-            }
+    document.getElementById("contacto").value =
+        c.contacto || "";
 
-            document.getElementById("maneja_sucursales").value =
-                c.maneja_sucursales || "NO";
-        }
+    document.getElementById("tel_contacto").value =
+        c.tel_contacto || "";
+
+    if (document.getElementById("asesor")) {
+
+        document.getElementById("asesor").value =
+            c.asesor || "";
+    }
+
+    document.getElementById("maneja_sucursales").value =
+        c.maneja_sucursales || "NO";
+}
 
         // =========================================
         // SAVE
