@@ -10,7 +10,12 @@ const {
     updateCliente,
     deleteCliente,
     getClienteById,
-    getKpisCliente
+    getKpisCliente,
+
+    // 🔥 NUEVOS
+    guardarContacto,
+    guardarSucursal
+
 } = require("../controllers/clientes.controller");
 
 // =========================================
@@ -62,6 +67,24 @@ router.get(
     "/kpis/:id",
     authMiddleware,
     getKpisCliente
+);
+
+// =========================================
+// 🔥 NUEVAS RUTAS
+// =========================================
+
+// GUARDAR CONTACTO
+router.post(
+    "/:id/contacto",
+    authMiddleware,
+    guardarContacto
+);
+
+// GUARDAR SUCURSAL
+router.post(
+    "/:id/sucursal",
+    authMiddleware,
+    guardarSucursal
 );
 
 module.exports = router;
