@@ -35,7 +35,7 @@ router.delete("/:id", authMiddleware, deleteCliente);
 
 router.get("/:id", authMiddleware, getClienteById);
 
-router.get("/:id/contactos", authMiddleware, getContactosCliente);
+//router.get("/:id/contactos", authMiddleware, getContactosCliente);
 
 router.get("/kpis/:id", authMiddleware, getKpisCliente);
 
