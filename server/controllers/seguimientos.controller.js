@@ -120,6 +120,8 @@ const createSeguimiento = (req, res) => {
         sql,
         [
             data.cliente_id,
+            data.contacto,
+            data.tel_contacto,
             data.tipo,
             data.nota,
             data.proxima_accion,
