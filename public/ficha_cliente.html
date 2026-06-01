@@ -1040,7 +1040,6 @@ MODAL NUEVO CONTACTO
 
                 // 🔥 AQUÍ VA LO IMPORTANTE
                 loadSeguimientos(c.id);
-                loadContactos(c.id);
             }
 
 
@@ -1676,66 +1675,7 @@ MODAL NUEVO CONTACTO
                 }
             }
 
-            async function loadContactos(clienteId) {
 
-                const container = document.getElementById("tablaContactosBody");
-
-                container.innerHTML = `
-        <div style="padding:15px; text-align:center; color:#94a3b8;">
-            Cargando contactos...
-        </div>
-    `;
-
-                try {
-
-                    const res = await fetch(`/api/clientes/${clienteId}/contactos`, {
-                        headers: {
-                            Authorization: "Bearer " + localStorage.getItem("token")
-                        }
-                    });
-
-                    const data = await res.json();
-
-                    if (!Array.isArray(data) || !data.length) {
-
-                        container.innerHTML = `
-                <div style="padding:15px; text-align:center; color:#94a3b8;">
-                    No hay contactos registrados
-                </div>
-            `;
-                        return;
-                    }
-
-                    container.innerHTML = data.map(c => `
-            <div class="crm-row"
-                style="grid-template-columns: 1fr 1fr 1fr 120px 120px;">
-
-                <div>${c.nombre}</div>
-                <div>${c.cargo || ""}</div>
-                <div>${c.telefono || ""}</div>
-                <div>${c.tipo || ""}</div>
-
-                <div>
-                    <button class="btn btn-blue"
-                        onclick="abrirLlamada('${c.nombre}','${c.telefono}','${clienteId}')">
-                        CARGAR
-                    </button>
-                </div>
-
-            </div>
-        `).join("");
-
-                } catch (err) {
-
-                    console.error(err);
-
-                    container.innerHTML = `
-            <div style="padding:15px; text-align:center; color:#ef4444;">
-                Error cargando contactos
-            </div>
-        `;
-                }
-            }
 
         </script>
 </body>
