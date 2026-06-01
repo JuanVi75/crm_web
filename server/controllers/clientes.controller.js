@@ -447,6 +447,35 @@ const guardarSucursal = (req, res) => {
     );
 };
 
+const getContactosCliente = (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = `
+        SELECT
+            id,
+            cliente_id,
+            nombre,
+            cargo,
+            telefono,
+            email,
+            tipo
+        FROM cliente_contactos
+        WHERE cliente_id = ?
+        ORDER BY id DESC
+    `;
+
+    db.query(sql, [id], (err, rows) => {
+
+        if (err) {
+            console.error(err);
+            return res.status(500).json([]);
+        }
+
+        res.json(rows);
+    });
+};
+
 
 // =========================================
 // EXPORTS
@@ -461,5 +490,6 @@ module.exports = {
     buscarSectores,
     guardarContacto,
     guardarSucursal,
+    getContactosCliente,
     getKpisCliente: require("./getKpisCliente").getKpisCliente
 };
