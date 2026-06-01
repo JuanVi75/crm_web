@@ -391,11 +391,41 @@
 
         /* ================= INIT ================= */
 
-        window.onload = () => {
-            cargarCotizaciones()
-            cargarPedidos()
-        }
+        window.onload = async () => {
 
+            await cargarCotizaciones();
+            await cargarPedidos();
+
+            const base = localStorage.getItem("clientePedidoBase");
+            const cot = localStorage.getItem("clientePedidoCotizacion");
+
+            // 🔥 SI VIENE DESDE CLIENTES
+            if (base) {
+                const data = JSON.parse(base);
+
+                id_cliente.value = data.id_cliente || "";
+                cliente.value = data.cliente || "";
+
+                localStorage.removeItem("clientePedidoBase");
+            }
+
+            // 🔥 SI VIENE CON COTIZACIÓN SELECCIONADA
+            if (cot) {
+                const c = JSON.parse(cot);
+
+                cot_no.value = c.doc || "";
+                id_cliente.value = c.id_cliente || "";
+                cliente.value = c.cliente || "";
+
+                total.value = c.total || "";
+                venta_neta.value = c.venta_neta || "";
+                iva.value = c.iva || "";
+                otros_imp.value = c.otros_imp || 0;
+                asesor.value = c.asesor || "";
+
+                localStorage.removeItem("clientePedidoCotizacion");
+            }
+        };
         function limpiar() {
             pedido_numero.value = ""
             fecha.value = ""
