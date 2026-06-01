@@ -1133,25 +1133,18 @@
                 document.getElementById("fechaFinReporte").value;
 
             if (!fechaInicio || !fechaFin) {
-
                 alert("Debe seleccionar las fechas");
                 return;
             }
 
-            // 🔥 OCULTAR MODAL
             document.getElementById("modalReporte").style.display = "none";
-
-            // =========================================
-            // SEGUIMIENTOS
-            // =========================================
 
             const resSeguimientos = await fetch(
                 `/api/seguimientos/reporte?inicio=${fechaInicio}&fin=${fechaFin}`,
                 {
                     headers: {
                         Authorization:
-                            "Bearer " +
-                            localStorage.getItem("token")
+                            "Bearer " + localStorage.getItem("token")
                     }
                 }
             );
@@ -1164,17 +1157,12 @@
                 return;
             }
 
-            // =========================================
-            // COTIZACIONES
-            // =========================================
-
             const resCotizaciones = await fetch(
                 `/api/cotizaciones`,
                 {
                     headers: {
                         Authorization:
-                            "Bearer " +
-                            localStorage.getItem("token")
+                            "Bearer " + localStorage.getItem("token")
                     }
                 }
             );
@@ -1182,17 +1170,12 @@
             const dataCotizaciones =
                 await resCotizaciones.json();
 
-            // =========================================
-            // PEDIDOS
-            // =========================================
-
             const resPedidos = await fetch(
                 `/api/pedidos`,
                 {
                     headers: {
                         Authorization:
-                            "Bearer " +
-                            localStorage.getItem("token")
+                            "Bearer " + localStorage.getItem("token")
                     }
                 }
             );
@@ -1205,10 +1188,6 @@
 
             const rol =
                 localStorage.getItem("rol") || "INVITADO";
-
-            // =========================================
-            // FILTRAR COTIZACIONES
-            // =========================================
 
             let cotizaciones =
                 dataCotizaciones.data || [];
@@ -1232,23 +1211,14 @@
                     cumpleUsuario;
             });
 
-            cotizaciones.sort((a, b) => {
-                return (b.doc || "").localeCompare(a.doc || "");
-            });
-
-
-            // =========================================
-            // FILTRAR PEDIDOS
-            // =========================================
+            cotizaciones.sort((a, b) =>
+                (b.doc || "").localeCompare(a.doc || "")
+            );
 
             let pedidos =
                 dataPedidos.data || [];
 
             pedidos = pedidos.filter(p => {
-
-                //          pedidos.sort((a, b) => {
-                //            return (b.doc || "").localeCompare(a.doc || "");
-                //      });
 
                 const fecha =
                     p.fecha
@@ -1267,81 +1237,112 @@
                     cumpleUsuario;
             });
 
-            // =========================================
-            // TOTALES
-            // =========================================
-
             const totalCotizaciones =
                 cotizaciones.reduce(
-                    (acc, c) =>
-                        acc + Number(c.venta_neta || 0),
+                    (acc, c) => acc + Number(c.venta_neta || 0),
                     0
                 );
 
             const totalPedidos =
                 pedidos.reduce(
-                    (acc, p) =>
-                        acc + Number(p.venta_neta || 0),
+                    (acc, p) => acc + Number(p.venta_neta || 0),
                     0
                 );
 
             // =========================================
-            // FILAS SEGUIMIENTOS
+            // 🔥 SEGUIMIENTOS AGRUPADOS POR ASESOR
             // =========================================
+
+            const seguimientosRaw = dataSeguimientos.data || [];
 
             let filasSeguimientos = "";
 
-            dataSeguimientos.data.forEach(s => {
+            if (rol === "ADMIN") {
 
-                filasSeguimientos += `
-<tr>
-    <td>${s.fecha ? s.fecha.substring(0, 10) : ""}</td>
-    <td class="cliente">${s.cliente || ""}</td>
-    <td>${s.contacto || ""}</td>
-    <td>${s.tel_contacto || ""}</td>
-    <td>${s.ciudad || ""}</td>
-    <td>${s.sector || ""}</td>
-    <td>${s.tipo || ""}</td>    
-    <td class="resultado">${s.nota || ""}</td>
-</tr>`;
-            });
+                const agrupado = {};
 
-            // =========================================
-            // FILAS COTIZACIONES
-            // =========================================
+                seguimientosRaw.forEach(s => {
+
+                    const key = s.asesor || "SIN ASESOR";
+
+                    if (!agrupado[key]) {
+                        agrupado[key] = [];
+                    }
+
+                    agrupado[key].push(s);
+                });
+
+                Object.keys(agrupado).forEach(asesor => {
+
+                    filasSeguimientos += `
+                <tr>
+                    <td colspan="8" style="background:#e2e8f0;font-weight:bold;">
+                        ASESOR: ${asesor}
+                    </td>
+                </tr>
+            `;
+
+                    agrupado[asesor].forEach(s => {
+
+                        filasSeguimientos += `
+                <tr>
+                    <td>${s.fecha ? s.fecha.substring(0, 10) : ""}</td>
+                    <td class="cliente">${s.cliente || ""}</td>
+                    <td>${s.contacto || ""}</td>
+                    <td>${s.tel_contacto || ""}</td>
+                    <td>${s.ciudad || ""}</td>
+                    <td>${s.sector || ""}</td>
+                    <td>${s.tipo || ""}</td>
+                    <td class="resultado">${s.nota || ""}</td>
+                </tr>`;
+                    });
+                });
+
+            } else {
+
+                seguimientosRaw.forEach(s => {
+
+                    filasSeguimientos += `
+            <tr>
+                <td>${s.fecha ? s.fecha.substring(0, 10) : ""}</td>
+                <td class="cliente">${s.cliente || ""}</td>
+                <td>${s.contacto || ""}</td>
+                <td>${s.tel_contacto || ""}</td>
+                <td>${s.ciudad || ""}</td>
+                <td>${s.sector || ""}</td>
+                <td>${s.tipo || ""}</td>
+                <td class="resultado">${s.nota || ""}</td>
+            </tr>`;
+                });
+            }
 
             let filasCotizaciones = "";
 
             cotizaciones.forEach(c => {
 
                 filasCotizaciones += `
-<tr>
-    <td>${c.fecha ? c.fecha.substring(0, 10) : ""}</td>
-    <td class="cliente">${c.cliente || ""}</td>
-    <td>${c.doc || ""}</td>
-    <td>$ ${Number(c.venta_neta || 0).toLocaleString("es-CO")}</td>
-    <td>$ ${Number(c.total || 0).toLocaleString("es-CO")}</td>
-</tr>`;
+        <tr>
+            <td>${c.fecha ? c.fecha.substring(0, 10) : ""}</td>
+            <td class="cliente">${c.cliente || ""}</td>
+            <td>${c.doc || ""}</td>
+            <td>$ ${Number(c.venta_neta || 0).toLocaleString("es-CO")}</td>
+            <td>$ ${Number(c.total || 0).toLocaleString("es-CO")}</td>
+        </tr>`;
             });
-
-            // =========================================
-            // FILAS PEDIDOS
-            // =========================================
 
             let filasPedidos = "";
 
             pedidos.forEach(p => {
 
                 filasPedidos += `
-<tr>
-    <td>${p.fecha ? p.fecha.substring(0, 10) : ""}</td>
-    <td class="cliente">${p.cliente || ""}</td>
-    <td>${p.doc || ""}</td>
-    <td>${p.cot_no || ""}</td>
-    <td>$ ${Number(p.venta_neta || 0).toLocaleString("es-CO")}</td>
-    <td>$ ${Number(p.total || 0).toLocaleString("es-CO")}</td>
-    
-</tr>`;
+        <tr>
+            <td>${p.fecha ? p.fecha.substring(0, 10) : ""}</td>
+            <td class="cliente">${p.cliente || ""}</td>
+            <td>${p.doc || ""}</td>
+            <td>${p.cot_no || ""}</td>
+            <td>$ ${Number(p.venta_neta || 0).toLocaleString("es-CO")}</td>
+            <td>$ ${Number(p.total || 0).toLocaleString("es-CO")}</td>
+        </tr>`;
             });
 
             // =========================================
@@ -1353,320 +1354,327 @@
 
             ventana.document.write(`
 
-<html>
+
+        <html>
 
 <head>
+    <title>REPORTE DE GESTION</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-<title>REPORTE DE GESTION</title>
+        body {
+            margin: 0;
+            padding: 14px;
+            background: white;
+            color: #0f172a;
+            font-family: Aptos, Arial, sans-serif;
+        }
 
-<style>
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
 
-*{
-    box-sizing:border-box;
-}
+        .header {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+        }
 
-body{
-    margin:0;
-    padding:14px;
-    background:white;
-    color:#0f172a;
-    font-family:Aptos, Arial, sans-serif;
-}
+        .titulo {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
 
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    margin-bottom:12px;
-}
+        .sub {
+            margin-top: 3px;
+            color: #64748b;
+            font-size: 10px;
+        }
 
-.header{
-    flex:1;
-    background:#f8fafc;
-    border:1px solid #cbd5e1;
-    border-radius:10px;
-    padding:12px;
-}
+        .acciones {
+            display: flex;
+            gap: 8px;
+        }
 
-.titulo{
-    font-size:16px;
-    font-weight:bold;
-    color:#1e3a8a;
-}
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 9px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 10px;
+        }
 
-.sub{
-    margin-top:3px;
-    color:#64748b;
-    font-size:10px;
-}
+        .btn-print {
+            background: #2563eb;
+        }
 
-.acciones{
-    display:flex;
-    gap:8px;
-}
+        .btn-close {
+            background: #dc2626;
+        }
 
-button{
-    border:none;
-    border-radius:8px;
-    padding:9px 14px;
-    cursor:pointer;
-    font-weight:bold;
-    color:white;
-    font-size:10px;
-}
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 12px;
+        }
 
-.btn-print{ background:#2563eb; }
-.btn-close{ background:#dc2626; }
+        .card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 20px;
+        }
 
-.cards{
-    display:grid;
-    grid-template-columns: repeat(5,1fr);
-    gap:20px;
-    margin-bottom:12px;
-}
+        .card-title {
+            font-size: 9px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
 
-.card{
-    background:#f8fafc;
-    border:1px solid #cbd5e1;
-    border-radius:8px;
-    padding:20px;
-}
+        .card-value {
+            font-size: 11px;
+            font-weight: bold;
+            color: #0f172a;
+        }
 
-.card-title{
-    font-size:9px;
-    color:#64748b;
-    margin-bottom:4px;
-}
+        .section {
+            margin-top: 18px;
+            page-break-after: always;
+        }
 
-.card-value{
-    font-size:11px;
-    font-weight:bold;
-    color:#0f172a;
-}
+        .section:last-child {
+            page-break-after: auto;
+        }
 
-.section{
-    margin-top:18px;
-    page-break-after: always;
-}
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
 
-.section:last-child{
-    page-break-after: auto;
-}
+        .table-wrap {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
 
-.section-title{
-    font-size:14px;
-    font-weight:bold;
-    margin-bottom:8px;
-    color:#1e293b;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
 
-.table-wrap{
-    border:1px solid #cbd5e1;
-    border-radius:10px;
-    overflow:hidden;
-}
+        thead {
+            background: #e2e8f0;
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-}
+        th {
+            padding: 7px;
+            font-size: 9px;
+            color: #0f172a;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 1px solid #cbd5e1;
+        }
 
-thead{
-    background:#e2e8f0;
-}
+        td {
+            padding: 7px;
+            font-size: 9px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: top;
+            word-break: break-word;
+        }
 
-th{
-    padding:7px;
-    font-size:9px;
-    color:#0f172a;
-    text-align:left;
-    font-weight:bold;
-    border-bottom:1px solid #cbd5e1;
-}
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
 
-td{
-    padding:7px;
-    font-size:9px;
-    border-bottom:1px solid #e2e8f0;
-    color:#334155;
-    vertical-align:top;
-    word-break:break-word;
-}
+        .cliente {
+            font-weight: bold;
+            color: #0f172a;
+        }
 
-tbody tr:nth-child(even){
-    background:#f8fafc;
-}
+        .resultado {
+            white-space: pre-wrap;
+            line-height: 1.3;
+        }
 
-.cliente{
-    font-weight:bold;
-    color:#0f172a;
-}
+        @page {
+            size: auto;
+            margin: 8mm;
+        }
 
-.resultado{
-    white-space:pre-wrap;
-    line-height:1.3;
-}
+        @media print {
 
-@page{
-    size:auto;
-    margin:8mm;
-}
+            body {
+                padding: 0;
+            }
 
-@media print{
+            .acciones {
+                display: none;
+            }
 
-    body{ padding:0; }
-    .acciones{ display:none; }
+            .section {
+                page-break-after: always;
+            }
 
-    .section{
-        page-break-after: always;
-    }
-
-    .section:last-child{
-        page-break-after: auto;
-    }
-}
-
-</style>
+            .section:last-child {
+                page-break-after: auto;
+            }
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="topbar">
+    <div class="topbar">
 
-    <div class="header">
-        <div class="titulo">REPORTE DE GESTION</div>
+        <div class="header">
+            <div class="titulo">REPORTE DE GESTION</div>
+        </div>
+
+        <div class="acciones">
+            <button class="btn-print" onclick="window.print()">🖨 IMPRIMIR</button>
+            <button class="btn-close" onclick="window.close()">✕ CERRAR</button>
+        </div>
+
     </div>
 
-    <div class="acciones">
-        <button class="btn-print" onclick="window.print()">🖨 IMPRIMIR</button>
-        <button class="btn-close" onclick="window.close()">✕ CERRAR</button>
+    <div class="cards">
+
+        <div class="card">
+            <div class="card-title">FECHA INICIO</div>
+            <div class="card-value">${fechaInicio}</div>
+            <div class="card-title">FECHA FINAL</div>
+            <div class="card-value">${fechaFin}</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">SEGUIMIENTOS</div>
+            <div class="card-value">${dataSeguimientos.total}</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">COTIZACIONES</div>
+            <div class="card-value">${cotizaciones.length}</div>
+            <div class="card-title">TOTAL COTIZADO</div>
+            <div class="card-value">$ ${totalCotizaciones.toLocaleString("es-CO")}</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">PEDIDOS</div>
+            <div class="card-value">${pedidos.length}</div>
+            <div class="card-title">TOTAL PEDIDOS</div>
+            <div class="card-value">$ ${totalPedidos.toLocaleString("es-CO")}</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">ASESOR</div>
+            <div class="card-value">${usuario}</div>
+        </div>
+
     </div>
 
-</div>
+    <!-- SEGUIMIENTOS -->
+    <div class="section">
 
-<div class="cards">
+        <div class="section-title">SEGUIMIENTOS</div>
 
-    <div class="card">
-        <div class="card-title">FECHA INICIO</div>
-        <div class="card-value">${fechaInicio}</div>
-        <div class="card-title">FECHA FINAL</div>
-        <div class="card-value">${fechaFin}</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>FECHA</th>
+                        <th>CLIENTE</th>
+                        <th>CONTACTO</th>
+                        <th>TEL</th>
+                        <th>CIUDAD</th>
+                        <th>SECTOR</th>
+                        <th>TIPO</th>
+                        <th>RESULTADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasSeguimientos}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
-    <div class="card">
-        <div class="card-title">SEGUIMIENTOS</div>
-        <div class="card-value">${dataSeguimientos.total}</div>
+    ${cotizaciones.length > 0 ? `
+    <div class="section">
+
+        <div class="section-title">COTIZACIONES</div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>FECHA</th>
+                        <th>CLIENTE</th>
+                        <th>DOC</th>
+                        <th>TOTAL</th>
+                        <th>VENTA NETA</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasCotizaciones}
+                </tbody>
+            </table>
+        </div>
+
     </div>
+    ` : ""}
 
-    <div class="card">
-        <div class="card-title">COTIZACIONES</div>
-        <div class="card-value">${cotizaciones.length}</div>
-        <div class="card-title">TOTAL COTIZADO</div>
-        <div class="card-value">$ ${totalCotizaciones.toLocaleString("es-CO")}</div>
-    </div>
+    ${pedidos.length > 0 ? `
+    <div class="section">
 
-    <div class="card">
-        <div class="card-title">PEDIDOS</div>
-        <div class="card-value">${pedidos.length}</div>
-        <div class="card-title">TOTAL PEDIDOS</div>
-        <div class="card-value">$ ${totalPedidos.toLocaleString("es-CO")}</div>
-    </div>
+        <div class="section-title">PEDIDOS</div>
 
-    <div class="card">
-        <div class="card-title">ASESOR</div>
-        <div class="card-value">${usuario}</div>
-    </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>FECHA</th>
+                        <th>CLIENTE</th>
+                        <th>PEDIDO</th>
+                        <th>COTIZACIÓN</th>
+                        <th>TOTAL</th>
+                        <th>VENTA NETA</th>
 
-</div>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasPedidos}
+                </tbody>
+            </table>
+                    </div>
 
-<!-- SEGUIMIENTOS -->
-<div class="section">
+                    </div>
+                    ` : ""}
 
-    <div class="section-title">SEGUIMIENTOS</div>
+                </body>
 
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>FECHA</th>
-                    <th>CLIENTE</th>
-                    <th>CONTACTO</th>
-                    <th>TEL</th>
-                    <th>CIUDAD</th>
-                    <th>SECTOR</th>
-                    <th>TIPO</th>
-                    <th>RESULTADO</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${filasSeguimientos}
-            </tbody>
-        </table>
-    </div>
+            </html>
 
-</div>
-
-${cotizaciones.length > 0 ? `
-<div class="section">
-
-    <div class="section-title">COTIZACIONES</div>
-
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>FECHA</th>
-                    <th>CLIENTE</th>
-                    <th>DOC</th>
-                    <th>TOTAL</th>
-                    <th>VENTA NETA</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                ${filasCotizaciones}
-            </tbody>
-        </table>
-    </div>
-
-</div>
-` : ""}
-
-${pedidos.length > 0 ? `
-<div class="section">
-
-    <div class="section-title">PEDIDOS</div>
-
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>FECHA</th>
-                    <th>CLIENTE</th>
-                    <th>PEDIDO</th>
-                    <th>COTIZACIÓN</th>
-                    <th>TOTAL</th>
-                    <th>VENTA NETA</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                ${filasPedidos}
-            </tbody>
-        </table>
-    </div>
-
-</div>
-` : ""}
-
-</body>
-
-</html>
-
-`);
+        `);
 
             ventana.document.close();
         }
