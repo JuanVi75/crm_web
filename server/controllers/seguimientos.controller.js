@@ -113,7 +113,7 @@ const createSeguimiento = (req, res) => {
             fecha,
             asesor
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
