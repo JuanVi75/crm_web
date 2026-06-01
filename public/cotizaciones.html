@@ -645,26 +645,31 @@
 
         function cargarCotizacionEnFormulario(c) {
 
-            doc.value = c.doc || "";
-            fecha.value = (c.fecha || "").substring(0, 10);
+    doc.value = c.doc || "";
 
-            id_cliente.value = c.id_cliente || "";
-            cliente.value = c.cliente || "";
+    // 🔥 evita error si fecha viene null o undefined
+    fecha.value = c.fecha ? c.fecha.substring(0, 10) : "";
 
-            dcto.value = c.dcto || "";
-            vta_bruta.value = c.vta_bruta || "";
+    // 🔥 ID CLIENTE (CORREGIDO Y ASEGURADO)
+    id_cliente.value = c.id_cliente ? String(c.id_cliente) : "";
 
-            // recalcular para asegurar consistencia visual
-            calcular();
+    cliente.value = c.cliente || "";
 
-            venta_neta.value = formatCOP(c.venta_neta || 0);
-            iva.value = formatCOP(c.iva || 0);
-            total.value = formatCOP(c.total || 0);
+    dcto.value = c.dcto || "";
 
-            otros_imp.value = formatCOP(c.otros_imp || 0);
+    vta_bruta.value = c.vta_bruta || "";
 
-            asesor.value = c.asesor || "";
-        }
+    // recalcular primero para consistencia visual
+    calcular();
+
+    venta_neta.value = formatCOP(c.venta_neta || 0);
+    iva.value = formatCOP(c.iva || 0);
+    total.value = formatCOP(c.total || 0);
+
+    otros_imp.value = formatCOP(c.otros_imp || 0);
+
+    asesor.value = c.asesor || "";
+}
 
     </script>
 
