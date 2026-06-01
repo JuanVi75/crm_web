@@ -331,6 +331,7 @@
                         <label>Tipo</label>
                         <select id="tipo">
                             <option>LLAMADA</option>
+                            <option>FACEBOOK</option>                            
                             <option>WHATSAPP</option>
                             <option>VISITA</option>
                             <option>EMAIL</option>
@@ -423,6 +424,8 @@
 
                 fecha: fecha.value || new Date().toISOString().split("T")[0],
                 cliente_id: cliente_id.value,
+                contacto: contacto.value,
+                tel_contacto: tel_contacto.value,
                 tipo: tipo.value,
                 nota: nota.value,
                 proxima_accion: proxima_accion.value,
