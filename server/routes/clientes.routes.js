@@ -35,6 +35,8 @@ router.delete("/:id", authMiddleware, deleteCliente);
 
 router.get("/:id", authMiddleware, getClienteById);
 
+router.get("/:id/contactos", authMiddleware, getContactosCliente);
+
 router.get("/kpis/:id", authMiddleware, getKpisCliente);
 
 // =========================================
@@ -58,5 +60,7 @@ router.post("/:id/sucursal", authMiddleware, (req, res) => {
     req.body.cliente_id = req.params.id;
     return guardarSucursal(req, res);
 });
+
+
 
 module.exports = router;
