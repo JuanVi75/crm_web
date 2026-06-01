@@ -7,7 +7,8 @@ const {
     updateSeguimiento,
     deleteSeguimiento,
     getSeguimientoById,
-    getReporteSeguimientos
+    getReporteSeguimientos,
+    getTareasHoy
 } = require("../controllers/seguimientos.controller");
 
 const authMiddleware = require("../middlewares/auth.middleware");
@@ -64,6 +65,12 @@ router.delete(
     "/:id",
     authMiddleware,
     deleteSeguimiento
+);
+
+router.get(
+    "/tareas-hoy",
+    authMiddleware,
+    getTareasHoy
 );
 
 module.exports = router;
