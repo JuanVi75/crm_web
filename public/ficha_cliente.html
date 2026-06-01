@@ -48,25 +48,6 @@
             min-height: 0;
         }
 
-        .modal-bg{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.7);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-}
-
-.modal-box{
-    width:700px;
-    max-width:95%;
-    background:#111827;
-    border:1px solid #334155;
-    border-radius:12px;
-    padding:20px;
-}
-
         /* =========================
    SIDEBAR
 ========================= */
@@ -667,129 +648,74 @@ MODAL EDITAR CLIENTE
     </div>
 </div>
 
-<!-- ===================================================== -->
-<!-- MODAL SUCURSAL -->
-<!-- ===================================================== -->
+<!-- =======================================================
+MODAL FUTURO SUCURSALES
+======================================================= -->
 
-<div id="modalSucursal" class="modal-bg" style="display:none;">
+<div id="modalSucursales"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.7);
+        z-index:99999;
+        align-items:center;
+        justify-content:center;
+    ">
 
-    <div class="modal-box">
+    <div style="
+        width:450px;
+        background:#111827;
+        border:1px solid #334155;
+        border-radius:14px;
+        padding:25px;
+    ">
 
-        <h3>AGREGAR SUCURSAL</h3>
+        <h2 style="
+            color:#60a5fa;
+            margin-top:0;
+            text-align:center;
+        ">
+            Gestión de Sucursales / Contactos
+        </h2>
 
-        <div class="form-grid">
+        <p style="
+            color:#cbd5e1;
+            text-align:center;
+            margin-bottom:20px;
+        ">
+            ¿Qué desea agregar?
+        </p>
 
-            <div class="field">
-                <label>Nombre Sucursal</label>
-                <input id="sucursal_nombre">
-            </div>
+        <div style="
+            display:flex;
+            gap:10px;
+            justify-content:center;
+        ">
 
-            <div class="field">
-                <label>Ciudad</label>
-                <input id="sucursal_ciudad">
-            </div>
+            <button class="btn btn-blue"
+                onclick="abrirSucursal()">
 
-            <div class="field">
-                <label>Dirección</label>
-                <input id="sucursal_direccion">
-            </div>
-
-            <div class="field">
-                <label>Teléfono</label>
-                <input id="sucursal_telefono">
-            </div>
-
-            <div class="field">
-                <label>Contacto</label>
-                <input id="sucursal_contacto">
-            </div>
-
-        </div>
-
-        <div class="actions" style="margin-top:15px;">
+                SUCURSAL
+            </button>
 
             <button class="btn btn-green"
-                onclick="guardarSucursal()">
-                GUARDAR
-            </button>
+                onclick="abrirContacto()">
 
-            <button class="btn btn-gray"
-                onclick="cerrarModalSucursal()">
-                CANCELAR
+                CONTACTO
             </button>
 
         </div>
 
-    </div>
-
-</div>
-
-
-<!-- ===================================================== -->
-<!-- MODAL CONTACTO -->
-<!-- ===================================================== -->
-
-<div id="modalContacto" class="modal-bg" style="display:none;">
-
-    <div class="modal-box">
-
-        <h3>AGREGAR CONTACTO</h3>
-
-        <div class="form-grid">
-
-            <div class="field">
-                <label>Nombre</label>
-                <input id="contacto_nombre">
-            </div>
-
-            <div class="field">
-                <label>Cargo</label>
-                <input id="contacto_cargo">
-            </div>
-
-            <div class="field">
-                <label>Teléfono</label>
-                <input id="contacto_telefono">
-            </div>
-
-            <div class="field">
-                <label>Email</label>
-                <input id="contacto_email">
-            </div>
-
-            <div class="field">
-                <label>Tipo</label>
-
-                <select id="contacto_tipo">
-
-                    <option value="COMPRADOR">
-                        COMPRADOR
-                    </option>
-
-                    <option value="ADMINISTRATIVO">
-                        ADMINISTRATIVO
-                    </option>
-
-                    <option value="OTRO">
-                        OTRO
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-        <div class="actions" style="margin-top:15px;">
-
-            <button class="btn btn-green"
-                onclick="guardarContacto()">
-                GUARDAR
-            </button>
+        <div style="
+            margin-top:25px;
+            text-align:center;
+        ">
 
             <button class="btn btn-gray"
-                onclick="cerrarModalContacto()">
-                CANCELAR
+                onclick="cerrarModalSucursales()">
+
+                CERRAR
             </button>
 
         </div>
@@ -1413,7 +1339,7 @@ function cerrarModalSucursales() {
 
     document.getElementById("modalSucursales").style.display = "none";
 }
- 
+
             const selectSucursales =
     document.getElementById("manejaSucursales");
 
@@ -1434,51 +1360,6 @@ function cerrarModalSucursales() {
 
     document.getElementById("modalSucursales")
         .style.display = "none";
-}
-
-            /* ===================================================== */
-/* MODAL SUCURSAL */
-/* ===================================================== */
-
-function abrirModalSucursal() {
-
-    document.getElementById("modalSucursal")
-        .style.display = "flex";
-}
-
-function cerrarModalSucursal() {
-
-    document.getElementById("modalSucursal")
-        .style.display = "none";
-}
-
-/* ===================================================== */
-/* MODAL CONTACTO */
-/* ===================================================== */
-
-function abrirModalContacto() {
-
-    document.getElementById("modalContacto")
-        .style.display = "flex";
-}
-
-function cerrarModalContacto() {
-
-    document.getElementById("modalContacto")
-        .style.display = "none";
-}
-            function seleccionarTipoSucursal(tipo) {
-
-    cerrarModalTipoSucursal();
-
-    if (tipo === "SUCURSAL") {
-
-        abrirModalSucursal();
-
-    } else {
-
-        abrirModalContacto();
-    }
 }
             
         </script>
