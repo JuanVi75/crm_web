@@ -1206,13 +1206,16 @@ function cargarFormulario(id) {
         }
 
         // mostrar pagina
-        alert(
-            `Cliente encontrado en página ${paginaCliente}`
-        );
+        //alert(
+          //  `Cliente encontrado en página ${paginaCliente}`
+        //);
 
     });
 
     clienteList.classList.add("hidden");
+        window.location.href =
+            "ficha_cliente.html?cliente=" +
+            idCliente;
 }
         // =========================================
         // FILTERS
@@ -1236,6 +1239,7 @@ function cargarFormulario(id) {
         if (filterAsesor) {
             filterAsesor.addEventListener("input", aplicarFiltros);
         }
+        
         function cargarFiltros() {
 
             // =========================
