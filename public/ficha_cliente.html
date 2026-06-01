@@ -897,6 +897,7 @@ MODAL NUEVO CONTACTO
         </div>
 
         <script>
+
             /*----------------------------------------------------------
                 VARIABLES GLOBALES
             -----------------------------------------------------------*/
@@ -906,6 +907,8 @@ MODAL NUEVO CONTACTO
 
             const user = localStorage.getItem("user") || "INVITADO";
             const rol = localStorage.getItem("rol") || "INVITADO";
+
+            let clienteActual = null;
 
             /*----------------------------------------------------------
                 INICIO SEGURO (CLAVE)
@@ -1003,6 +1006,12 @@ MODAL NUEVO CONTACTO
                     return;
                 }
 
+                // 🔥 GUARDAR CLIENTE GLOBAL (IMPORTANTE PARA MODALES)
+                clienteActual = c;
+
+                // =========================
+                // HEADER VISUAL
+                // =========================
                 document.querySelector(".client-title").textContent = c.cliente || "";
 
                 document.querySelector(".client-header").children[1].textContent =
@@ -1014,7 +1023,10 @@ MODAL NUEVO CONTACTO
                 document.querySelector(".client-header").children[3].textContent =
                     "EMAIL: " + (c.email || "");
 
-                const inputs = document.querySelectorAll(".form-grid input");
+                // =========================
+                // FORMULARIO
+                // =========================
+                const inputs = document.querySelectorAll(".panel .form-grid input");
 
                 if (inputs.length >= 8) {
                     inputs[0].value = c.direccion || "";
@@ -1027,6 +1039,9 @@ MODAL NUEVO CONTACTO
                     inputs[7].value = c.estado || "";
                 }
 
+                // =========================
+                // TITULO + TAB BROWSER
+                // =========================
                 const titulo = document.getElementById("clienteTitulo");
 
                 if (titulo) {
@@ -1035,11 +1050,12 @@ MODAL NUEVO CONTACTO
 
                 document.title = "TABLA CLIENTE - " + (c.cliente || "");
 
-                document.getElementById("clienteTitulo").textContent =
-                    "TABLA CLIENTE - " + (c.cliente || "");
-
-                // 🔥 AQUÍ VA LO IMPORTANTE
+                // =========================
+                // 🔥 CARGA DE TABLAS
+                // =========================
                 loadSeguimientos(c.id);
+                loadCotizaciones(c.id);
+                loadPedidos(c.id);
                 loadContactos(c.id);
             }
 
@@ -1406,53 +1422,6 @@ MODAL NUEVO CONTACTO
             function clienteTieneCotizacion(clienteId) {
 
                 return cotizaciones.some(c => c.cliente_id == clienteId);
-            }
-
-            /* ======================================================
-                ABRIR MODAL
-            ====================================================== */
-            let clienteActual = null;
-
-            function pintarCliente(c) {
-
-                if (!c) {
-                    console.error("Cliente vacío");
-                    return;
-                }
-
-                // 🔥 GUARDAR CLIENTE GLOBAL
-                clienteActual = c;
-
-                document.querySelector(".client-title").textContent = c.cliente || "";
-
-                document.querySelector(".client-header").children[1].textContent =
-                    "NIT: " + (c.id || "");
-
-                document.querySelector(".client-header").children[2].textContent =
-                    "TEL: " + (c.telefono || "");
-
-                document.querySelector(".client-header").children[3].textContent =
-                    "EMAIL: " + (c.email || "");
-
-                const inputs = document.querySelectorAll(".panel .form-grid input");
-
-                if (inputs.length >= 8) {
-
-                    inputs[0].value = c.direccion || "";
-                    inputs[1].value = c.contacto || "";
-                    inputs[2].value = c.tel_contacto || "";
-                    inputs[3].value = c.ciudad || "";
-                    inputs[4].value = c.departamento || "";
-                    inputs[5].value = c.sector || "";
-                    inputs[6].value = c.maneja_sucursales || "";
-                    inputs[7].value = c.estado || "";
-                }
-
-                document.getElementById("clienteTitulo").textContent =
-                    "TABLA CLIENTE - " + (c.cliente || "");
-
-                document.title =
-                    "TABLA CLIENTE - " + (c.cliente || "");
             }
 
             function abrirModalEditar() {
