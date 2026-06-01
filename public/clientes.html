@@ -771,59 +771,51 @@ ${user}<br>${rol}
         // =========================================
         // LOAD FORM
         // =========================================
-function cargarFormulario(id) {
+        function cargarFormulario(id) {
 
-    const c =
-        clientesBusqueda.find(
-            x => x.id == id
-        );
+            const c =
+                clientes.find(x => x.id == id);
 
-    if (!c) {
+            if (!c) return;
 
-        alert("Cliente no encontrado");
+            document.getElementById("id").value =
+                c.id || "";
 
-        return;
-    }
+            document.getElementById("cliente").value =
+                c.cliente || "";
 
-    document.getElementById("id").value =
-        c.id || "";
+            document.getElementById("direccion").value =
+                c.direccion || "";
 
-    document.getElementById("cliente").value =
-        c.cliente || "";
+            document.getElementById("telefono").value =
+                c.telefono || "";
 
-    document.getElementById("direccion").value =
-        c.direccion || "";
+            document.getElementById("ciudad").value =
+                c.ciudad || "";
 
-    document.getElementById("telefono").value =
-        c.telefono || "";
+            document.getElementById("departamento").value =
+                c.departamento || "";
 
-    document.getElementById("ciudad").value =
-        c.ciudad || "";
+            document.getElementById("email").value =
+                c.email || "";
 
-    document.getElementById("departamento").value =
-        c.departamento || "";
+            document.getElementById("sector").value =
+                c.sector || "";
 
-    document.getElementById("email").value =
-        c.email || "";
+            document.getElementById("contacto").value =
+                c.contacto || "";
 
-    document.getElementById("sector").value =
-        c.sector || "";
+            document.getElementById("tel_contacto").value =
+                c.tel_contacto || "";
 
-    document.getElementById("contacto").value =
-        c.contacto || "";
+            if (document.getElementById("asesor")) {
+                document.getElementById("asesor").value =
+                    c.asesor || "";
+            }
 
-    document.getElementById("tel_contacto").value =
-        c.tel_contacto || "";
-
-    if (document.getElementById("asesor")) {
-
-        document.getElementById("asesor").value =
-            c.asesor || "";
-    }
-
-    document.getElementById("maneja_sucursales").value =
-        c.maneja_sucursales || "NO";
-}
+            document.getElementById("maneja_sucursales").value =
+                c.maneja_sucursales || "NO";
+        }
 
         // =========================================
         // SAVE
@@ -1141,82 +1133,17 @@ function cargarFormulario(id) {
 
         function seleccionarClienteBusqueda(idCliente) {
 
-        const index =
-            clientesBusqueda.findIndex(
-            c => c.id == idCliente
-        );
+            const cliente =
+                clientesBusqueda.find(
+                    c => c.id == idCliente
+                );
 
-        if (index === -1) {
+            if (!cliente) return;
 
-        alert("Cliente no encontrado");
-
-        return;
+            window.location.href =
+                "ficha_cliente.html?cliente=" +
+                idCliente;
         }
-
-    // =========================
-    // CALCULAR PAGINA
-    // =========================
-    const paginaCliente =
-        Math.floor(index / limit) + 1;
-
-    // =========================
-    // IR A PAGINA
-    // =========================
-    page = paginaCliente;
-
-    // =========================
-    // CARGAR PAGINA
-    // =========================
-    cargarClientes().then(() => {
-
-        // buscar cliente ya cargado
-        const cliente =
-            clientes.find(
-                c => c.id == idCliente
-            );
-
-        if (!cliente) {
-
-            alert(
-                "Cliente encontrado en página " +
-                paginaCliente
-            );
-
-            return;
-        }
-
-        // abrir detalle
-        toggleDetails(cliente.id);
-
-        // cargar formulario
-        cargarFormulario(cliente.id);
-
-        // scroll visual
-        const el =
-            document.getElementById(
-                `details-${cliente.id}`
-            );
-
-        if (el) {
-
-            el.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-        }
-
-        // mostrar pagina
-        //alert(
-          //  `Cliente encontrado en página ${paginaCliente}`
-        //);
-
-    });
-
-    clienteList.classList.add("hidden");
-        window.location.href =
-            "ficha_cliente.html?cliente=" +
-            idCliente;
-}
         // =========================================
         // FILTERS
         // =========================================
@@ -1239,7 +1166,6 @@ function cargarFormulario(id) {
         if (filterAsesor) {
             filterAsesor.addEventListener("input", aplicarFiltros);
         }
-        
         function cargarFiltros() {
 
             // =========================
