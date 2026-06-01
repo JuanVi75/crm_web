@@ -29,13 +29,13 @@ router.get("/", authMiddleware, getClientes);
 
 router.post("/", authMiddleware, createCliente);
 
+router.get("/:id/contactos", authMiddleware, getContactosCliente);
+
 router.put("/:id", authMiddleware, updateCliente);
 
 router.delete("/:id", authMiddleware, deleteCliente);
 
 router.get("/:id", authMiddleware, getClienteById);
-
-//router.get("/:id/contactos", authMiddleware, getContactosCliente);
 
 router.get("/kpis/:id", authMiddleware, getKpisCliente);
 
