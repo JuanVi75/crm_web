@@ -47,7 +47,7 @@ const getSeguimientos = (req, res) => {
             s.proxima_accion,
             s.fecha_proxima,
             s.fecha,
-            s.asesor
+            c.asesor
         FROM seguimientos s
         LEFT JOIN clientes c
             ON c.id = s.cliente_id
