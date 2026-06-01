@@ -433,8 +433,8 @@
             <div class="actions">
                 <button class="btn btn-green" onclick="abrirModalEditar()">EDITAR</button>
                 <button class="btn btn-red" onclick="irLlamadasDesdeCliente()">SEGUIMIENTOS</button>
-                <button class="btn btn-orange">COTIZACIONES</button>
-                <button class="btn btn-green">PEDIDOS</button>
+                <button class="btn btn-orange" onclick="irCotizacionesDesdeCliente()">COTIZACIONES</button>
+                <button class="btn btn-green" onclick="irPedidosDesdeCliente()">PEDIDOS</button>
             </div>
 
 
@@ -1738,6 +1738,111 @@ MODAL NUEVO CONTACTO
                 localStorage.setItem("clienteSeguimiento", JSON.stringify(payload));
 
                 window.location.href = "llamadas.html";
+            }
+
+            function irCotizacionesDesdeCliente() {
+
+                if (!clienteActual) {
+                    alert("No hay cliente cargado");
+                    return;
+                }
+
+                const payload = {
+                    id: clienteActual.id,
+                    cliente: clienteActual.cliente || "",
+                    contacto: clienteActual.contacto || "",
+                    telefono: clienteActual.tel_contacto || clienteActual.telefono || ""
+                };
+
+                localStorage.setItem("clienteCotizacion", JSON.stringify(payload));
+
+                window.location.href = "cotizaciones.html";
+            }
+
+            async function irPedidosDesdeCliente() {
+
+                if (!clienteActual) {
+                    alert("Cliente no cargado");
+                    return;
+                }
+
+                // guardar cliente base
+                localStorage.setItem("clientePedidoBase", JSON.stringify({
+                    id_cliente: clienteActual.id,
+                    cliente: clienteActual.cliente
+                }));
+
+                // traer cotizaciones del cliente
+                const res = await fetch(`/api/cotizaciones/cliente?cliente_id=${clienteActual.id}`);
+                const data = await res.json();
+
+                const cotizaciones = data.data || [];
+
+                if (!cotizaciones.length) {
+                    alert("Este cliente no tiene cotizaciones");
+                    return;
+                }
+
+                // construir modal dinámico
+                let html = `
+        <div id="modalPedidos" style="
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.7);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index:99999;
+        ">
+            <div style="
+                background:#111827;
+                padding:20px;
+                border-radius:12px;
+                width:500px;
+                max-height:80vh;
+                overflow:auto;
+            ">
+
+            <h3 style="color:#60a5fa;">Seleccionar Cotización</h3>
+
+            <select id="selectCotModal" style="width:100%;padding:8px;margin-top:10px;">
+                ${cotizaciones.map(c => `
+                    <option value='${JSON.stringify(c)}'>
+                        ${c.doc} - ${c.cliente}
+                    </option>
+                `).join("")}
+            </select>
+
+            <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
+                <button onclick="cerrarModalPedidos()" class="btn btn-gray">Cancelar</button>
+                <button onclick="confirmarIrPedidos()" class="btn btn-green">Continuar</button>
+            </div>
+
+            </div>
+        </div>
+    `;
+
+                document.body.insertAdjacentHTML("beforeend", html);
+            }
+
+            function cerrarModalPedidos() {
+                document.getElementById("modalPedidos")?.remove();
+            }
+
+            function confirmarIrPedidos() {
+
+                const select = document.getElementById("selectCotModal");
+
+                if (!select.value) return;
+
+                const cot = JSON.parse(select.value);
+
+                // guardar cotización seleccionada
+                localStorage.setItem("clientePedidoCotizacion", JSON.stringify(cot));
+
+                cerrarModalPedidos();
+
+                window.location.href = "pedidos.html";
             }
 
         </script>
