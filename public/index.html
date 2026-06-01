@@ -20,6 +20,23 @@
             box-sizing: border-box;
         }
 
+        .task-item {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .task-item:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .task-item.empty {
+            background: transparent;
+            border: 1px dashed #334155;
+            text-align: center;
+            color: #64748b;
+        }
+
         /* =========================================
             BODY
         ========================================= */
@@ -750,30 +767,13 @@ HIDDEN
                     </div>
 
                     <div class="task-list">
-
-                        <div class="task-item">
-                            📞 Llamar cliente Panel Reyco - 9:00 AM
-                        </div>
-
-                        <div class="task-item">
-                            📄 Enviar cotización Colegio San Mateo
-                        </div>
-
-                        <div class="task-item">
-                            📦 Confirmar pedido Conjunto Mirador
-                        </div>
-
-                        <div class="task-item">
-                            📅 Seguimiento Universidad Nacional
-                        </div>
-
-                        <div class="task-item">
-                            💰 Revisar cotizaciones pendientes
+                        <div class="task-list" id="taskList">
+                            <div class="task-item empty">
+                                Selecciona una fecha en el calendario
+                            </div>
                         </div>
 
                     </div>
-
-                </div>
 
             </section>
 
