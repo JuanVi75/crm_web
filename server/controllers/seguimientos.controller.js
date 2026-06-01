@@ -259,9 +259,14 @@ const getSeguimientoById = (req, res) => {
 // =========================================
 const getReporteSeguimientos = (req, res) => {
 
+    const user = req.user || {
+        rol: "INVITADO",
+        nombre: ""
+    };
+
     const { inicio, fin } = req.query;
 
-    const sql = `
+    let sql = `
         SELECT
             s.id,
             s.fecha,
@@ -288,21 +293,24 @@ const getReporteSeguimientos = (req, res) => {
             s.asesor
 
         FROM seguimientos s
-
-        LEFT JOIN clientes c
-            ON c.id = s.cliente_id
-
+        LEFT JOIN clientes c ON c.id = s.cliente_id
         WHERE DATE(s.fecha) BETWEEN ? AND ?
-
-        ORDER BY s.fecha DESC
     `;
 
-    db.query(sql, [inicio, fin], (err, rows) => {
+    let params = [inicio, fin];
+
+    // 🔥 FILTRO POR ROL
+    if (user.rol === "ASESOR") {
+        sql += " AND s.asesor = ?";
+        params.push(user.nombre);
+    }
+
+    sql += " ORDER BY s.fecha DESC";
+
+    db.query(sql, params, (err, rows) => {
 
         if (err) {
-
             console.error(err);
-
             return res.status(500).json({
                 success: false,
                 message: "Error generando reporte"
