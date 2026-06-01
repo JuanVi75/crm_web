@@ -1686,7 +1686,7 @@ MODAL NUEVO CONTACTO
 
                 <div>
                     <button class="btn btn-blue"
-                        onclick="abrirLlamada('${c.nombre}','${c.telefono}','${clienteId}')">
+                        onclick="irLlamadasDesdeContacto('${c.nombre}','${c.telefono}','${clienteId}')"
                         CARGAR
                     </button>
                 </div>
@@ -1704,6 +1704,22 @@ MODAL NUEVO CONTACTO
             </div>
         `;
                 }
+            }
+
+            function irLlamadasDesdeContacto(nombre, telefono, clienteId) {
+
+                const cliente = clienteActual || {};
+
+                const payload = {
+                    id: clienteId,
+                    cliente: cliente.cliente || "",
+                    contacto: nombre || "",
+                    telefono: telefono || ""
+                };
+
+                localStorage.setItem("clienteSeguimiento", JSON.stringify(payload));
+
+                window.location.href = "llamadas.html";
             }
 
         </script>
