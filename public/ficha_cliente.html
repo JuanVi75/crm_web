@@ -433,7 +433,7 @@
             <div class="actions">
                 <button class="btn btn-green" onclick="abrirModalEditar()">EDITAR</button>
                 <button class="btn btn-blue">ACTUALIZAR</button>
-                <button class="btn btn-red" onclick="irLlamadasDesdeContacto('${c.nombre}','${c.telefono}','${clienteId}')">SEGUIMIENTOS</button>
+                <button class="btn btn-red" onclick="irLlamadasDesdeCliente()">SEGUIMIENTOS</button>
                 <button class="btn btn-orange">COTIZACIONES</button>
                 <button class="btn btn-green">PEDIDOS</button>
             </div>
@@ -1715,6 +1715,25 @@ MODAL NUEVO CONTACTO
                     cliente: cliente.cliente || "",
                     contacto: nombre || "",
                     telefono: telefono || ""
+                };
+
+                localStorage.setItem("clienteSeguimiento", JSON.stringify(payload));
+
+                window.location.href = "llamadas.html";
+            }
+
+            function irLlamadasDesdeCliente() {
+
+                if (!clienteActual) {
+                    alert("No hay cliente cargado");
+                    return;
+                }
+
+                const payload = {
+                    id: clienteActual.id,
+                    cliente: clienteActual.cliente || "",
+                    contacto: clienteActual.contacto || "",
+                    telefono: clienteActual.tel_contacto || clienteActual.telefono || ""
                 };
 
                 localStorage.setItem("clienteSeguimiento", JSON.stringify(payload));
