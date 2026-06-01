@@ -266,8 +266,19 @@ const getReporteSeguimientos = (req, res) => {
             s.id,
             s.fecha,
             c.cliente,
-            c.contacto,
-            c.tel_contacto,
+
+            CASE
+                WHEN s.contacto IS NULL OR s.contacto = ''
+                THEN c.contacto
+                ELSE s.contacto
+            END AS contacto,
+
+            CASE
+                WHEN s.tel_contacto IS NULL OR s.tel_contacto = ''
+                THEN c.tel_contacto
+                ELSE s.tel_contacto
+            END AS tel_contacto,
+
             c.ciudad,
             c.sector,
             s.tipo,
@@ -275,17 +286,23 @@ const getReporteSeguimientos = (req, res) => {
             s.proxima_accion,
             s.fecha_proxima,
             s.asesor
+
         FROM seguimientos s
+
         LEFT JOIN clientes c
             ON c.id = s.cliente_id
+
         WHERE DATE(s.fecha) BETWEEN ? AND ?
+
         ORDER BY s.fecha DESC
     `;
 
     db.query(sql, [inicio, fin], (err, rows) => {
 
         if (err) {
+
             console.error(err);
+
             return res.status(500).json({
                 success: false,
                 message: "Error generando reporte"
