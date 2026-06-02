@@ -150,36 +150,29 @@ const createSeguimiento = (req, res) => {
 // =========================================
 // UPDATE SEGUIMIENTO
 // =========================================
+// =========================================
+// UPDATE SEGUIMIENTO
+// =========================================
 const updateSeguimiento = (req, res) => {
 
     const { id } = req.params;
-    const data = req.body;
 
     const sql = `
         UPDATE seguimientos
         SET
-            fecha = ?,
-            tipo = ?,
-            nota = ?,
-            proxima_accion = ?,
-            fecha_proxima = ?
+            estado = 'TERMINADO'
         WHERE id = ?
     `;
 
     db.query(
         sql,
-        [
-            data.fecha,
-            data.tipo,
-            data.nota,
-            data.proxima_accion,
-            data.fecha_proxima || null,
-            id
-        ],
+        [id],
         (err) => {
 
             if (err) {
+
                 console.error(err);
+
                 return res.status(500).json({
                     success: false,
                     message: "Error actualizando"
@@ -188,7 +181,7 @@ const updateSeguimiento = (req, res) => {
 
             return res.json({
                 success: true,
-                message: "Seguimiento actualizado"
+                message: "Seguimiento finalizado"
             });
         }
     );
@@ -392,6 +385,82 @@ const getTareasHoy = (req, res) => {
         });
     });
 };
+
+// =========================================
+// RESUMEN CALENDARIO
+// =========================================
+const getResumenCalendario = (req, res) => {
+
+    const user = req.user || {
+        rol: "INVITADO",
+        nombre: ""
+    };
+
+    let sql = `
+        SELECT
+            DATE(s.fecha_proxima) AS fecha,
+
+            SUM(
+                CASE
+                    WHEN (
+                        s.estado IS NULL
+                        OR s.estado = 'ACTIVO'
+                        OR s.estado = 'STAND BY'
+                    )
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS pendientes,
+
+            SUM(
+                CASE
+                    WHEN s.estado = 'TERMINADO'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS realizados
+
+        FROM seguimientos s
+
+        WHERE s.fecha_proxima IS NOT NULL
+    `;
+
+    let params = [];
+
+    // =========================================
+    // FILTRO ASESOR
+    // =========================================
+    if (user.rol === "ASESOR") {
+
+        sql += " AND s.asesor = ?";
+
+        params.push(user.nombre);
+    }
+
+    sql += `
+        GROUP BY DATE(s.fecha_proxima)
+        ORDER BY DATE(s.fecha_proxima) ASC
+    `;
+
+    db.query(sql, params, (err, rows) => {
+
+        if (err) {
+
+            console.error(err);
+
+            return res.status(500).json({
+                success: false,
+                message: "Error calendario"
+            });
+        }
+
+        return res.json({
+            success: true,
+            data: rows
+        });
+    });
+};
+
 module.exports = {
     getSeguimientos,
     createSeguimiento,
@@ -399,5 +468,6 @@ module.exports = {
     deleteSeguimiento,
     getSeguimientoById,
     getReporteSeguimientos,
-    getTareasHoy
+    getTareasHoy,
+    getResumenCalendario
 };
