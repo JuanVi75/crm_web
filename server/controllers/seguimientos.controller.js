@@ -223,10 +223,22 @@ const getSeguimientoById = (req, res) => {
 
     const sql = `
         SELECT
-            s.*,
+            s.id,
+            s.cliente_id,
+            s.contacto,
+            s.tel_contacto,
+            s.tipo,
+            s.nota,
+            s.proxima_accion,
+            s.fecha_proxima,
+            s.fecha,
+            s.estado,
+
             c.cliente,
-            c.contacto,
-            c.tel_contacto
+            c.ciudad,
+            c.sector,
+            c.asesor
+
         FROM seguimientos s
         LEFT JOIN clientes c
             ON c.id = s.cliente_id
@@ -239,7 +251,8 @@ const getSeguimientoById = (req, res) => {
         if (err) {
             console.error(err);
             return res.status(500).json({
-                success: false
+                success: false,
+                message: "Error obteniendo seguimiento"
             });
         }
 
@@ -466,6 +479,7 @@ const getResumenCalendario = (req, res) => {
         });
     });
 };
+
 
 module.exports = {
     getSeguimientos,
