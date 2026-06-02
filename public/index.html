@@ -20,12 +20,14 @@
             box-sizing: border-box;
         }
 
+
+        /* =========================================
+            TAREAS
+        ========================================= */
         .task-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-
-            /* 🔥 CLAVE */
             overflow-y: auto;
             max-height: 100%;
         }
@@ -37,20 +39,44 @@
             color: #cbd5e1;
             font-size: 13px;
             transition: 0.2s;
+            cursor: pointer;
         }
 
+        .task-title {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .task-action {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-top: 4px;
+        }
+
+        .task-footer {
+            font-size: 11px;
+            margin-top: 6px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .task-state {
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        /* HOVER */
         .task-item:hover {
             background: #60a5fa;
-            /* azul claro */
             color: #0f172a;
-            /* texto oscuro */
         }
 
-        .task-item.empty {
-            background: transparent;
-            border: 1px dashed #334155;
-            text-align: center;
-            color: #64748b;
+        .task-item:hover .task-title,
+        .task-item:hover .task-action,
+        .task-item:hover .task-footer,
+        .task-item:hover .task-state {
+            color: #0f172a;
         }
 
         /* =========================================
@@ -1337,38 +1363,29 @@ HIDDEN
             tareas.forEach(t => {
 
                 const div = document.createElement("div");
+                div.className = "task-item";
 
-                div.classList.add("task-item");
-
-                // Click → abrir modal de llamadas (lo conectamos después)
                 div.onclick = () => abrirTarea(t);
 
                 div.innerHTML = `
-            <div style="font-weight:600; margin-bottom:4px;">
+            <div class="task-title">
                 ${t.cliente || "Sin cliente"}
             </div>
 
-            <div style="font-size:12px; color:#94a3b8;">
+            <div class="task-action">
                 ${t.proxima_accion || "Sin acción"}
             </div>
 
-            <div style="font-size:11px; margin-top:6px; color:#64748b;">
-                📅 ${formatearFecha(t.fecha_proxima)}
-                <span style="float:right;">
+            <div class="task-footer">
+                <span>
+                    ${formatearFecha(t.fecha_proxima)}
+                </span>
+
+                <span class="task-state">
                     ${t.estado || "ACTIVO"}
                 </span>
             </div>
         `;
-
-                // color por estado
-                if (t.estado === "STAND BY") {
-                    div.style.borderLeft = "4px solid #f59e0b";
-                }
-
-                if (t.estado === "TERMINADO") {
-                    div.style.opacity = "0.5";
-                    div.style.borderLeft = "4px solid #22c55e";
-                }
 
                 container.appendChild(div);
             });
