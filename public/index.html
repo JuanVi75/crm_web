@@ -117,10 +117,10 @@ MODAL TAREAS
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 5px;
-            color: white; 
+            padding: 14px;
+            color: white;
             outline: none;
-            font-size: 11px;
+            font-size: 13px;
             transition: 0.2s;
         }
 
@@ -1422,7 +1422,7 @@ MODAL TAREAS (AJUSTADO)
                 <div class="form-group">
 
                     <label>Nota</label>
-                    <textarea id="m_nota" rows="1"></textarea>
+                    <textarea id="m_nota" rows="3"></textarea>
 
                 </div>
 
@@ -1520,95 +1520,91 @@ MODAL TAREAS (AJUSTADO)
             // =========================================
             const select = document.getElementById("contactoSelect");
 
-            const grupoSelect = document.getElementById("grupoSelectContacto");
-            const grupoFallback = document.getElementById("grupoContactoFallback");
-            const grupoTelFallback = document.getElementById("grupoTelefonoFallback");
+            const inputContacto = document.getElementById("modalContacto");
+            const inputTelefono = document.getElementById("modalTelefono");
 
-            const fallbackNombre = document.getElementById("fallbackContacto");
-            const fallbackTel = document.getElementById("fallbackTelefono");
-
-            const modalContacto = document.getElementById("modalContacto");
-            const modalTelefono = document.getElementById("modalTelefono");
-
-            // RESET UI
-            select.innerHTML = `<option value="">Seleccione contacto</option>`;
-
-            grupoSelect.classList.add("hidden");
-            grupoFallback.classList.add("hidden");
-            grupoTelFallback.classList.add("hidden");
-
-            modalContacto.innerText = "--";
-            modalTelefono.innerText = "--";
+            // RESET
+            select.innerHTML = "";
+            inputContacto.value = "";
+            inputTelefono.value = "";
 
             try {
 
                 const res = await fetch(`/api/clientes/${tarea.cliente_id}/contactos`);
-                const data = await res.json();
+                const contactos = await res.json();
 
                 // =========================================
-                // CASO 1: HAY CONTACTOS
+                // CASO 1: HAY CONTACTOS ADICIONALES
                 // =========================================
-                if (data && data.length > 0) {
-
-                    grupoSelect.classList.remove("hidden");
+                if (contactos && contactos.length > 0) {
 
                     select.innerHTML = `<option value="">Seleccione contacto</option>`;
 
-                    data.forEach(c => {
-
+                    // agregar contactos adicionales
+                    contactos.forEach(c => {
                         const opt = document.createElement("option");
 
-                        opt.value = JSON.stringify(c);
+                        opt.value = JSON.stringify({
+                            origen: "CONTACTO",
+                            data: c
+                        });
+
                         opt.textContent = `${c.nombre} - ${c.telefono || ""}`;
 
                         select.appendChild(opt);
                     });
 
-                    select.onchange = () => {
-
-                        if (!select.value) return;
-
-                        const c = JSON.parse(select.value);
-
-                        modalContacto.innerText = c.nombre || "";
-                        modalTelefono.innerText = c.telefono || "";
+                    // agregar contacto principal de clientes también
+                    const principal = {
+                        origen: "CLIENTE",
+                        data: {
+                            nombre: tarea.contacto || "",
+                            telefono: tarea.tel_contacto || ""
+                        }
                     };
 
-                    return;
+                    const optPrincipal = document.createElement("option");
+                    optPrincipal.value = JSON.stringify(principal);
+                    optPrincipal.textContent = `${principal.data.nombre} - ${principal.data.telefono}`;
+
+                    select.appendChild(optPrincipal);
+
+                } else {
+
+                    // =========================================
+                    // CASO 2: SOLO CONTACTO UNICO (CLIENTES)
+                    // =========================================
+
+                    select.innerHTML = `<option value="UNICO">CONTACTO ÚNICO</option>`;
+
+                    inputContacto.value = tarea.contacto || "";
+                    inputTelefono.value = tarea.tel_contacto || "";
                 }
 
                 // =========================================
-                // CASO 2: NO HAY CONTACTOS (FALLBACK CLIENTE)
+                // EVENTO SELECT
                 // =========================================
-                grupoFallback.classList.remove("hidden");
-                grupoTelFallback.classList.remove("hidden");
+                select.onchange = function () {
 
-                const nombre = tarea.contacto || "";
-                const tel = tarea.tel_contacto || "";
+                    if (!select.value || select.value === "UNICO") return;
 
-                fallbackNombre.value = nombre;
-                fallbackTel.value = tel;
+                    const parsed = JSON.parse(select.value);
 
-                modalContacto.innerText = nombre;
-                modalTelefono.innerText = tel;
+                    inputContacto.value = parsed.data.nombre || "";
+                    inputTelefono.value = parsed.data.telefono || "";
+                };
 
             } catch (err) {
 
                 console.error(err);
 
-                grupoFallback.classList.remove("hidden");
-                grupoTelFallback.classList.remove("hidden");
+                select.innerHTML = `<option value="UNICO">CONTACTO ÚNICO</option>`;
 
-                const nombre = tarea.contacto || "";
-                const tel = tarea.tel_contacto || "";
-
-                fallbackNombre.value = nombre;
-                fallbackTel.value = tel;
-
-                modalContacto.innerText = nombre;
-                modalTelefono.innerText = tel;
+                inputContacto.value = tarea.contacto || "";
+                inputTelefono.value = tarea.tel_contacto || "";
             }
         }
+
         // =========================================
         // CERRAR MODAL
         // =========================================
@@ -2127,7 +2123,8 @@ MODAL TAREAS (AJUSTADO)
             document.getElementById("m_nota").value =
                 tarea.nota || "";
 
-            document.getElementById("m_proxima_accion").value = "";
+            document.getElementById("m_proxima_accion").value =
+                tarea.proxima_accion || "";
 
             document.getElementById("m_fecha_proxima").value =
                 tarea.fecha_proxima
