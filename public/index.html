@@ -1303,46 +1303,57 @@ HIDDEN
             clearRegister();
         }
 
-        window.onload = function () {
+        window.addEventListener("DOMContentLoaded", function () {
 
             clearLogin();
             clearRegister();
 
-            // verificar sesión activa
+            const loginOverlay = document.getElementById("loginOverlay");
+            const userInfo = document.getElementById("userInfo");
+
+            // =========================================
+            // SESIÓN ACTIVA
+            // =========================================
             if (localStorage.getItem("auth") === "true") {
 
-                loginOverlay.classList.add("hidden");
+                if (loginOverlay) {
+                    loginOverlay.classList.add("hidden");
+                }
 
-                document.getElementById("userInfo").innerHTML = `
-            Bienvenido<br>
-            ${localStorage.getItem("user")}<br>
-            ${localStorage.getItem("rol")}
-        `;
+                if (userInfo) {
+                    userInfo.innerHTML = `
+                Bienvenido<br>
+                ${localStorage.getItem("user") || ""}<br>
+                ${localStorage.getItem("rol") || ""}
+            `;
+                }
 
-                // =========================
-                // KPI
-                // =========================
-                cargarKPIs();
+                // =========================================
+                // CARGA INICIAL DEL DASHBOARD
+                // =========================================
+                if (typeof cargarKPIs === "function") {
+                    cargarKPIs();
+                }
 
-                // =========================
-                // TAREAS HOY (FALTABA ESTO)
-                // =========================
-                cargarTareasHoy();
+                if (typeof cargarTareasHoy === "function") {
+                    cargarTareasHoy();
+                }
 
             } else {
 
-                loginOverlay.classList.remove("hidden");
-
-                const userInfo = document.getElementById("userInfo");
+                if (loginOverlay) {
+                    loginOverlay.classList.remove("hidden");
+                }
 
                 if (userInfo) {
                     userInfo.innerText = "No autenticado";
                 }
             }
-        };
+        });
+
     </script>
     <!-- =========================================
-MODAL TAREAS
+        MODAL TAREAS
 ========================================= -->
     <div class="modal-overlay hidden" id="modalTarea">
 
@@ -1358,13 +1369,17 @@ MODAL TAREAS
                     </div>
 
                     <div class="modal-subtitle">
-                        <span id="modalContacto">
-                            Contacto
-                        </span>
-                        ·
-                        <span id="modalTelefono">
-                            Teléfono
-                        </span>
+
+                        <div>
+                            <strong>Contacto:</strong>
+                            <span id="modalContacto">Seleccionar</span>
+                        </div>
+
+                        <div>
+                            <strong>Tel:</strong>
+                            <span id="modalTelefono">--</span>
+                        </div>
+
                     </div>
 
                 </div>
@@ -1378,6 +1393,18 @@ MODAL TAREAS
             <!-- BODY -->
             <div class="modal-body">
 
+                <!-- CONTACTO (NUEVO) -->
+                <div class="form-group">
+
+                    <label>Contacto del Cliente</label>
+
+                    <select id="contactoSelect">
+                        <option value="">Seleccione contacto</option>
+                    </select>
+
+                </div>
+
+                <!-- TIPO -->
                 <div class="form-group">
 
                     <label>Tipo</label>
@@ -1394,6 +1421,7 @@ MODAL TAREAS
 
                 </div>
 
+                <!-- NOTA -->
                 <div class="form-group">
 
                     <label>Nota</label>
@@ -1402,6 +1430,7 @@ MODAL TAREAS
 
                 </div>
 
+                <!-- ACCIÓN -->
                 <div class="form-group">
 
                     <label>Próxima Acción</label>
@@ -1410,6 +1439,7 @@ MODAL TAREAS
 
                 </div>
 
+                <!-- FECHA + ESTADO -->
                 <div class="form-row">
 
                     <div class="form-group">
@@ -1426,17 +1456,9 @@ MODAL TAREAS
 
                         <select id="m_estado">
 
-                            <option value="ACTIVO">
-                                ACTIVO
-                            </option>
-
-                            <option value="STAND BY">
-                                STAND BY
-                            </option>
-
-                            <option value="TERMINADO">
-                                TERMINADO
-                            </option>
+                            <option value="ACTIVO">ACTIVO</option>
+                            <option value="STAND BY">STAND BY</option>
+                            <option value="TERMINADO">TERMINADO</option>
 
                         </select>
 
@@ -1483,45 +1505,34 @@ MODAL TAREAS
         // =========================================
         // ABRIR TAREA
         // =========================================
-        function abrirTarea(tarea) {
+        async function abrirTarea(tarea) {
 
             window.tareaActual = tarea;
 
-            window.tareaActualIndex =
-                window.tareasHoy.findIndex(
-                    t => t.id === tarea.id
-                );
+            document.getElementById("clienteLlamada").value = tarea.cliente || "";
 
-            document
-                .getElementById("modalTarea")
-                .classList
-                .remove("hidden");
+            document.getElementById("notaLlamada").value = "";
 
-            document.getElementById("modalCliente").innerText =
-                tarea.cliente || "Sin cliente";
+            document.getElementById("estadoTarea").value = "ACTIVO";
 
-            document.getElementById("modalContacto").innerText =
-                tarea.contacto || "Sin contacto";
+            document.getElementById("telefonoLlamada").value = "";
 
-            document.getElementById("modalTelefono").innerText =
-                tarea.tel_contacto || "Sin teléfono";
+            // LIMPIAR SELECT
+            const select = document.getElementById("contactoSelect");
+            select.innerHTML = `<option value="">Cargando contactos...</option>`;
 
-            document.getElementById("m_tipo").value =
-                tarea.tipo || "LLAMADA";
+            // CARGAR CONTACTOS DEL CLIENTE
+            const res = await fetch(`/api/clientes/contactos/${tarea.cliente_id}`);
+            const data = await res.json();
 
-            document.getElementById("m_nota").value =
-                tarea.nota || "";
+            select.innerHTML = `<option value="">Seleccione contacto</option>`;
 
-            document.getElementById("m_proxima_accion").value =
-                tarea.proxima_accion || "";
-
-            document.getElementById("m_fecha_proxima").value =
-                tarea.fecha_proxima
-                    ? tarea.fecha_proxima.split("T")[0]
-                    : "";
-
-            document.getElementById("m_estado").value =
-                tarea.estado || "ACTIVO";
+            data.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = JSON.stringify(c);
+                opt.textContent = c.nombre;
+                select.appendChild(opt);
+            });
         }
 
         // =========================================
@@ -1992,95 +2003,53 @@ MODAL TAREAS
 
                 const body = {
 
-                    tipo:
-                        document.getElementById("m_tipo").value,
+                    cliente_id: window.tareaActual.cliente_id,
+                    contacto: window.tareaActual.contacto,
+                    tel_contacto: window.tareaActual.tel_contacto,
 
-                    nota:
-                        document.getElementById("m_nota").value,
+                    tipo: document.getElementById("m_tipo").value,
+                    nota: document.getElementById("m_nota").value,
+                    proxima_accion: document.getElementById("m_proxima_accion").value,
 
-                    proxima_accion:
-                        document.getElementById("m_proxima_accion").value,
+                    estado: document.getElementById("m_estado").value,
 
-                    fecha_proxima:
-                        document.getElementById("m_fecha_proxima").value,
-
-                    estado:
-                        document.getElementById("m_estado").value,
-
-                    fecha:
-                        new Date().toISOString()
+                    fecha: new Date().toISOString()
                 };
 
-                const res = await fetch(
-
-                    `/api/seguimientos/${window.tareaActual.id}`,
-
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        },
-
-                        body: JSON.stringify(body)
-                    }
-                );
+                // 1. CREAR NUEVO SEGUIMIENTO
+                const res = await fetch(`/api/seguimientos`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    },
+                    body: JSON.stringify(body)
+                });
 
                 const data = await res.json();
 
                 if (!data.success) {
-
-                    alert("Error guardando seguimiento");
-
+                    alert("Error creando seguimiento");
                     return;
                 }
 
-                // =========================================
-                // RECARGAR TAREAS
-                // =========================================
+                // 2. CERRAR ANTERIORES DEL CLIENTE
+                await fetch(`/api/seguimientos/cerrar-anteriores/${window.tareaActual.cliente_id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                // 3. RECARGAR TAREAS
                 await cargarTareasHoy();
 
-                // =========================================
-                // SI NO QUEDAN TAREAS
-                // =========================================
-                if (
-                    !window.tareasHoy ||
-                    window.tareasHoy.length === 0
-                ) {
-
-                    cerrarModalTarea();
-
-                    return;
-                }
-
-                // =========================================
-                // AJUSTAR ÍNDICE
-                // =========================================
-                if (
-                    window.tareaActualIndex >=
-                    window.tareasHoy.length
-                ) {
-
-                    window.tareaActualIndex =
-                        window.tareasHoy.length - 1;
-                }
-
-                // =========================================
-                // ABRIR SIGUIENTE
-                // =========================================
-                abrirTarea(
-                    window.tareasHoy[
-                    window.tareaActualIndex
-                    ]
-                );
+                // 4. SIGUIENTE
+                tareaSiguiente();
 
             } catch (err) {
-
                 console.error(err);
-
-                alert("Error de servidor");
+                alert("Error servidor");
             }
         }
 
@@ -2143,6 +2112,33 @@ MODAL TAREAS
                     });
                 }
             );
+        };
+
+        const cerrarAnteriores = (req, res) => {
+
+            const { cliente_id } = req.params;
+
+            const sql = `
+        UPDATE seguimientos
+        SET estado = 'TERMINADO'
+        WHERE cliente_id = ?
+        AND estado != 'TERMINADO'
+    `;
+
+            db.query(sql, [cliente_id], (err) => {
+
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error cerrando anteriores"
+                    });
+                }
+
+                return res.json({
+                    success: true,
+                    message: "Anteriores cerrados"
+                });
+            });
         };
 
     </script>
