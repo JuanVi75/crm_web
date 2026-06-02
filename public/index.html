@@ -1236,6 +1236,111 @@ HIDDEN
             ).format(valor || 0);
         }
 
+        async function cargarTareasHoy() {
+
+            try {
+
+                const res = await fetch("/api/seguimientos/tareas-hoy", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                const data = await res.json();
+
+                if (!data.success) {
+                    console.error("Error cargando tareas:", data.message);
+                    return;
+                }
+
+                // Guardamos globalmente para uso en UI
+                window.tareasHoy = data.data || [];
+
+                console.log("Tareas hoy:", window.tareasHoy);
+
+                // siguiente paso: pintar UI
+                renderTareasHoy(window.tareasHoy);
+
+            } catch (err) {
+
+                console.error("Error en tareas hoy:", err);
+
+                const taskList = document.getElementById("taskList");
+
+                taskList.innerHTML = `
+            <div class="task-item empty">
+                Error cargando tareas
+            </div>
+        `;
+            }
+        }
+
+        function renderTareasHoy(tareas) {
+
+            const container = document.getElementById("taskList");
+
+            container.innerHTML = "";
+
+            if (!tareas || tareas.length === 0) {
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                No hay tareas para hoy
+            </div>
+        `;
+
+                return;
+            }
+
+            tareas.forEach(t => {
+
+                const div = document.createElement("div");
+
+                div.classList.add("task-item");
+
+                // Click → abrir modal de llamadas (lo conectamos después)
+                div.onclick = () => abrirTarea(t);
+
+                div.innerHTML = `
+            <div style="font-weight:600; margin-bottom:4px;">
+                ${t.cliente || "Sin cliente"}
+            </div>
+
+            <div style="font-size:12px; color:#94a3b8;">
+                ${t.proxima_accion || "Sin acción"}
+            </div>
+
+            <div style="font-size:11px; margin-top:6px; color:#64748b;">
+                📅 ${t.fecha_proxima || ""}
+                <span style="float:right;">
+                    ${t.estado || "ACTIVO"}
+                </span>
+            </div>
+        `;
+
+                // color por estado
+                if (t.estado === "STAND BY") {
+                    div.style.borderLeft = "4px solid #f59e0b";
+                }
+
+                if (t.estado === "TERMINADO") {
+                    div.style.opacity = "0.5";
+                    div.style.borderLeft = "4px solid #22c55e";
+                }
+
+                container.appendChild(div);
+            });
+        }
+
+        function abrirTarea(tarea) {
+
+            console.log("Abriendo tarea:", tarea);
+
+            // aquí después abrimos el modal de llamadas
+        }
+
     </script>
 
 </body>
