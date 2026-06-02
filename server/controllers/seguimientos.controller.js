@@ -340,28 +340,28 @@ const getTareasHoy = (req, res) => {
     let sql = `
         SELECT
             s.id,
-            s.fecha_proxima,
-            s.proxima_accion,
+            s.cliente_id,
             c.cliente,
             s.contacto,
             s.tel_contacto,
-            c.ciudad,
-            c.sector,
-            s.asesor
+            s.proxima_accion,
+            s.fecha_proxima,
+            s.estado,
+            c.ciudad
         FROM seguimientos s
         LEFT JOIN clientes c ON c.id = s.cliente_id
         WHERE DATE(s.fecha_proxima) = ?
+        AND (s.estado IS NULL OR s.estado != 'TERMINADO')
     `;
 
     let params = [hoy];
 
-    // 🔥 FILTRO POR ROL
     if (user.rol === "ASESOR") {
         sql += " AND s.asesor = ?";
         params.push(user.nombre);
     }
 
-    sql += " ORDER BY s.fecha_proxima ASC";
+    sql += " ORDER BY s.id DESC";
 
     db.query(sql, params, (err, rows) => {
 
@@ -380,7 +380,6 @@ const getTareasHoy = (req, res) => {
         });
     });
 };
-
 module.exports = {
     getSeguimientos,
     createSeguimiento,
