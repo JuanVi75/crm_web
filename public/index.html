@@ -1551,7 +1551,8 @@ HIDDEN
             const modalTelefono = document.getElementById("modalTelefono");
 
             // RESET UI
-            select.innerHTML = "";
+            select.innerHTML = `<option value="">Seleccione contacto</option>`;
+
             grupoSelect.classList.add("hidden");
             grupoFallback.classList.add("hidden");
             grupoTelFallback.classList.add("hidden");
@@ -1583,6 +1584,16 @@ HIDDEN
                         select.appendChild(opt);
                     });
 
+                    select.onchange = () => {
+
+                        if (!select.value) return;
+
+                        const c = JSON.parse(select.value);
+
+                        modalContacto.innerText = c.nombre || "";
+                        modalTelefono.innerText = c.telefono || "";
+                    };
+
                     return;
                 }
 
@@ -1608,11 +1619,16 @@ HIDDEN
                 grupoFallback.classList.remove("hidden");
                 grupoTelFallback.classList.remove("hidden");
 
-                fallbackNombre.value = tarea.contacto || "";
-                fallbackTel.value = tarea.tel_contacto || "";
+                const nombre = tarea.contacto || "";
+                const tel = tarea.tel_contacto || "";
+
+                fallbackNombre.value = nombre;
+                fallbackTel.value = tel;
+
+                modalContacto.innerText = nombre;
+                modalTelefono.innerText = tel;
             }
         }
-
         // =========================================
         // CERRAR MODAL
         // =========================================
