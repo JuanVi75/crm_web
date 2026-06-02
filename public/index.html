@@ -1412,9 +1412,10 @@ HIDDEN
 
             if (!fecha) return "";
 
-            const partes = fecha.split("-");
+            // Tomar solo YYYY-MM-DD
+            fecha = fecha.substring(0, 10);
 
-            if (partes.length < 3) return fecha;
+            const partes = fecha.split("-");
 
             return `${partes[2]}-${partes[1]}-${partes[0]}`;
         }
