@@ -472,10 +472,9 @@ const getContactosCliente = (req, res) => {
             return res.status(500).json([]);
         }
 
-        res.json(rows);
+        return res.json(rows);
     });
 };
-
 
 // =========================================
 // EXPORTS
