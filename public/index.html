@@ -1502,33 +1502,18 @@ HIDDEN
 
             window.tareaActual = tarea;
 
-            // =========================================
-            // CLIENTE (ÚNICO DATO FIABLE)
-            // =========================================
             document.getElementById("modalCliente").innerText =
                 tarea.cliente || "Sin cliente";
 
-            // =========================================
-            // RESET HEADER CONTACTO
-            // =========================================
-            document.getElementById("modalContacto").innerText =
-                "Seleccionar";
+            document.getElementById("modalContacto").innerText = "Seleccionar";
+            document.getElementById("modalTelefono").innerText = "--";
 
-            document.getElementById("modalTelefono").innerText =
-                "--";
-
-            // =========================================
-            // RESET FORMULARIO (TODO LIMPIO)
-            // =========================================
             document.getElementById("m_nota").value = "";
             document.getElementById("m_proxima_accion").value = "";
             document.getElementById("m_fecha_proxima").value = "";
             document.getElementById("m_estado").value = "ACTIVO";
             document.getElementById("m_tipo").value = "LLAMADA";
 
-            // =========================================
-            // LIMPIAR SELECT
-            // =========================================
             const select = document.getElementById("contactoSelect");
 
             select.innerHTML = `<option value="">Cargando contactos...</option>`;
@@ -1538,24 +1523,52 @@ HIDDEN
                 const res = await fetch(`/api/clientes/contactos/${tarea.cliente_id}`);
                 const data = await res.json();
 
-                select.innerHTML = `<option value="">Seleccione contacto</option>`;
+                select.innerHTML = "";
 
-                (data || []).forEach(c => {
+                // =========================================
+                // CASO 1: HAY CONTACTOS EN TABLA
+                // =========================================
+                if (data && data.length > 0) {
 
-                    const opt = document.createElement("option");
+                    select.innerHTML = `<option value="">Seleccione contacto</option>`;
 
-                    opt.value = JSON.stringify(c);
+                    data.forEach(c => {
 
-                    opt.textContent = c.nombre || c.contacto || "Sin nombre";
+                        const opt = document.createElement("option");
+                        opt.value = JSON.stringify(c);
+                        opt.textContent = `${c.nombre} - ${c.telefono || ""}`;
+                        select.appendChild(opt);
+                    });
 
-                    select.appendChild(opt);
-                });
+                    return;
+                }
+
+                // =========================================
+                // CASO 2: NO HAY CONTACTOS → FALLBACK CLIENTES
+                // =========================================
+                select.innerHTML = `<option value="">Contacto principal</option>`;
+
+                const fallback = {
+                    nombre: tarea.contacto || "",
+                    telefono: tarea.tel_contacto || ""
+                };
+
+                const opt = document.createElement("option");
+                opt.value = JSON.stringify(fallback);
+                opt.textContent = `${fallback.nombre} - ${fallback.telefono}`;
+
+                select.appendChild(opt);
+
+                select.value = JSON.stringify(fallback);
+
+                document.getElementById("modalContacto").innerText = fallback.nombre;
+                document.getElementById("modalTelefono").innerText = fallback.telefono;
 
             } catch (err) {
 
                 console.error(err);
 
-                select.innerHTML = `<option value="">Sin contactos</option>`;
+                select.innerHTML = `<option value="">Error cargando contactos</option>`;
             }
         }
 
@@ -1564,10 +1577,24 @@ HIDDEN
         // =========================================
         function cerrarModalTarea() {
 
-            document
-                .getElementById("modalTarea")
-                .classList
-                .add("hidden");
+            document.getElementById("modalTarea").classList.add("hidden");
+
+            window.tareaActual = null;
+
+            const select = document.getElementById("contactoSelect");
+
+            if (select) {
+                select.innerHTML = `<option value="">Seleccione contacto</option>`;
+            }
+
+            document.getElementById("modalContacto").innerText = "Seleccionar";
+            document.getElementById("modalTelefono").innerText = "--";
+
+            document.getElementById("m_nota").value = "";
+            document.getElementById("m_proxima_accion").value = "";
+            document.getElementById("m_fecha_proxima").value = "";
+            document.getElementById("m_tipo").value = "LLAMADA";
+            document.getElementById("m_estado").value = "ACTIVO";
         }
 
         // =========================================
@@ -1617,7 +1644,7 @@ HIDDEN
                 const estado = document.getElementById("m_estado").value;
 
                 // =========================================
-                // 1. CALCULAR FECHA AUTOMÁTICA
+                // FECHA PRÓXIMA
                 // =========================================
                 const hoy = new Date();
 
@@ -1630,7 +1657,7 @@ HIDDEN
                 fechaProxima.setDate(hoy.getDate() + dias);
 
                 // =========================================
-                // 2. CONTACTO SELECCIONADO
+                // CONTACTO SELECCIONADO
                 // =========================================
                 const contactoSelect = document.getElementById("contactoSelect");
 
@@ -1643,16 +1670,27 @@ HIDDEN
                     tel = contacto.telefono || "";
                 }
 
+                // fallback seguro (si no hay contactos en cliente_contactos)
+                const contactoFinal =
+                    contacto?.nombre ||
+                    window.tareaActual.contacto ||
+                    "";
+
+                const telFinal =
+                    tel ||
+                    window.tareaActual.tel_contacto ||
+                    "";
+
                 // =========================================
-                // 3. DATA NUEVO SEGUIMIENTO
+                // BODY
                 // =========================================
                 const body = {
 
                     cliente_id: window.tareaActual.cliente_id,
 
-                    contacto: contacto ? contacto.nombre : window.tareaActual.contacto,
+                    contacto: contactoFinal,
 
-                    tel_contacto: tel || window.tareaActual.tel_contacto,
+                    tel_contacto: telFinal,
 
                     tipo: document.getElementById("m_tipo").value,
 
@@ -1670,7 +1708,7 @@ HIDDEN
                 };
 
                 // =========================================
-                // 4. CERRAR ANTERIORES SEGUIMIENTOS
+                // CERRAR ANTERIORES
                 // =========================================
                 await fetch(`/api/seguimientos/cerrar-por-cliente/${window.tareaActual.cliente_id}`, {
                     method: "PUT",
@@ -1681,7 +1719,7 @@ HIDDEN
                 });
 
                 // =========================================
-                // 5. CREAR NUEVO SEGUIMIENTO
+                // CREAR SEGUIMIENTO
                 // =========================================
                 const res = await fetch(`/api/seguimientos`, {
 
@@ -1703,7 +1741,7 @@ HIDDEN
                 }
 
                 // =========================================
-                // 6. REFRESH UI
+                // REFRESH
                 // =========================================
                 await cargarTareasHoy();
 
@@ -1852,25 +1890,19 @@ HIDDEN
 
             try {
 
-                const res = await fetch(
-                    "/api/seguimientos/tareas-hoy",
-                    {
-                        method: "GET",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        }
+                const res = await fetch("/api/seguimientos/tareas-hoy", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
                     }
-                );
+                });
 
                 const data = await res.json();
 
-                if (!data.success) {
+                const container = document.getElementById("taskList");
 
-                    const container =
-                        document.getElementById("taskList");
+                if (!data.success) {
 
                     container.innerHTML = `
                 <div class="task-item empty">
@@ -1882,38 +1914,47 @@ HIDDEN
                 }
 
                 // =========================================
-                // GUARDAR GLOBALMENTE
+                // DATA GLOBAL (LISTA HOY)
                 // =========================================
-                window.tareasHoy =
-                    data.data || [];
+                window.tareasHoy = data.data || [];
 
                 // =========================================
-                // RENDER
+                // DATA FUTURA (CALENDARIO)
                 // =========================================
-                renderTareasHoy(
-                    window.tareasHoy
-                );
+                window.tareasCalendario = window.tareasCalendario || {};
+
+                window.tareasHoy.forEach(t => {
+
+                    if (!t.fecha_proxima) return;
+
+                    const fecha = t.fecha_proxima;
+
+                    if (!window.tareasCalendario[fecha]) {
+                        window.tareasCalendario[fecha] = [];
+                    }
+
+                    window.tareasCalendario[fecha].push(t);
+                });
+
+                // =========================================
+                // RENDER LISTA HOY
+                // =========================================
+                renderTareasHoy(window.tareasHoy);
 
                 // =========================================
                 // KPI PENDIENTES
                 // =========================================
-                const pendientes =
-                    document.getElementById(
-                        "seguimientosPendientes"
-                    );
+                const pendientes = document.getElementById("seguimientosPendientes");
 
                 if (pendientes) {
-
-                    pendientes.innerText =
-                        window.tareasHoy.length;
+                    pendientes.innerText = window.tareasHoy.length;
                 }
 
             } catch (err) {
 
                 console.error(err);
 
-                const container =
-                    document.getElementById("taskList");
+                const container = document.getElementById("taskList");
 
                 container.innerHTML = `
             <div class="task-item empty">
@@ -2124,10 +2165,11 @@ HIDDEN
 
             if (!fecha) return "";
 
-            // Tomar solo YYYY-MM-DD
-            fecha = fecha.substring(0, 10);
+            const f = String(fecha).substring(0, 10);
 
-            const partes = fecha.split("-");
+            const partes = f.split("-");
+
+            if (partes.length !== 3) return f;
 
             return `${partes[2]}-${partes[1]}-${partes[0]}`;
         }
