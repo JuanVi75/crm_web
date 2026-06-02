@@ -1509,30 +1509,59 @@ HIDDEN
 
             window.tareaActual = tarea;
 
-            document.getElementById("clienteLlamada").value = tarea.cliente || "";
+            // =========================================
+            // HEADER LIMPIO
+            // =========================================
+            document.getElementById("modalCliente").innerText =
+                tarea.cliente || "Sin cliente";
 
-            document.getElementById("notaLlamada").value = "";
+            document.getElementById("modalContacto").innerText =
+                "Sin seleccionar";
 
-            document.getElementById("estadoTarea").value = "ACTIVO";
+            document.getElementById("modalTelefono").innerText =
+                "--";
 
-            document.getElementById("telefonoLlamada").value = "";
+            // =========================================
+            // LIMPIAR FORMULARIO
+            // =========================================
+            document.getElementById("m_nota").value = "";
+            document.getElementById("m_proxima_accion").value = "";
+            document.getElementById("m_fecha_proxima").value = "";
+            document.getElementById("m_estado").value = "ACTIVO";
 
+            document.getElementById("m_tipo").value = "LLAMADA";
+
+            // =========================================
             // LIMPIAR SELECT
+            // =========================================
             const select = document.getElementById("contactoSelect");
+
             select.innerHTML = `<option value="">Cargando contactos...</option>`;
 
-            // CARGAR CONTACTOS DEL CLIENTE
-            const res = await fetch(`/api/clientes/contactos/${tarea.cliente_id}`);
-            const data = await res.json();
+            try {
 
-            select.innerHTML = `<option value="">Seleccione contacto</option>`;
+                const res = await fetch(`/api/clientes/contactos/${tarea.cliente_id}`);
+                const data = await res.json();
 
-            data.forEach(c => {
-                const opt = document.createElement("option");
-                opt.value = JSON.stringify(c);
-                opt.textContent = c.nombre;
-                select.appendChild(opt);
-            });
+                select.innerHTML = `<option value="">Seleccione contacto</option>`;
+
+                (data || []).forEach(c => {
+
+                    const opt = document.createElement("option");
+
+                    opt.value = JSON.stringify(c);
+
+                    opt.textContent = c.nombre || c.contacto || "Sin nombre";
+
+                    select.appendChild(opt);
+                });
+
+            } catch (err) {
+
+                console.error("Error cargando contactos", err);
+
+                select.innerHTML = `<option value="">Sin contactos</option>`;
+            }
         }
 
         // =========================================
@@ -1590,61 +1619,104 @@ HIDDEN
 
             try {
 
+                const estado = document.getElementById("m_estado").value;
+
+                // =========================================
+                // 1. CALCULAR FECHA AUTOMÁTICA
+                // =========================================
+                const hoy = new Date();
+
+                let dias = 5;
+
+                if (estado === "STAND BY") dias = 30;
+                if (estado === "TERMINADO") dias = 0;
+
+                const fechaProxima = new Date();
+                fechaProxima.setDate(hoy.getDate() + dias);
+
+                // =========================================
+                // 2. CONTACTO SELECCIONADO
+                // =========================================
+                const contactoSelect = document.getElementById("contactoSelect");
+
+                let contacto = null;
+                let tel = "";
+
+                if (contactoSelect.value) {
+
+                    contacto = JSON.parse(contactoSelect.value);
+                    tel = contacto.telefono || "";
+                }
+
+                // =========================================
+                // 3. DATA NUEVO SEGUIMIENTO
+                // =========================================
                 const body = {
 
-                    tipo:
-                        document.getElementById("m_tipo").value,
+                    cliente_id: window.tareaActual.cliente_id,
 
-                    nota:
-                        document.getElementById("m_nota").value,
+                    contacto: contacto ? contacto.nombre : window.tareaActual.contacto,
 
-                    proxima_accion:
-                        document.getElementById("m_proxima_accion").value,
+                    tel_contacto: tel || window.tareaActual.tel_contacto,
 
-                    fecha_proxima:
-                        document.getElementById("m_fecha_proxima").value,
+                    tipo: document.getElementById("m_tipo").value,
 
-                    estado:
-                        document.getElementById("m_estado").value,
+                    nota: document.getElementById("m_nota").value,
 
-                    fecha:
-                        new Date().toISOString()
+                    proxima_accion: document.getElementById("m_proxima_accion").value,
+
+                    fecha_proxima: fechaProxima.toISOString().slice(0, 10),
+
+                    fecha: new Date().toISOString(),
+
+                    asesor: localStorage.getItem("user"),
+
+                    estado: estado
                 };
 
-                const res = await fetch(
-
-                    `/api/seguimientos/${window.tareaActual.id}`,
-
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        },
-
-                        body: JSON.stringify(body)
+                // =========================================
+                // 4. CERRAR ANTERIORES SEGUIMIENTOS
+                // =========================================
+                await fetch(`/api/seguimientos/cerrar-por-cliente/${window.tareaActual.cliente_id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
                     }
-                );
+                });
+
+                // =========================================
+                // 5. CREAR NUEVO SEGUIMIENTO
+                // =========================================
+                const res = await fetch(`/api/seguimientos`, {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    },
+
+                    body: JSON.stringify(body)
+                });
 
                 const data = await res.json();
 
                 if (!data.success) {
-
-                    alert("Error guardando");
-
+                    alert("Error guardando seguimiento");
                     return;
                 }
 
+                // =========================================
+                // 6. REFRESH UI
+                // =========================================
                 await cargarTareasHoy();
 
-                tareaSiguiente();
+                cerrarModalTarea();
 
             } catch (err) {
 
                 console.error(err);
-
                 alert("Error servidor");
             }
         }
