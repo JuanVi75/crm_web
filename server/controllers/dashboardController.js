@@ -31,7 +31,8 @@ const getDashboard = (req, res) => {
         SELECT COUNT(*) AS total
         FROM seguimientos
         WHERE fecha_proxima IS NOT NULL
-        AND fecha_proxima <= DATE_ADD(CURDATE(), INTERVAL 5 DAY)
+        AND DATE(fecha_proxima) < CURDATE()
+        AND (estado IS NULL OR estado != 'TERMINADO')
     `;
 
     const sqlClientesActivos = `
