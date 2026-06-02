@@ -21,17 +21,17 @@
         }
 
         /* =========================================
-            MODAL TAREAS
-        ========================================= */
+MODAL TAREAS
+========================================= */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.82);
             backdrop-filter: blur(6px);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 99999;
+            z-index: 999999;
         }
 
         .modal-overlay.hidden {
@@ -39,63 +39,63 @@
         }
 
         .modal-box {
-            width: 700px;
+            width: 760px;
             max-width: 95%;
+            max-height: 92vh;
+            overflow: hidden;
             background: #111827;
             border: 1px solid #1e293b;
-            border-radius: 20px;
-            overflow: hidden;
+            border-radius: 22px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
         }
 
         .modal-header {
-            padding: 18px 22px;
+            padding: 20px 24px;
             border-bottom: 1px solid #1e293b;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 15px;
         }
 
         .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #e2e8f0;
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 22px;
-            overflow-y: auto;
-        }
-
-        .modal-section {
-            margin-bottom: 20px;
-        }
-
-        .modal-client {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #f8fafc;
-            margin-bottom: 6px;
+            line-height: 1.2;
         }
 
-        .modal-contact {
+        .modal-subtitle {
+            margin-top: 6px;
             font-size: 13px;
             color: #94a3b8;
         }
 
-        .modal-form {
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 18px;
         }
 
         .form-group {
@@ -104,36 +104,46 @@
         }
 
         .form-group label {
-            margin-bottom: 6px;
             font-size: 12px;
-            color: #cbd5e1;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
+            width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 14px;
             color: white;
-            font-size: 13px;
             outline: none;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2563eb;
+            background: #0f172a;
         }
 
         .form-group textarea {
-            min-height: 120px;
             resize: vertical;
+            min-height: 130px;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 16px;
         }
 
         .modal-footer {
-            padding: 18px 22px;
+            padding: 20px 24px;
             border-top: 1px solid #1e293b;
             display: flex;
             justify-content: space-between;
@@ -143,41 +153,40 @@
 
         .modal-btn {
             border: none;
-            border-radius: 10px;
-            padding: 12px 16px;
-            cursor: pointer;
+            border-radius: 12px;
+            padding: 13px 18px;
             font-size: 13px;
             font-weight: 600;
+            cursor: pointer;
             transition: 0.2s;
         }
 
-        .modal-btn.primary {
+        .primary-btn {
             background: #2563eb;
             color: white;
         }
 
-        .modal-btn.primary:hover {
+        .primary-btn:hover {
             background: #1d4ed8;
         }
 
-        .modal-btn.secondary {
+        .secondary-btn {
             background: #334155;
             color: white;
         }
 
-        .modal-btn.secondary:hover {
+        .secondary-btn:hover {
             background: #475569;
         }
 
-        .modal-btn.danger {
+        .danger-btn {
             background: #dc2626;
             color: white;
         }
 
-        .modal-btn.danger:hover {
+        .danger-btn:hover {
             background: #b91c1c;
         }
-
 
 
         /* =========================================
@@ -1342,12 +1351,26 @@ MODAL TAREAS
             <!-- HEADER -->
             <div class="modal-header">
 
-                <div class="modal-title">
-                    Gestión de Seguimiento
+                <div>
+
+                    <div class="modal-title" id="modalCliente">
+                        Cliente
+                    </div>
+
+                    <div class="modal-subtitle">
+                        <span id="modalContacto">
+                            Contacto
+                        </span>
+                        ·
+                        <span id="modalTelefono">
+                            Teléfono
+                        </span>
+                    </div>
+
                 </div>
 
                 <button class="modal-close" onclick="cerrarModalTarea()">
-                    ✖
+                    ✕
                 </button>
 
             </div>
@@ -1355,103 +1378,67 @@ MODAL TAREAS
             <!-- BODY -->
             <div class="modal-body">
 
-                <!-- CLIENTE -->
-                <div class="modal-section">
+                <div class="form-group">
 
-                    <div class="modal-client" id="modalCliente">
-                        CLIENTE
-                    </div>
+                    <label>Tipo</label>
 
-                    <div class="modal-contact">
-                        <span id="modalContacto">
-                            CONTACTO
-                        </span>
+                    <select id="m_tipo">
 
-                        ·
+                        <option value="LLAMADA">LLAMADA</option>
+                        <option value="VISITA">VISITA</option>
+                        <option value="WHATSAPP">WHATSAPP</option>
+                        <option value="EMAIL">EMAIL</option>
+                        <option value="COTIZACION">COTIZACION</option>
 
-                        <span id="modalTelefono">
-                            TELÉFONO
-                        </span>
-                    </div>
+                    </select>
 
                 </div>
 
-                <!-- FORM -->
-                <div class="modal-form">
+                <div class="form-group">
+
+                    <label>Nota</label>
+
+                    <textarea id="m_nota" rows="5"></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Próxima Acción</label>
+
+                    <input type="text" id="m_proxima_accion">
+
+                </div>
+
+                <div class="form-row">
 
                     <div class="form-group">
 
-                        <label>Tipo</label>
+                        <label>Próxima Fecha</label>
 
-                        <select id="m_tipo">
+                        <input type="date" id="m_fecha_proxima">
 
-                            <option value="LLAMADA">
-                                LLAMADA
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Estado</label>
+
+                        <select id="m_estado">
+
+                            <option value="ACTIVO">
+                                ACTIVO
                             </option>
 
-                            <option value="WHATSAPP">
-                                WHATSAPP
+                            <option value="STAND BY">
+                                STAND BY
                             </option>
 
-                            <option value="VISITA">
-                                VISITA
-                            </option>
-
-                            <option value="EMAIL">
-                                EMAIL
+                            <option value="TERMINADO">
+                                TERMINADO
                             </option>
 
                         </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label>Nota</label>
-
-                        <textarea id="m_nota"></textarea>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label>Próxima Acción</label>
-
-                        <input type="text" id="m_proxima_accion">
-
-                    </div>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label>Próxima Fecha</label>
-
-                            <input type="date" id="m_fecha_proxima">
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>Estado</label>
-
-                            <select id="m_estado">
-
-                                <option value="ACTIVO">
-                                    ACTIVO
-                                </option>
-
-                                <option value="STAND BY">
-                                    STAND BY
-                                </option>
-
-                                <option value="TERMINADO">
-                                    TERMINADO
-                                </option>
-
-                            </select>
-
-                        </div>
 
                     </div>
 
@@ -1462,20 +1449,20 @@ MODAL TAREAS
             <!-- FOOTER -->
             <div class="modal-footer">
 
-                <button class="modal-btn secondary" onclick="tareaAnterior()">
-                    ← Anterior
+                <button class="modal-btn secondary-btn" onclick="tareaAnterior()">
+                    ⬅ Anterior
                 </button>
 
-                <button class="modal-btn primary" onclick="guardarTarea()">
-                    Guardar
+                <button class="modal-btn primary-btn" onclick="guardarTarea()">
+                    💾 Guardar
                 </button>
 
-                <button class="modal-btn secondary" onclick="tareaSiguiente()">
-                    Siguiente →
+                <button class="modal-btn primary-btn" onclick="tareaSiguiente()">
+                    ➡ Siguiente
                 </button>
 
-                <button class="modal-btn danger" onclick="cerrarModalTarea()">
-                    Cerrar
+                <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
+                    ✕ Cerrar
                 </button>
 
             </div>
@@ -1483,6 +1470,176 @@ MODAL TAREAS
         </div>
 
     </div>
+
+    <script>
+
+        // =========================================
+        // VARIABLES GLOBALES
+        // =========================================
+        window.tareasHoy = [];
+        window.tareaActual = null;
+        window.tareaActualIndex = 0;
+
+        // =========================================
+        // ABRIR TAREA
+        // =========================================
+        function abrirTarea(tarea) {
+
+            window.tareaActual = tarea;
+
+            window.tareaActualIndex =
+                window.tareasHoy.findIndex(
+                    t => t.id === tarea.id
+                );
+
+            document
+                .getElementById("modalTarea")
+                .classList
+                .remove("hidden");
+
+            document.getElementById("modalCliente").innerText =
+                tarea.cliente || "Sin cliente";
+
+            document.getElementById("modalContacto").innerText =
+                tarea.contacto || "Sin contacto";
+
+            document.getElementById("modalTelefono").innerText =
+                tarea.tel_contacto || "Sin teléfono";
+
+            document.getElementById("m_tipo").value =
+                tarea.tipo || "LLAMADA";
+
+            document.getElementById("m_nota").value =
+                tarea.nota || "";
+
+            document.getElementById("m_proxima_accion").value =
+                tarea.proxima_accion || "";
+
+            document.getElementById("m_fecha_proxima").value =
+                tarea.fecha_proxima
+                    ? tarea.fecha_proxima.split("T")[0]
+                    : "";
+
+            document.getElementById("m_estado").value =
+                tarea.estado || "ACTIVO";
+        }
+
+        // =========================================
+        // CERRAR MODAL
+        // =========================================
+        function cerrarModalTarea() {
+
+            document
+                .getElementById("modalTarea")
+                .classList
+                .add("hidden");
+        }
+
+        // =========================================
+        // SIGUIENTE
+        // =========================================
+        function tareaSiguiente() {
+
+            if (
+                window.tareaActualIndex <
+                window.tareasHoy.length - 1
+            ) {
+
+                window.tareaActualIndex++;
+
+                abrirTarea(
+                    window.tareasHoy[
+                    window.tareaActualIndex
+                    ]
+                );
+            }
+        }
+
+        // =========================================
+        // ANTERIOR
+        // =========================================
+        function tareaAnterior() {
+
+            if (window.tareaActualIndex > 0) {
+
+                window.tareaActualIndex--;
+
+                abrirTarea(
+                    window.tareasHoy[
+                    window.tareaActualIndex
+                    ]
+                );
+            }
+        }
+
+        // =========================================
+        // GUARDAR
+        // =========================================
+        async function guardarTarea() {
+
+            try {
+
+                const body = {
+
+                    tipo:
+                        document.getElementById("m_tipo").value,
+
+                    nota:
+                        document.getElementById("m_nota").value,
+
+                    proxima_accion:
+                        document.getElementById("m_proxima_accion").value,
+
+                    fecha_proxima:
+                        document.getElementById("m_fecha_proxima").value,
+
+                    estado:
+                        document.getElementById("m_estado").value,
+
+                    fecha:
+                        new Date().toISOString()
+                };
+
+                const res = await fetch(
+
+                    `/api/seguimientos/${window.tareaActual.id}`,
+
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization":
+                                "Bearer " + localStorage.getItem("token")
+                        },
+
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                const data = await res.json();
+
+                if (!data.success) {
+
+                    alert("Error guardando");
+
+                    return;
+                }
+
+                await cargarTareasHoy();
+
+                tareaSiguiente();
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert("Error servidor");
+            }
+        }
+
+    </script>
+
     <script>
 
         const API = "/api/dashboard";
@@ -1617,54 +1774,74 @@ MODAL TAREAS
 
             try {
 
-                const res = await fetch("/api/seguimientos/tareas-hoy", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + localStorage.getItem("token")
+                const res = await fetch(
+                    "/api/seguimientos/tareas-hoy",
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization":
+                                "Bearer " + localStorage.getItem("token")
+                        }
                     }
-                });
+                );
 
                 const data = await res.json();
 
-                if (!data || !data.success) {
+                if (!data.success) {
 
-                    console.error("Error cargando tareas:", data?.message || "Respuesta inválida");
+                    const container =
+                        document.getElementById("taskList");
 
-                    const taskList = document.getElementById("taskList");
-
-                    if (taskList) {
-                        taskList.innerHTML = `
-                    <div class="task-item empty">
-                        No se pudieron cargar las tareas
-                    </div>
-                `;
-                    }
-
-                    return;
-                }
-
-                // Guardar globalmente
-                window.tareasHoy = data.data || [];
-
-                console.log("Tareas hoy:", window.tareasHoy);
-
-                // Render UI
-                renderTareasHoy(window.tareasHoy);
-
-            } catch (err) {
-
-                console.error("Error en tareas hoy:", err);
-
-                const taskList = document.getElementById("taskList");
-
-                if (taskList) {
-                    taskList.innerHTML = `
+                    container.innerHTML = `
                 <div class="task-item empty">
                     Error cargando tareas
                 </div>
             `;
+
+                    return;
                 }
+
+                // =========================================
+                // GUARDAR GLOBALMENTE
+                // =========================================
+                window.tareasHoy =
+                    data.data || [];
+
+                // =========================================
+                // RENDER
+                // =========================================
+                renderTareasHoy(
+                    window.tareasHoy
+                );
+
+                // =========================================
+                // KPI PENDIENTES
+                // =========================================
+                const pendientes =
+                    document.getElementById(
+                        "seguimientosPendientes"
+                    );
+
+                if (pendientes) {
+
+                    pendientes.innerText =
+                        window.tareasHoy.length;
+                }
+
+            } catch (err) {
+
+                console.error(err);
+
+                const container =
+                    document.getElementById("taskList");
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                Error cargando tareas
+            </div>
+        `;
             }
         }
 
@@ -1866,9 +2043,38 @@ MODAL TAREAS
                 await cargarTareasHoy();
 
                 // =========================================
-                // PASAR A SIGUIENTE
+                // SI NO QUEDAN TAREAS
                 // =========================================
-                tareaSiguiente();
+                if (
+                    !window.tareasHoy ||
+                    window.tareasHoy.length === 0
+                ) {
+
+                    cerrarModalTarea();
+
+                    return;
+                }
+
+                // =========================================
+                // AJUSTAR ÍNDICE
+                // =========================================
+                if (
+                    window.tareaActualIndex >=
+                    window.tareasHoy.length
+                ) {
+
+                    window.tareaActualIndex =
+                        window.tareasHoy.length - 1;
+                }
+
+                // =========================================
+                // ABRIR SIGUIENTE
+                // =========================================
+                abrirTarea(
+                    window.tareasHoy[
+                    window.tareaActualIndex
+                    ]
+                );
 
             } catch (err) {
 
@@ -1889,6 +2095,55 @@ MODAL TAREAS
 
             return `${partes[2]}-${partes[1]}-${partes[0]}`;
         }
+
+        const updateSeguimiento = (req, res) => {
+
+            const { id } = req.params;
+
+            const data = req.body;
+
+            const sql = `
+        UPDATE seguimientos
+        SET
+            fecha = ?,
+            tipo = ?,
+            nota = ?,
+            proxima_accion = ?,
+            fecha_proxima = ?,
+            estado = ?
+        WHERE id = ?
+    `;
+
+            db.query(
+                sql,
+                [
+                    data.fecha,
+                    data.tipo,
+                    data.nota,
+                    data.proxima_accion,
+                    data.fecha_proxima || null,
+                    data.estado || "ACTIVO",
+                    id
+                ],
+                (err) => {
+
+                    if (err) {
+
+                        console.error(err);
+
+                        return res.status(500).json({
+                            success: false,
+                            message: "Error actualizando"
+                        });
+                    }
+
+                    return res.json({
+                        success: true,
+                        message: "Seguimiento actualizado"
+                    });
+                }
+            );
+        };
 
     </script>
 
