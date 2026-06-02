@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const calendarEl =
-    document.getElementById("calendar");
+        document.getElementById("calendar");
 
     // =========================================
     // GENERAR FESTIVOS COLOMBIA
@@ -9,24 +9,24 @@ document.addEventListener("DOMContentLoaded", function () {
     function generarFestivosColombia(
         yearStart,
         yearEnd
-    ){
+    ) {
 
         let festivos = [];
 
         // =====================================
         // FORMAT DATE
         // =====================================
-        function formatDate(date){
+        function formatDate(date) {
 
             const y = date.getFullYear();
 
             const m =
                 String(date.getMonth() + 1)
-                .padStart(2, "0");
+                    .padStart(2, "0");
 
             const d =
                 String(date.getDate())
-                .padStart(2, "0");
+                    .padStart(2, "0");
 
             return `${y}-${m}-${d}`;
         }
@@ -34,31 +34,31 @@ document.addEventListener("DOMContentLoaded", function () {
         // =====================================
         // ADD HOLIDAY
         // =====================================
-        function addHoliday(title, date){
+        function addHoliday(title, date) {
 
             festivos.push({
 
-                title:title,
+                title: title,
 
-                start:formatDate(date),
+                start: formatDate(date),
 
-                allDay:true,
+                allDay: true,
 
-                color:"#b91c1c"
+                color: "#b91c1c"
             });
         }
 
         // =====================================
         // NEXT MONDAY
         // =====================================
-        function nextMonday(date){
+        function nextMonday(date) {
 
             const day = date.getDay();
 
-            if(day !== 1){
+            if (day !== 1) {
 
                 const diff =
-                (8 - day) % 7;
+                    (8 - day) % 7;
 
                 date.setDate(
                     date.getDate() + diff
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // =====================================
         // EASTER
         // =====================================
-        function easterDate(year){
+        function easterDate(year) {
 
             const f = Math.floor;
 
@@ -81,17 +81,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const H =
                 (C - f(C / 4) -
-                f((8 * C + 13) / 25) +
-                19 * G + 15) % 30;
+                    f((8 * C + 13) / 25) +
+                    19 * G + 15) % 30;
 
             const I =
                 H - f(H / 28) *
                 (1 - f(29 / (H + 1)) *
-                f((21 - G) / 11));
+                    f((21 - G) / 11));
 
             const J =
                 (year + f(year / 4) +
-                I + 2 - C + f(C / 4)) % 7;
+                    I + 2 - C + f(C / 4)) % 7;
 
             const L = I - J;
 
@@ -108,102 +108,102 @@ document.addEventListener("DOMContentLoaded", function () {
         // =====================================
         // YEARS
         // =====================================
-        for(let year = yearStart; year <= yearEnd; year++){
+        for (let year = yearStart; year <= yearEnd; year++) {
 
             // FIJOS
             addHoliday(
                 "Año Nuevo",
-                new Date(year,0,1)
+                new Date(year, 0, 1)
             );
 
             addHoliday(
                 "Día del Trabajo",
-                new Date(year,4,1)
+                new Date(year, 4, 1)
             );
 
             addHoliday(
                 "20 de Julio",
-                new Date(year,6,20)
+                new Date(year, 6, 20)
             );
 
             addHoliday(
                 "Batalla de Boyacá",
-                new Date(year,7,7)
+                new Date(year, 7, 7)
             );
 
             addHoliday(
                 "Inmaculada Concepción",
-                new Date(year,11,8)
+                new Date(year, 11, 8)
             );
 
             addHoliday(
                 "Navidad",
-                new Date(year,11,25)
+                new Date(year, 11, 25)
             );
 
             // EMILIANI
             addHoliday(
                 "Reyes Magos",
                 nextMonday(
-                    new Date(year,0,6)
+                    new Date(year, 0, 6)
                 )
             );
 
             addHoliday(
                 "San José",
                 nextMonday(
-                    new Date(year,2,19)
+                    new Date(year, 2, 19)
                 )
             );
 
             addHoliday(
                 "San Pedro y San Pablo",
                 nextMonday(
-                    new Date(year,5,29)
+                    new Date(year, 5, 29)
                 )
             );
 
             addHoliday(
                 "Asunción",
                 nextMonday(
-                    new Date(year,7,15)
+                    new Date(year, 7, 15)
                 )
             );
 
             addHoliday(
                 "Día de la Raza",
                 nextMonday(
-                    new Date(year,9,12)
+                    new Date(year, 9, 12)
                 )
             );
 
             addHoliday(
                 "Todos los Santos",
                 nextMonday(
-                    new Date(year,10,1)
+                    new Date(year, 10, 1)
                 )
             );
 
             addHoliday(
                 "Independencia Cartagena",
                 nextMonday(
-                    new Date(year,10,11)
+                    new Date(year, 10, 11)
                 )
             );
 
             // PASCUA
             const easter =
-            easterDate(year);
+                easterDate(year);
 
             const juevesSanto =
-            new Date(easter);
+                new Date(easter);
 
             juevesSanto.setDate(
                 easter.getDate() - 3
             );
 
             const viernesSanto =
-            new Date(easter);
+                new Date(easter);
 
             viernesSanto.setDate(
                 easter.getDate() - 2
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // ASCENSION
             const ascension =
-            new Date(easter);
+                new Date(easter);
 
             ascension.setDate(
                 easter.getDate() + 43
@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // CORPUS
             const corpus =
-            new Date(easter);
+                new Date(easter);
 
             corpus.setDate(
                 easter.getDate() + 64
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // CORAZON
             const corazon =
-            new Date(easter);
+                new Date(easter);
 
             corazon.setDate(
                 easter.getDate() + 71
@@ -266,301 +266,338 @@ document.addEventListener("DOMContentLoaded", function () {
     // FESTIVOS
     // =========================================
     const festivos =
-    generarFestivosColombia(
-        2025,
-        2035
-    );
+        generarFestivosColombia(
+            2025,
+            2035
+        );
 
     // =========================================
     // CALENDAR
     // =========================================
     const calendar =
-    new FullCalendar.Calendar(calendarEl, {
+        new FullCalendar.Calendar(calendarEl, {
 
-        locale:"es",
+            locale: "es",
 
-        initialView:"dayGridMonth",
+            initialView: "dayGridMonth",
 
-        // =====================================
-        // ALTURA RESPONSIVE REAL
-        // =====================================
-        height:"100%",
+            // =====================================
+            // ALTURA RESPONSIVE REAL
+            // =====================================
+            height: "100%",
 
-        contentHeight:"100%",
+            contentHeight: "100%",
 
-        expandRows:true,
+            expandRows: true,
 
-        stickyHeaderDates:true,
+            stickyHeaderDates: true,
 
-        handleWindowResize:true,
+            handleWindowResize: true,
 
-        // =====================================
-        // SCROLL
-        // =====================================
-        slotMinTime:"00:00:00",
+            // =====================================
+            // SCROLL
+            // =====================================
+            slotMinTime: "00:00:00",
 
-        slotMaxTime:"24:00:00",
+            slotMaxTime: "24:00:00",
 
-        scrollTime:"06:00:00",
+            scrollTime: "06:00:00",
 
-        slotDuration:"00:30:00",
+            slotDuration: "00:30:00",
 
-        slotLabelFormat:{
+            slotLabelFormat: {
 
-          hour:"2-digit",
+                hour: "2-digit",
 
-            minute:"2-digit",
+                minute: "2-digit",
 
-            hour12:true
-        },
+                hour12: true
+            },
 
-        eventTimeFormat:{
+            eventTimeFormat: {
 
-            hour:"2-digit",
+                hour: "2-digit",
 
-            minute:"2-digit",
+                minute: "2-digit",
 
-            hour12:true
-        },
+                hour12: true
+            },
 
-        nowIndicator:true,
+            nowIndicator: true,
 
-        // =====================================
-        // TEXTOS
-        // =====================================
-        allDayText:"Todo el Día",
+            // =====================================
+            // TEXTOS
+            // =====================================
+            allDayText: "Todo el Día",
 
-        // =====================================
-        // EVENTS
-        // =====================================
-        events:festivos,
+            // =====================================
+            // EVENTS
+            // =====================================
+            events: function (fetchInfo, successCallback) {
 
-        // =====================================
-        // HEADER
-        // =====================================
-        headerToolbar:{
+                const eventos = [...festivos];
 
-            left:
-            "prev,next today customYearPicker",
+                // =================================
+                // TAREAS PENDIENTES
+                // =================================
+                if (window.tareasHoy) {
 
-            center:"title",
+                    const agrupados = {};
 
-            right:
-            "dayGridMonth,timeGridWeek,timeGridDay"
-        },
+                    window.tareasHoy.forEach(t => {
 
-        // =====================================
-        // BUTTONS
-        // =====================================
-        buttonText:{
+                        if (!t.fecha_proxima) return;
 
-            today:"Hoy",
+                        const fecha =
+                            t.fecha_proxima
+                                .split("T")[0];
 
-            month:"Mes",
+                        if (!agrupados[fecha]) {
 
-            week:"Semana",
+                            agrupados[fecha] = {
+                                pendientes: 0
+                            };
+                        }
 
-            day:"Día"
-        },
+                        agrupados[fecha].pendientes++;
+                    });
 
-        // =====================================
-        // YEAR PICKER
-        // =====================================
-        customButtons:{
+                    Object.keys(agrupados).forEach(fecha => {
 
-            customYearPicker:{
+                        eventos.push({
 
-                text:"Año",
+                            title:
+                                `📞 Pendientes: ${agrupados[fecha].pendientes}`,
 
-                click:function(){
+                            start: fecha,
 
-                    const year =
-                    prompt(
-                        "Ingrese el año:",
-                        new Date().getFullYear()
-                    );
+                            allDay: true,
 
-                    if(year){
+                            color: "#dc2626"
+                        });
+                    });
+                }
 
-                        calendar.gotoDate(
-                            year + "-01-01"
-                        );
+                successCallback(eventos);
+            },
+
+            // =====================================
+            // EVENTOS CRM
+            // =====================================
+            eventDidMount: function (info) {
+
+                // FESTIVOS
+                if (info.event.backgroundColor === "#b91c1c") {
+
+                    info.el.style.fontSize = "10px";
+
+                    return;
+                }
+
+                // =================================
+                // EVENTOS CRM
+                // =================================
+                info.el.style.border = "none";
+
+                info.el.style.padding = "2px 4px";
+
+                info.el.style.fontSize = "11px";
+
+                info.el.style.fontWeight = "600";
+
+                info.el.style.borderRadius = "6px";
+            },
+
+            // =====================================
+            // HEADER
+            // =====================================
+            headerToolbar: {
+
+                left:
+                    "prev,next today customYearPicker",
+
+                center: "title",
+
+                right:
+                    "dayGridMonth,timeGridDay"
+            },
+
+            // =====================================
+            // BUTTONS
+            // =====================================
+            buttonText: {
+
+                today: "Hoy",
+
+                month: "Mes",
+
+                day: "Día"
+            },
+
+            // =====================================
+            // YEAR PICKER
+            // =====================================
+            customButtons: {
+
+                customYearPicker: {
+
+                    text: "Año",
+
+                    click: function () {
+
+                        const year =
+                            prompt(
+                                "Ingrese el año:",
+                                new Date().getFullYear()
+                            );
+
+                        if (year) {
+
+                            calendar.gotoDate(
+                                year + "-01-01"
+                            );
+                        }
                     }
                 }
-            }
-        },
+            },
 
-        // =====================================
-        // MES COLORES
-        // =====================================
-        dayCellDidMount:function(info){
+            // =====================================
+            // MES COLORES
+            // =====================================
+            dayCellDidMount: function (info) {
 
-            if(
-                calendar.view.type !==
-                "dayGridMonth"
-            ){
-                return;
-            }
+                if (
+                    calendar.view.type !==
+                    "dayGridMonth"
+                ) {
+                    return;
+                }
 
-            const date = info.date;
+                const date = info.date;
 
-            const day =
-            date.getDay();
+                const day =
+                    date.getDay();
 
-            const today =
-            new Date();
+                const today =
+                    new Date();
 
-            const dateStr =
-            date.toISOString()
-            .split("T")[0];
+                const dateStr =
+                    date.toISOString()
+                        .split("T")[0];
 
-            const isHoliday =
-            festivos.some(
-                f => f.start === dateStr
-            );
+                const isHoliday =
+                    festivos.some(
+                        f => f.start === dateStr
+                    );
 
-            // DOMINGO
-            if(day === 0){
+                // DOMINGO
+                if (day === 0) {
 
-                info.el.style.background =
-                "#7f1d1d";
-            }
+                    info.el.style.background =
+                        "#7f1d1d";
+                }
 
-            // SABADO
-            if(day === 6){
+                // SABADO
+                if (day === 6) {
 
-                info.el.style.background =
-                "#1e3a8a";
-            }
+                    info.el.style.background =
+                        "#1e3a8a";
+                }
 
-            // FESTIVO
-            if(isHoliday){
+                // FESTIVO
+                if (isHoliday) {
 
-                info.el.style.background =
-                "#b91c1c";
-            }
+                    info.el.style.background =
+                        "#b91c1c";
+                }
 
-            // HOY
-            if(
-                date.toDateString() ===
-                today.toDateString()
-            ){
+                // HOY
+                if (
+                    date.toDateString() ===
+                    today.toDateString()
+                ) {
 
-                info.el.style.background =
-                "#facc15";
+                    info.el.style.background =
+                        "#facc15";
 
-                info.el.style.color =
-                "#000";
-            }
-        },
+                    info.el.style.color =
+                        "#000";
+                }
+            },
 
-        // =====================================
-        // VISTAS
-        // =====================================
-        datesSet:function(){
+            // =====================================
+            // VISTAS
+            // =====================================
+            datesSet: function () {
 
-            setTimeout(() => {
+                setTimeout(() => {
 
-                // HEADERS
-                document.querySelectorAll(
-                    ".fc-col-header-cell"
-                ).forEach(header => {
-
-                    header.style.background =
-                    "white";
-
-                    header.style.color =
-                    "#111827";
-
-                    header.style.fontWeight =
-                    "600";
-                });
-
-                // =================================
-                // SCROLL INTERNO REAL
-                // =================================
-                document.querySelectorAll(
-                    ".fc-scroller"
-                ).forEach(scroller => {
-
-                    scroller.style.overflowY =
-                    "auto";
-
-                    scroller.style.overflowX =
-                    "hidden";
-
-                    scroller.style.maxHeight =
-                    "100%";
-                });
-
-                // =================================
-                // SEMANA / DIA
-                // =================================
-                if(
-
-                    calendar.view.type ===
-                    "timeGridWeek"
-
-                    ||
-
-                    calendar.view.type ===
-                    "timeGridDay"
-                ){
-
+                    // HEADERS
                     document.querySelectorAll(
                         ".fc-col-header-cell"
                     ).forEach(header => {
 
-                        const text =
-                        header.innerText
-                        .toLowerCase();
-
-                        // DOMINGO
-                        if(text.includes("dom")){
-
-                            header.style.background =
-                            "#7f1d1d";
-
-                            header.style.color =
+                        header.style.background =
                             "white";
-                        }
 
-                        // SABADO
-                        if(
-                            text.includes("sáb")
-                            ||
-                            text.includes("sab")
-                        ){
+                        header.style.color =
+                            "#111827";
 
-                            header.style.background =
-                            "#1e3a8a";
-
-                            header.style.color =
-                            "white";
-                        }
-
-                        // HOY
-                        if(
-                            header.classList.contains(
-                                "fc-day-today"
-                            )
-                        ){
-
-                            header.style.background =
-                            "#facc15";
-
-                            header.style.color =
-                            "#000";
-                        }
-
+                        header.style.fontWeight =
+                            "600";
                     });
-                }
 
-            },50);
+                    // =================================
+                    // SCROLL INTERNO REAL
+                    // =================================
+                    document.querySelectorAll(
+                        ".fc-scroller"
+                    ).forEach(scroller => {
 
-        }
+                        scroller.style.overflowY =
+                            "auto";
 
-    });
+                        scroller.style.overflowX =
+                            "hidden";
+
+                        scroller.style.maxHeight =
+                            "100%";
+                    });
+
+                    // =================================
+                    // DIA
+                    // =================================
+                    if (
+
+                        calendar.view.type ===
+                        "timeGridDay"
+                    ) {
+
+                        document.querySelectorAll(
+                            ".fc-col-header-cell"
+                        ).forEach(header => {
+
+                            if (
+                                header.classList.contains(
+                                    "fc-day-today"
+                                )
+                            ) {
+
+                                header.style.background =
+                                    "#facc15";
+
+                                header.style.color =
+                                    "#000";
+                            }
+
+                        });
+                    }
+
+                }, 50);
+
+            }
+
+        });
 
     calendar.render();
 
