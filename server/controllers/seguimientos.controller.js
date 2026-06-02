@@ -334,18 +334,24 @@ const getTareasHoy = (req, res) => {
             c.cliente,
 
             MAX(s.id) AS id,
-            MAX(s.contacto) AS contacto,
-            MAX(s.tel_contacto) AS tel_contacto,
             MAX(s.proxima_accion) AS proxima_accion,
             MAX(s.fecha_proxima) AS fecha_proxima,
             MAX(s.estado) AS estado,
-
             COALESCE(MAX(s.asesor), MAX(c.asesor)) AS asesor,
-            MAX(c.ciudad) AS ciudad
+            MAX(c.ciudad) AS ciudad,
+
+            cc.id AS contacto_id,
+            cc.nombre AS contacto,
+            cc.telefono AS tel_contacto
 
         FROM seguimientos s
+
         LEFT JOIN clientes c
             ON c.id = s.cliente_id
+
+        LEFT JOIN cliente_contactos cc
+            ON cc.cliente_id = s.cliente_id
+            AND cc.estado = 'ACTIVO'
 
         WHERE s.fecha_proxima <= CURDATE()
         AND (s.estado IS NULL OR s.estado != 'TERMINADO')
@@ -353,7 +359,6 @@ const getTareasHoy = (req, res) => {
 
     let params = [];
 
-    // FILTRO ASESOR
     if (user.rol === "ASESOR") {
         sql += " AND s.asesor = ?";
         params.push(user.nombre);
@@ -362,9 +367,10 @@ const getTareasHoy = (req, res) => {
     sql += `
         GROUP BY
             s.cliente_id,
-            s.contacto,
-            c.ciudad,
-            DATE(s.fecha_proxima)
+            cc.id,
+            cc.nombre,
+            cc.telefono,
+            c.ciudad
         ORDER BY MAX(s.fecha_proxima) ASC
     `;
 
