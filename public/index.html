@@ -1354,8 +1354,8 @@ HIDDEN
     </script>
 
     <!-- =========================================
-        MODAL TAREAS
-    ========================================= -->
+MODAL TAREAS (AJUSTADO)
+========================================= -->
     <div class="modal-overlay hidden" id="modalTarea">
 
         <div class="modal-box">
@@ -1376,7 +1376,7 @@ HIDDEN
             <!-- BODY -->
             <div class="modal-body">
 
-                <!-- SELECTOR CONTACTOS -->
+                <!-- CONTACTOS -->
                 <div class="form-group" id="grupoSelectContacto">
 
                     <label>Contactos del Cliente</label>
@@ -1387,7 +1387,7 @@ HIDDEN
 
                 </div>
 
-                <!-- CONTACTO + TELEFONO (MISMA LINEA) -->
+                <!-- CONTACTO + TELEFONO -->
                 <div class="form-row">
 
                     <div class="form-group">
@@ -1408,30 +1408,29 @@ HIDDEN
                     <label>Tipo</label>
 
                     <select id="m_tipo">
-
                         <option value="LLAMADA">LLAMADA</option>
+                        <option value="LLAMADA">FACEBOOK</option>
                         <option value="VISITA">VISITA</option>
                         <option value="WHATSAPP">WHATSAPP</option>
                         <option value="EMAIL">EMAIL</option>
                         <option value="COTIZACION">COTIZACION</option>
-
                     </select>
 
                 </div>
 
-                <!-- NOTA -->
+                <!-- NOTA (MAS PEQUEÑO) -->
                 <div class="form-group">
 
                     <label>Nota</label>
-                    <textarea id="m_nota" rows="5"></textarea>
+                    <textarea id="m_nota" rows="3"></textarea>
 
                 </div>
 
-                <!-- PROXIMA ACCION -->
+                <!-- PROXIMA ACCION (SIEMPRE VACIO) -->
                 <div class="form-group">
 
                     <label>Próxima Acción</label>
-                    <input type="text" id="m_proxima_accion">
+                    <input type="text" id="m_proxima_accion" value="">
                 </div>
 
                 <!-- FECHA + ESTADO -->
