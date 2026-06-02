@@ -1354,7 +1354,7 @@ HIDDEN
     </script>
 
     <!-- =========================================
-        MODAL TAREAS
+    MODAL TAREAS
 ========================================= -->
     <div class="modal-overlay hidden" id="modalTarea">
 
@@ -1369,7 +1369,6 @@ HIDDEN
                         Cliente
                     </div>
 
-                    <!-- SOLO CLIENTE -->
                     <div class="modal-subtitle">
                         <div id="bloqueContactoManual" class="hidden">
                             <strong>Contacto:</strong>
@@ -1395,7 +1394,7 @@ HIDDEN
             <!-- BODY -->
             <div class="modal-body">
 
-                <!-- CONTACTO (SOLO SI EXISTEN REGISTROS) -->
+                <!-- SELECT CONTACTOS -->
                 <div class="form-group hidden" id="grupoSelectContacto">
 
                     <label>Contacto del Cliente</label>
@@ -1406,7 +1405,7 @@ HIDDEN
 
                 </div>
 
-                <!-- CONTACTO FALLBACK (SI NO HAY REGISTROS) -->
+                <!-- FALLBACK CONTACTO -->
                 <div class="form-group hidden" id="grupoContactoFallback">
 
                     <label>Contacto</label>
@@ -1425,13 +1424,11 @@ HIDDEN
                     <label>Tipo</label>
 
                     <select id="m_tipo">
-
                         <option value="LLAMADA">LLAMADA</option>
                         <option value="VISITA">VISITA</option>
                         <option value="WHATSAPP">WHATSAPP</option>
                         <option value="EMAIL">EMAIL</option>
                         <option value="COTIZACION">COTIZACION</option>
-
                     </select>
 
                 </div>
@@ -1445,13 +1442,12 @@ HIDDEN
 
                 </div>
 
-                <!-- ACCIÓN -->
+                <!-- PRÓXIMA ACCIÓN (SIEMPRE VACÍO) -->
                 <div class="form-group">
 
                     <label>Próxima Acción</label>
 
-                    <input type="text" id="m_proxima_accion">
-
+                    <input type="text" id="m_proxima_accion" value="">
                 </div>
 
                 <!-- FECHA + ESTADO -->
@@ -1461,8 +1457,7 @@ HIDDEN
 
                         <label>Próxima Fecha</label>
 
-                        <input type="date" id="m_fecha_proxima">
-
+                        <input type="date" id="m_fecha_proxima" value="">
                     </div>
 
                     <div class="form-group">
@@ -1471,7 +1466,7 @@ HIDDEN
 
                         <select id="m_estado">
 
-                            <option value="ACTIVO">ACTIVO</option>
+                            <option value="ACTIVO" selected>ACTIVO</option>
                             <option value="STAND BY">STAND BY</option>
                             <option value="TERMINADO">TERMINADO</option>
 
@@ -1507,6 +1502,8 @@ HIDDEN
         </div>
 
     </div>
+
+
     <script>
 
         // =========================================
