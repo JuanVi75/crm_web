@@ -20,14 +20,30 @@
             box-sizing: border-box;
         }
 
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            /* 🔥 CLAVE */
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
         .task-item {
-            cursor: pointer;
+            background: #1e293b;
+            padding: 14px;
+            border-radius: 12px;
+            color: #cbd5e1;
+            font-size: 13px;
             transition: 0.2s;
         }
 
         .task-item:hover {
-            background: #2563eb;
-            color: white;
+            background: #60a5fa;
+            /* azul claro */
+            color: #0f172a;
+            /* texto oscuro */
         }
 
         .task-item.empty {
@@ -1337,7 +1353,7 @@ HIDDEN
             </div>
 
             <div style="font-size:11px; margin-top:6px; color:#64748b;">
-                📅 ${t.fecha_proxima || ""}
+                📅 ${formatearFecha(t.fecha_proxima)}
                 <span style="float:right;">
                     ${t.estado || "ACTIVO"}
                 </span>
@@ -1373,6 +1389,19 @@ HIDDEN
 
             // Guardar ID actual
             window.tareaActual = tarea;
+        }
+
+        function formatearFecha(fecha) {
+
+            if (!fecha) return "";
+
+            const d = new Date(fecha);
+
+            const dia = String(d.getDate()).padStart(2, "0");
+            const mes = String(d.getMonth() + 1).padStart(2, "0");
+            const anio = d.getFullYear();
+
+            return `${dia}-${mes}-${anio}`;
         }
 
     </script>
