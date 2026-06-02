@@ -22,8 +22,8 @@
 
 
         /* =========================================
-            TAREAS
-        ========================================= */
+    TAREAS
+========================================= */
         .task-list {
             display: flex;
             flex-direction: column;
@@ -42,39 +42,55 @@
             cursor: pointer;
         }
 
+        .task-item.empty {
+            background: transparent;
+            border: 1px dashed #334155;
+            text-align: center;
+            color: #64748b;
+        }
+
         .task-title {
             font-weight: 600;
+            font-size: 14px;
             color: #e2e8f0;
         }
 
         .task-action {
             font-size: 12px;
+            margin-top: 5px;
             color: #cbd5e1;
-            margin-top: 4px;
         }
 
         .task-footer {
-            font-size: 11px;
-            margin-top: 6px;
-            color: #94a3b8;
+            margin-top: 8px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .task-asesor {
+            color: #60a5fa;
+            font-weight: 600;
+            flex: 1;
         }
 
         .task-state {
-            font-weight: 600;
+            font-weight: 700;
             color: #60a5fa;
         }
 
         /* HOVER */
         .task-item:hover {
             background: #60a5fa;
-            color: #0f172a;
         }
 
         .task-item:hover .task-title,
         .task-item:hover .task-action,
         .task-item:hover .task-footer,
+        .task-item:hover .task-asesor,
         .task-item:hover .task-state {
             color: #0f172a;
         }
@@ -1360,23 +1376,40 @@ HIDDEN
                 return;
             }
 
+            const esAdmin =
+                localStorage.getItem("rol") === "ADMIN";
+
             tareas.forEach(t => {
 
                 const div = document.createElement("div");
+
                 div.className = "task-item";
 
                 div.onclick = () => abrirTarea(t);
 
                 div.innerHTML = `
+
             <div class="task-title">
                 ${t.cliente || "Sin cliente"}
             </div>
 
             <div class="task-action">
-                ${t.proxima_accion || "Sin acción"}
+                ${t.proxima_accion || "SEGUIMIENTO"}
             </div>
 
             <div class="task-footer">
+
+                ${esAdmin
+                        ?
+                        `
+                    <span class="task-asesor">
+                        ${t.asesor || ""}
+                    </span>
+                    `
+                        :
+                        `<span></span>`
+                    }
+
                 <span>
                     ${formatearFecha(t.fecha_proxima)}
                 </span>
@@ -1384,6 +1417,7 @@ HIDDEN
                 <span class="task-state">
                     ${t.estado || "ACTIVO"}
                 </span>
+
             </div>
         `;
 
