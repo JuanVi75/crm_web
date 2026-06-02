@@ -1061,14 +1061,12 @@ MODAL NUEVO CONTACTO
 
             function formatearFecha(fecha) {
                 if (!fecha) return "";
-
-                const f = new Date(fecha);
-
-                const dia = String(f.getDate()).padStart(2, '0');
-                const mes = String(f.getMonth() + 1).padStart(2, '0');
-                const anio = f.getFullYear();
-
-                return `${dia}-${mes}-${anio}`;
+                    const soloFecha =
+                    fecha.toString().split("T")[0];
+                    const partes = soloFecha.split("-");
+                    return `
+                ${partes[2]}-${partes[1]}-${partes[0]}
+                `.trim();
             }
 
             function formatearCOP(valor) {
