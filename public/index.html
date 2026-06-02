@@ -1412,13 +1412,11 @@ HIDDEN
 
             if (!fecha) return "";
 
-            const d = new Date(fecha);
+            const partes = fecha.split("-");
 
-            const dia = String(d.getDate()).padStart(2, "0");
-            const mes = String(d.getMonth() + 1).padStart(2, "0");
-            const anio = d.getFullYear();
+            if (partes.length < 3) return fecha;
 
-            return `${dia}-${mes}-${anio}`;
+            return `${partes[2]}-${partes[1]}-${partes[0]}`;
         }
 
     </script>
