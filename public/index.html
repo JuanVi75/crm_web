@@ -1523,41 +1523,66 @@ HIDDEN
 
             window.tareaActual = tarea;
 
+            // =========================================
+            // CLIENTE
+            // =========================================
             document.getElementById("modalCliente").innerText =
                 tarea.cliente || "Sin cliente";
 
-            document.getElementById("modalContacto").innerText = "Seleccionar";
-            document.getElementById("modalTelefono").innerText = "--";
-
+            // =========================================
+            // RESET CAMPOS
+            // =========================================
             document.getElementById("m_nota").value = "";
             document.getElementById("m_proxima_accion").value = "";
             document.getElementById("m_fecha_proxima").value = "";
             document.getElementById("m_estado").value = "ACTIVO";
             document.getElementById("m_tipo").value = "LLAMADA";
 
+            // =========================================
+            // ELEMENTOS UI
+            // =========================================
             const select = document.getElementById("contactoSelect");
 
-            select.innerHTML = `<option value="">Cargando contactos...</option>`;
+            const grupoSelect = document.getElementById("grupoSelectContacto");
+            const grupoFallback = document.getElementById("grupoContactoFallback");
+            const grupoTelFallback = document.getElementById("grupoTelefonoFallback");
+
+            const fallbackNombre = document.getElementById("fallbackContacto");
+            const fallbackTel = document.getElementById("fallbackTelefono");
+
+            const modalContacto = document.getElementById("modalContacto");
+            const modalTelefono = document.getElementById("modalTelefono");
+
+            // RESET UI
+            select.innerHTML = "";
+            grupoSelect.classList.add("hidden");
+            grupoFallback.classList.add("hidden");
+            grupoTelFallback.classList.add("hidden");
+
+            modalContacto.innerText = "--";
+            modalTelefono.innerText = "--";
 
             try {
 
-                const res = await fetch(`/api/clientes/contactos/${tarea.cliente_id}`);
+                const res = await fetch(`/api/clientes/${tarea.cliente_id}/contactos`);
                 const data = await res.json();
 
-                select.innerHTML = "";
-
                 // =========================================
-                // CASO 1: HAY CONTACTOS EN TABLA
+                // CASO 1: HAY CONTACTOS
                 // =========================================
                 if (data && data.length > 0) {
+
+                    grupoSelect.classList.remove("hidden");
 
                     select.innerHTML = `<option value="">Seleccione contacto</option>`;
 
                     data.forEach(c => {
 
                         const opt = document.createElement("option");
+
                         opt.value = JSON.stringify(c);
                         opt.textContent = `${c.nombre} - ${c.telefono || ""}`;
+
                         select.appendChild(opt);
                     });
 
@@ -1565,31 +1590,29 @@ HIDDEN
                 }
 
                 // =========================================
-                // CASO 2: NO HAY CONTACTOS → FALLBACK CLIENTES
+                // CASO 2: NO HAY CONTACTOS (FALLBACK CLIENTE)
                 // =========================================
-                select.innerHTML = `<option value="">Contacto principal</option>`;
+                grupoFallback.classList.remove("hidden");
+                grupoTelFallback.classList.remove("hidden");
 
-                const fallback = {
-                    nombre: tarea.contacto || "",
-                    telefono: tarea.tel_contacto || ""
-                };
+                const nombre = tarea.contacto || "";
+                const tel = tarea.tel_contacto || "";
 
-                const opt = document.createElement("option");
-                opt.value = JSON.stringify(fallback);
-                opt.textContent = `${fallback.nombre} - ${fallback.telefono}`;
+                fallbackNombre.value = nombre;
+                fallbackTel.value = tel;
 
-                select.appendChild(opt);
-
-                select.value = JSON.stringify(fallback);
-
-                document.getElementById("modalContacto").innerText = fallback.nombre;
-                document.getElementById("modalTelefono").innerText = fallback.telefono;
+                modalContacto.innerText = nombre;
+                modalTelefono.innerText = tel;
 
             } catch (err) {
 
                 console.error(err);
 
-                select.innerHTML = `<option value="">Error cargando contactos</option>`;
+                grupoFallback.classList.remove("hidden");
+                grupoTelFallback.classList.remove("hidden");
+
+                fallbackNombre.value = tarea.contacto || "";
+                fallbackTel.value = tarea.tel_contacto || "";
             }
         }
 
