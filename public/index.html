@@ -1510,25 +1510,27 @@ HIDDEN
             window.tareaActual = tarea;
 
             // =========================================
-            // HEADER LIMPIO
+            // CLIENTE (ÚNICO DATO FIABLE)
             // =========================================
             document.getElementById("modalCliente").innerText =
                 tarea.cliente || "Sin cliente";
 
+            // =========================================
+            // RESET HEADER CONTACTO
+            // =========================================
             document.getElementById("modalContacto").innerText =
-                "Sin seleccionar";
+                "Seleccionar";
 
             document.getElementById("modalTelefono").innerText =
                 "--";
 
             // =========================================
-            // LIMPIAR FORMULARIO
+            // RESET FORMULARIO (TODO LIMPIO)
             // =========================================
             document.getElementById("m_nota").value = "";
             document.getElementById("m_proxima_accion").value = "";
             document.getElementById("m_fecha_proxima").value = "";
             document.getElementById("m_estado").value = "ACTIVO";
-
             document.getElementById("m_tipo").value = "LLAMADA";
 
             // =========================================
@@ -1558,7 +1560,7 @@ HIDDEN
 
             } catch (err) {
 
-                console.error("Error cargando contactos", err);
+                console.error(err);
 
                 select.innerHTML = `<option value="">Sin contactos</option>`;
             }
