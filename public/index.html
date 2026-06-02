@@ -769,7 +769,7 @@ HIDDEN
                     <div class="task-list">
                         <div class="task-list" id="taskList">
                             <div class="task-item empty">
-                                Selecciona una fecha en el calendario
+                                Cargando tareas...
                             </div>
                         </div>
 
@@ -1113,6 +1113,9 @@ HIDDEN
 
         const API = "/api/dashboard";
 
+        let tareaActualIndex = null;
+        let tareasHoyGlobal = [];
+
         async function cargarKPIs() {
 
             try {
@@ -1250,17 +1253,29 @@ HIDDEN
 
                 const data = await res.json();
 
-                if (!data.success) {
-                    console.error("Error cargando tareas:", data.message);
+                if (!data || !data.success) {
+
+                    console.error("Error cargando tareas:", data?.message || "Respuesta inválida");
+
+                    const taskList = document.getElementById("taskList");
+
+                    if (taskList) {
+                        taskList.innerHTML = `
+                    <div class="task-item empty">
+                        No se pudieron cargar las tareas
+                    </div>
+                `;
+                    }
+
                     return;
                 }
 
-                // Guardamos globalmente para uso en UI
+                // Guardar globalmente
                 window.tareasHoy = data.data || [];
 
                 console.log("Tareas hoy:", window.tareasHoy);
 
-                // siguiente paso: pintar UI
+                // Render UI
                 renderTareasHoy(window.tareasHoy);
 
             } catch (err) {
@@ -1269,11 +1284,13 @@ HIDDEN
 
                 const taskList = document.getElementById("taskList");
 
-                taskList.innerHTML = `
-            <div class="task-item empty">
-                Error cargando tareas
-            </div>
-        `;
+                if (taskList) {
+                    taskList.innerHTML = `
+                <div class="task-item empty">
+                    Error cargando tareas
+                </div>
+            `;
+                }
             }
         }
 
@@ -1336,9 +1353,19 @@ HIDDEN
 
         function abrirTarea(tarea) {
 
-            console.log("Abriendo tarea:", tarea);
+            // Guardar índice actual
+            tareaActualIndex = tareasHoyGlobal.findIndex(t => t.id === tarea.id);
 
-            // aquí después abrimos el modal de llamadas
+            // Abrir modal de llamadas (YA EXISTE EN TU SISTEMA)
+            abrirModalLlamadas();
+
+            // Cargar datos en el formulario del modal
+            document.getElementById("clienteLlamada").value = tarea.cliente || "";
+            document.getElementById("telefonoLlamada").value = tarea.tel_contacto || "";
+            document.getElementById("notaLlamada").value = tarea.proxima_accion || "";
+
+            // Guardar ID actual
+            window.tareaActual = tarea;
         }
 
     </script>
