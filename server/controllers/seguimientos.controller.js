@@ -328,28 +328,30 @@ const getTareasHoy = (req, res) => {
         nombre: ""
     };
 
-    const hoy = new Date().toISOString().slice(0, 10);
-
     let sql = `
         SELECT
-            s.id,
             s.cliente_id,
             c.cliente,
-            s.contacto,
-            s.tel_contacto,
-            s.proxima_accion,
-            s.fecha_proxima,
-            s.estado,
-            c.ciudad,
-            COALESCE(s.asesor, c.asesor) AS asesor
+
+            MAX(s.id) AS id,
+            MAX(s.contacto) AS contacto,
+            MAX(s.tel_contacto) AS tel_contacto,
+            MAX(s.proxima_accion) AS proxima_accion,
+            MAX(s.fecha_proxima) AS fecha_proxima,
+            MAX(s.estado) AS estado,
+
+            COALESCE(MAX(s.asesor), MAX(c.asesor)) AS asesor,
+            MAX(c.ciudad) AS ciudad
+
         FROM seguimientos s
         LEFT JOIN clientes c
             ON c.id = s.cliente_id
-        WHERE DATE(s.fecha_proxima) <= ?
+
+        WHERE s.fecha_proxima <= CURDATE()
         AND (s.estado IS NULL OR s.estado != 'TERMINADO')
     `;
 
-    let params = [hoy];
+    let params = [];
 
     // FILTRO ASESOR
     if (user.rol === "ASESOR") {
@@ -357,7 +359,14 @@ const getTareasHoy = (req, res) => {
         params.push(user.nombre);
     }
 
-    sql += " ORDER BY s.fecha_proxima ASC";
+    sql += `
+        GROUP BY
+            s.cliente_id,
+            s.contacto,
+            c.ciudad,
+            DATE(s.fecha_proxima)
+        ORDER BY MAX(s.fecha_proxima) ASC
+    `;
 
     db.query(sql, params, (err, rows) => {
 
