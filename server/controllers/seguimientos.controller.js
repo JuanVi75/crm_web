@@ -347,26 +347,38 @@ const getTareasHoy = (req, res) => {
             s.proxima_accion,
             s.fecha_proxima,
             s.estado,
-            c.ciudad
+            c.ciudad,
+            COALESCE(s.asesor, c.asesor) AS asesor
         FROM seguimientos s
-        LEFT JOIN clientes c ON c.id = s.cliente_id
+        LEFT JOIN clientes c
+            ON c.id = s.cliente_id
         WHERE DATE(s.fecha_proxima) = ?
         AND (s.estado IS NULL OR s.estado != 'TERMINADO')
     `;
 
     let params = [hoy];
 
+    // =========================================
+    // FILTRO ASESOR
+    // =========================================
     if (user.rol === "ASESOR") {
+
         sql += " AND s.asesor = ?";
+
         params.push(user.nombre);
     }
 
+    // =========================================
+    // ORDEN
+    // =========================================
     sql += " ORDER BY s.id DESC";
 
     db.query(sql, params, (err, rows) => {
 
         if (err) {
+
             console.error(err);
+
             return res.status(500).json({
                 success: false,
                 message: "Error cargando tareas"
