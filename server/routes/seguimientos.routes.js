@@ -32,6 +32,15 @@ router.get(
 );
 
 // =========================================
+// TAREAS HOY
+// =========================================
+router.get(
+    "/tareas-hoy",
+    authMiddleware,
+    getTareasHoy
+);
+
+// =========================================
 // GET POR ID
 // =========================================
 router.get(
@@ -65,12 +74,6 @@ router.delete(
     "/:id",
     authMiddleware,
     deleteSeguimiento
-);
-
-router.get(
-    "/tareas-hoy",
-    authMiddleware,
-    getTareasHoy
 );
 
 module.exports = router;
