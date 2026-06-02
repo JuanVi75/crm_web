@@ -767,7 +767,12 @@ HIDDEN
                     </div>
 
                     <div class="task-list">
-                        <div class="task-list" id="taskList"></div>
+                        <div class="task-list" id="taskList">
+                            <div class="task-item empty">
+                                Cargando tareas...
+                            </div>
+                        </div>
+
                     </div>
 
             </section>
@@ -1082,24 +1087,31 @@ HIDDEN
 
                 loginOverlay.classList.add("hidden");
 
-                document.getElementById("userInfo").innerHTML =
-                    `
-                Bienvenido<br>
-                ${localStorage.getItem("user")}<br>
-                ${localStorage.getItem("rol")}
-            `;
+                document.getElementById("userInfo").innerHTML = `
+            Bienvenido<br>
+            ${localStorage.getItem("user")}<br>
+            ${localStorage.getItem("rol")}
+        `;
 
-                cargarKPIs(); // 👈 AQUÍ
+                // =========================
+                // KPI
+                // =========================
+                cargarKPIs();
 
-                //        userInfo.innerText =
-                //        localStorage.getItem("user") || "Usuario";
+                // =========================
+                // TAREAS HOY (FALTABA ESTO)
+                // =========================
+                cargarTareasHoy();
 
             } else {
 
                 loginOverlay.classList.remove("hidden");
 
-                userInfo.innerText =
-                    "No autenticado";
+                const userInfo = document.getElementById("userInfo");
+
+                if (userInfo) {
+                    userInfo.innerText = "No autenticado";
+                }
             }
         };
     </script>
