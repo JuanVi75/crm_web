@@ -2298,14 +2298,12 @@ MODAL TAREAS NUEVO
             try {
 
                 // =========================================
-                // TAREAS PANEL
+                // TAREAS PANEL (AHORA POR FECHA ACTIVA)
                 // =========================================
                 const res = await fetch(
-                    "/api/seguimientos/tareas-hoy",
+                    `/api/seguimientos/tareas-dia?fecha=${window.fechaActiva}`,
                     {
-
                         method: "GET",
-
                         headers: {
                             "Content-Type": "application/json",
                             "Authorization":
@@ -2347,20 +2345,16 @@ MODAL TAREAS NUEVO
                 renderTareasHoy(window.tareasHoy);
 
                 // =========================================
-                // KPI
+                // KPI LOCAL (DEL DÍA ACTIVO)
                 // =========================================
                 const pendientes =
-                    document.getElementById(
-                        "seguimientosPendientes"
-                    );
+                    document.getElementById("seguimientosPendientes");
 
                 if (pendientes) {
 
                     pendientes.innerText =
                         window.tareasHoy.filter(
-
                             t => t.estado === "ACTIVO"
-
                         ).length;
                 }
 
@@ -2503,11 +2497,23 @@ MODAL TAREAS NUEVO
         function cargarTareasPorFecha(fecha) {
 
             // =========================================
+            // FECHA ACTIVA GLOBAL
+            // =========================================
+            window.fechaActiva = fecha;
+
+            // =========================================
             // VALIDAR DATA
             // =========================================
             if (!window.tareasCalendario) {
 
                 renderTareasHoy([]);
+
+                const pendientes =
+                    document.getElementById("seguimientosPendientes");
+
+                if (pendientes) {
+                    pendientes.innerText = 0;
+                }
 
                 return;
             }
@@ -2521,7 +2527,7 @@ MODAL TAREAS NUEVO
             // =========================================
             // SIN TAREAS
             // =========================================
-            if (!dataFecha || !dataFecha.tareas) {
+            if (!dataFecha || !Array.isArray(dataFecha.tareas)) {
 
                 renderTareasHoy([]);
 
@@ -2529,7 +2535,6 @@ MODAL TAREAS NUEVO
                     document.getElementById("seguimientosPendientes");
 
                 if (pendientes) {
-
                     pendientes.innerText = 0;
                 }
 
@@ -2556,7 +2561,7 @@ MODAL TAREAS NUEVO
             if (pendientes) {
 
                 pendientes.innerText =
-                    tareas.length;
+                    tareas.filter(t => t.estado === "ACTIVO").length;
             }
         }
 
@@ -2685,7 +2690,15 @@ MODAL TAREAS NUEVO
 
             try {
 
-                const res = await fetch(API, {
+                // =========================================
+                // FECHA SEGURA (CLAVE PARA SINCRONIZACIÓN)
+                // =========================================
+                const fecha = window.fechaActiva || new Date().toISOString().split("T")[0];
+
+                // =========================================
+                // FETCH KPI
+                // =========================================
+                const res = await fetch(`/api/dashboard?fecha=${fecha}`, {
                     headers: {
                         "Authorization": "Bearer " + localStorage.getItem("token")
                     }
@@ -2700,13 +2713,10 @@ MODAL TAREAS NUEVO
                     data.totalClientes || 0;
 
                 document.getElementById("seguimientosHoy").innerText =
-                    data.seguimientosHoy || 0;
+                    data.seguimientos || 0;
 
                 document.getElementById("seguimientosPendientes").innerText =
                     data.seguimientosPendientes || 0;
-
-                //document.getElementById("clientesActivos").innerText =
-                //  data.clientesActivos || 0;
 
                 // =========================================
                 // COTIZACIONES
@@ -2718,10 +2728,10 @@ MODAL TAREAS NUEVO
                     formatearCOP(data.valorCotizaciones || 0);
 
                 document.getElementById("cotizacionesHoy").innerText =
-                    data.cotizacionesHoy || 0;
+                    data.cotizaciones || 0;
 
                 document.getElementById("valorCotizacionesHoy").innerText =
-                    formatearCOP(data.valorCotizacionesHoy || 0);
+                    formatearCOP(data.valorCotizacionesValor || 0);
 
                 // =========================================
                 // PEDIDOS
@@ -2750,22 +2760,24 @@ MODAL TAREAS NUEVO
 
                 if (pedidosHoyEl) {
                     pedidosHoyEl.innerText =
-                        data.pedidosHoy || 0;
+                        data.pedidos || 0;
                 }
 
                 if (valorPedidosHoyEl) {
                     valorPedidosHoyEl.innerText =
-                        formatearCOP(data.valorPedidosHoy || 0);
+                        formatearCOP(data.valorPedidosValor || 0);
                 }
 
             } catch (err) {
 
                 console.error(err);
 
+                // =========================================
+                // FALLBACK SEGURIDAD UI
+                // =========================================
                 document.getElementById("totalClientes").innerText = 0;
                 document.getElementById("seguimientosHoy").innerText = 0;
                 document.getElementById("seguimientosPendientes").innerText = 0;
-                //document.getElementById("clientesActivos").innerText = 0;
 
                 document.getElementById("cotizacionesMes").innerText = 0;
                 document.getElementById("valorCotizacionesMes").innerText = "$0";
