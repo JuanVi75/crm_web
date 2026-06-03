@@ -1891,6 +1891,9 @@ MODAL TAREAS NUEVO
             }
         }
 
+        // =========================================
+        // RENDER TAREAS
+        // =========================================
         function renderTareasHoy(tareas) {
 
             const container =
@@ -1898,29 +1901,43 @@ MODAL TAREAS NUEVO
 
             container.innerHTML = "";
 
-            // =========================================
+            // =====================================
             // SIN TAREAS
-            // =========================================
+            // =====================================
             if (!tareas || tareas.length === 0) {
 
                 container.innerHTML = `
             <div class="task-item empty">
-                No hay tareas para hoy
+                No hay tareas pendientes
             </div>
         `;
 
                 return;
             }
 
-            // =========================================
+            // =====================================
             // VALIDAR ROL
-            // =========================================
+            // =====================================
             const esAdmin =
                 localStorage.getItem("rol") === "ADMIN";
 
-            // =========================================
+            // =====================================
+            // ORDENAR POR FECHA
+            // =====================================
+            tareas.sort((a, b) => {
+
+                const fechaA =
+                    new Date(a.fecha_proxima || 0);
+
+                const fechaB =
+                    new Date(b.fecha_proxima || 0);
+
+                return fechaA - fechaB;
+            });
+
+            // =====================================
             // RENDER
-            // =========================================
+            // =====================================
             tareas.forEach((t, index) => {
 
                 const div =
@@ -1928,16 +1945,56 @@ MODAL TAREAS NUEVO
 
                 div.className = "task-item";
 
-                // =========================================
+                // =================================
+                // ESTADOS VISUALES
+                // =================================
+                if (t.estado === "TERMINADO") {
+
+                    div.classList.add(
+                        "task-finished"
+                    );
+                }
+
+                // =================================
+                // FECHA VENCIDA
+                // =================================
+                if (t.fecha_proxima) {
+
+                    const hoy =
+                        new Date();
+
+                    hoy.setHours(0, 0, 0, 0);
+
+                    const fechaTask =
+                        new Date(t.fecha_proxima);
+
+                    fechaTask.setHours(0, 0, 0, 0);
+
+                    if (
+                        fechaTask < hoy &&
+                        t.estado !== "TERMINADO"
+                    ) {
+
+                        div.classList.add(
+                            "task-overdue"
+                        );
+                    }
+                }
+
+                // =================================
                 // CLICK ABRIR MODAL
-                // =========================================
+                // =================================
                 div.onclick = () => {
 
-                    window.tareaActualIndex = index;
+                    window.tareaActualIndex =
+                        index;
 
                     abrirTarea(t);
                 };
 
+                // =================================
+                // HTML
+                // =================================
                 div.innerHTML = `
 
             <div class="task-title">
@@ -2219,7 +2276,17 @@ MODAL TAREAS NUEVO
                 // =========================================
                 window.tareasHoy.forEach(t => {
 
+                    // =========================================
+                    // VALIDAR FECHA
+                    // =========================================
                     if (!t.fecha_proxima) {
+                        return;
+                    }
+
+                    // =========================================
+                    // SOLO ACTIVOS
+                    // =========================================
+                    if (t.estado !== "ACTIVO") {
                         return;
                     }
 
@@ -2227,21 +2294,29 @@ MODAL TAREAS NUEVO
                         String(t.fecha_proxima).substring(0, 10);
 
                     // =========================================
-                    // CREAR FECHA SI NO EXISTE
+                    // CREAR FECHA
                     // =========================================
                     if (!window.tareasCalendario[fecha]) {
 
-                        window.tareasCalendario[fecha] = [];
+                        window.tareasCalendario[fecha] = {
+                            total: 0,
+                            tareas: []
+                        };
                     }
 
                     // =========================================
-                    // PUSH
+                    // CONTADOR
                     // =========================================
-                    window.tareasCalendario[fecha].push(t);
+                    window.tareasCalendario[fecha].total++;
+
+                    // =========================================
+                    // PUSH TAREA
+                    // =========================================
+                    window.tareasCalendario[fecha].tareas.push(t);
                 });
 
                 // =========================================
-                // RENDER
+                // RENDER TAREAS DEL DIA ACTUAL
                 // =========================================
                 renderTareasHoy(window.tareasHoy);
 
@@ -2254,7 +2329,19 @@ MODAL TAREAS NUEVO
                 if (pendientes) {
 
                     pendientes.innerText =
-                        window.tareasHoy.length;
+                        window.tareasHoy.filter(
+                            t => t.estado === "ACTIVO"
+                        ).length;
+                }
+
+                // =========================================
+                // REFRESH CALENDARIO
+                // =========================================
+                if (
+                    typeof renderCalendarioTareas === "function"
+                ) {
+
+                    renderCalendarioTareas();
                 }
 
             } catch (err) {
@@ -2270,6 +2357,178 @@ MODAL TAREAS NUEVO
             </div>
         `;
             }
+        }
+
+        function cargarTareasPorFecha(fecha) {
+
+            // =========================================
+            // VALIDAR DATA
+            // =========================================
+            if (!window.tareasCalendario) {
+
+                renderTareasHoy([]);
+
+                return;
+            }
+
+            // =========================================
+            // OBTENER FECHA
+            // =========================================
+            const dataFecha =
+                window.tareasCalendario[fecha];
+
+            // =========================================
+            // SIN TAREAS
+            // =========================================
+            if (!dataFecha || !dataFecha.tareas) {
+
+                renderTareasHoy([]);
+
+                const pendientes =
+                    document.getElementById("seguimientosPendientes");
+
+                if (pendientes) {
+
+                    pendientes.innerText = 0;
+                }
+
+                return;
+            }
+
+            // =========================================
+            // TAREAS DEL DIA
+            // =========================================
+            const tareas =
+                dataFecha.tareas || [];
+
+            // =========================================
+            // RENDER
+            // =========================================
+            renderTareasHoy(tareas);
+
+            // =========================================
+            // KPI
+            // =========================================
+            const pendientes =
+                document.getElementById("seguimientosPendientes");
+
+            if (pendientes) {
+
+                pendientes.innerText =
+                    tareas.length;
+            }
+        }
+
+        // =========================================
+        // EVENTOS CALENDARIO
+        // =========================================
+        function eventosCalendario() {
+
+            const eventos = [];
+
+            // =====================================
+            // FESTIVOS
+            // =====================================
+            if (window.festivosCalendario) {
+
+                eventos.push(
+                    ...window.festivosCalendario
+                );
+            }
+
+            // =====================================
+            // VALIDAR TAREAS
+            // =====================================
+            if (!window.tareasHoy) {
+
+                return eventos;
+            }
+
+            // =====================================
+            // AGRUPAR POR FECHA
+            // =====================================
+            const agrupados = {};
+
+            window.tareasHoy.forEach(t => {
+
+                // =================================
+                // VALIDAR FECHA
+                // =================================
+                if (!t.fecha_proxima) {
+                    return;
+                }
+
+                // =================================
+                // VALIDAR ESTADO
+                // =================================
+                if (
+                    t.estado === "TERMINADO"
+                ) {
+                    return;
+                }
+
+                // =================================
+                // FORMATEAR FECHA
+                // =================================
+                const fecha =
+                    String(t.fecha_proxima)
+                        .substring(0, 10);
+
+                // =================================
+                // CREAR FECHA
+                // =================================
+                if (!agrupados[fecha]) {
+
+                    agrupados[fecha] = {
+                        pendientes: 0,
+                        tareas: []
+                    };
+                }
+
+                // =================================
+                // CONTADOR
+                // =================================
+                agrupados[fecha].pendientes++;
+
+                // =================================
+                // PUSH
+                // =================================
+                agrupados[fecha].tareas.push(t);
+            });
+
+            // =====================================
+            // CREAR EVENTOS FULLCALENDAR
+            // =====================================
+            Object.keys(agrupados).forEach(fecha => {
+
+                const item =
+                    agrupados[fecha];
+
+                eventos.push({
+
+                    title:
+                        `📞 ${item.pendientes} pendientes`,
+
+                    start: fecha,
+
+                    allDay: true,
+
+                    color: "#dc2626",
+
+                    extendedProps: {
+
+                        fecha: fecha,
+
+                        pendientes:
+                            item.pendientes,
+
+                        tareas:
+                            item.tareas
+                    }
+                });
+            });
+
+            return eventos;
         }
 
     </script>
