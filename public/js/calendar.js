@@ -338,47 +338,81 @@ document.addEventListener("DOMContentLoaded", function () {
                 const eventos = [...festivos];
 
                 // =================================
-                // TAREAS PENDIENTES
+                // TAREAS CRM
                 // =================================
-                if (window.tareasHoy) {
+                if (window.tareasCalendario) {
 
-                    const agrupados = {};
+                    Object.keys(window.tareasCalendario)
+                        .forEach(fecha => {
 
-                    window.tareasHoy.forEach(t => {
+                            const dataDia =
+                                window.tareasCalendario[fecha];
 
-                        if (!t.fecha_proxima) return;
+                            if (!dataDia) {
+                                return;
+                            }
 
-                        const fecha =
-                            t.fecha_proxima
-                                .split("T")[0];
+                            const total =
+                                dataDia.total || 0;
 
-                        if (!agrupados[fecha]) {
+                            // =========================
+                            // SOLO SI HAY PENDIENTES
+                            // =========================
+                            if (total <= 0) {
+                                return;
+                            }
 
-                            agrupados[fecha] = {
-                                pendientes: 0
-                            };
-                        }
+                            // =========================
+                            // COLOR SEGUN CANTIDAD
+                            // =========================
+                            let color = "#2563eb";
 
-                        agrupados[fecha].pendientes++;
-                    });
+                            if (total >= 5) {
+                                color = "#d97706";
+                            }
 
-                    Object.keys(agrupados).forEach(fecha => {
+                            if (total >= 10) {
+                                color = "#dc2626";
+                            }
 
-                        eventos.push({
+                            // =========================
+                            // EVENTO
+                            // =========================
+                            eventos.push({
 
-                            title:
-                                `📞 Pendientes: ${agrupados[fecha].pendientes}`,
+                                title:
+                                    `📌 ${total} pendientes`,
 
-                            start: fecha,
+                                start: fecha,
 
-                            allDay: true,
+                                allDay: true,
 
-                            color: "#dc2626"
+                                color: color
+                            });
                         });
-                    });
                 }
 
                 successCallback(eventos);
+            },
+
+            // =====================================
+            // CLICK FECHA
+            // =====================================
+            dateClick: function (info) {
+
+                const fecha =
+                    info.dateStr;
+
+                // =================================
+                // CARGAR TAREAS DEL DIA
+                // =================================
+                if (
+                    typeof cargarTareasPorFecha ===
+                    "function"
+                ) {
+
+                    cargarTareasPorFecha(fecha);
+                }
             },
 
             // =====================================
@@ -599,6 +633,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
+    // =========================================
+    // GLOBAL
+    // =========================================
+    window.crmCalendar = calendar;
+
+    // =========================================
+    // RENDER
+    // =========================================
     calendar.render();
 
     // =========================================
