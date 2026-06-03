@@ -1491,111 +1491,456 @@ MODAL TAREAS NUEVO
         // =========================================
         async function abrirTarea(tarea) {
 
+            // =========================================
+            // GUARDAR TAREA ACTUAL
+            // =========================================
             window.tareaActual = tarea;
+
+            // =========================================
+            // GUARDAR INDEX
+            // =========================================
+            window.tareaActualIndex =
+                window.tareasHoy.findIndex(
+                    t => t.id === tarea.id
+                );
+
+            // =========================================
+            // ABRIR MODAL
+            // =========================================
+            document
+                .getElementById("modalTarea")
+                .classList
+                .remove("hidden");
 
             // =========================================
             // CLIENTE
             // =========================================
             document.getElementById("modalCliente").innerText =
-                tarea.cliente || "Sin cliente";
+                tarea.cliente || "SIN CLIENTE";
 
             // =========================================
             // RESET CAMPOS
             // =========================================
             document.getElementById("m_nota").value = "";
+
             document.getElementById("m_proxima_accion").value = "";
+
             document.getElementById("m_fecha_proxima").value = "";
-            document.getElementById("m_estado").value = "ACTIVO";
+
             document.getElementById("m_tipo").value = "LLAMADA";
 
-            // =========================================
-            // ELEMENTOS UI
-            // =========================================
-            const select = document.getElementById("contactoSelect");
+            document.getElementById("m_estado").value = "ACTIVO";
 
-            const inputContacto = document.getElementById("modalContacto");
-            const inputTelefono = document.getElementById("modalTelefono");
+            // =========================================
+            // ELEMENTOS
+            // =========================================
+            const select =
+                document.getElementById("contactoSelect");
 
-            // RESET
+            const inputTelefono =
+                document.getElementById("modalTelefono");
+
+            // =========================================
+            // RESET UI
+            // =========================================
             select.innerHTML = "";
-            inputContacto.value = "";
+
             inputTelefono.value = "";
+
+            // =========================================
+            // CONTACTO PRINCIPAL
+            // =========================================
+            const contactoPrincipal = {
+                nombre: tarea.contacto || "",
+                telefono: tarea.tel_contacto || ""
+            };
 
             try {
 
-                const res = await fetch(`/api/clientes/${tarea.cliente_id}/contactos`);
+                // =========================================
+                // CONSULTAR CONTACTOS ADICIONALES
+                // =========================================
+                const res = await fetch(
+                    `/api/clientes/${tarea.cliente_id}/contactos`
+                );
+
                 const contactos = await res.json();
 
                 // =========================================
-                // CASO 1: HAY CONTACTOS ADICIONALES
+                // OPTION DEFAULT
                 // =========================================
-                if (contactos && contactos.length > 0) {
+                select.innerHTML =
+                    `<option value="">SELECCIONE CONTACTO</option>`;
 
-                    select.innerHTML = `<option value="">Seleccione contacto</option>`;
+                // =========================================
+                // AGREGAR CONTACTO PRINCIPAL
+                // =========================================
+                const optPrincipal =
+                    document.createElement("option");
 
-                    // agregar contactos adicionales
+                optPrincipal.value =
+                    JSON.stringify(contactoPrincipal);
+
+                optPrincipal.textContent =
+                    `${contactoPrincipal.nombre} - ${contactoPrincipal.telefono}`;
+
+                select.appendChild(optPrincipal);
+
+                // =========================================
+                // AGREGAR CONTACTOS ADICIONALES
+                // =========================================
+                if (Array.isArray(contactos)) {
+
                     contactos.forEach(c => {
-                        const opt = document.createElement("option");
+
+                        // evitar duplicados
+                        if (
+                            c.nombre === contactoPrincipal.nombre &&
+                            c.telefono === contactoPrincipal.telefono
+                        ) {
+                            return;
+                        }
+
+                        const opt =
+                            document.createElement("option");
 
                         opt.value = JSON.stringify({
-                            origen: "CONTACTO",
-                            data: c
+                            nombre: c.nombre || "",
+                            telefono: c.telefono || ""
                         });
 
-                        opt.textContent = `${c.nombre} - ${c.telefono || ""}`;
+                        opt.textContent =
+                            `${c.nombre || ""} - ${c.telefono || ""}`;
 
                         select.appendChild(opt);
                     });
-
-                    // agregar contacto principal de clientes también
-                    const principal = {
-                        origen: "CLIENTE",
-                        data: {
-                            nombre: tarea.contacto || "",
-                            telefono: tarea.tel_contacto || ""
-                        }
-                    };
-
-                    const optPrincipal = document.createElement("option");
-                    optPrincipal.value = JSON.stringify(principal);
-                    optPrincipal.textContent = `${principal.data.nombre} - ${principal.data.telefono}`;
-
-                    select.appendChild(optPrincipal);
-
-                } else {
-
-                    // =========================================
-                    // CASO 2: SOLO CONTACTO UNICO (CLIENTES)
-                    // =========================================
-
-                    select.innerHTML = `<option value="UNICO">CONTACTO ÚNICO</option>`;
-
-                    inputContacto.value = tarea.contacto || "";
-                    inputTelefono.value = tarea.tel_contacto || "";
                 }
 
                 // =========================================
-                // EVENTO SELECT
+                // SELECCIONAR CONTACTO PRINCIPAL
+                // =========================================
+                select.selectedIndex = 1;
+
+                inputTelefono.value =
+                    contactoPrincipal.telefono || "";
+
+                // =========================================
+                // CAMBIO DE CONTACTO
                 // =========================================
                 select.onchange = function () {
 
-                    if (!select.value || select.value === "UNICO") return;
+                    if (!select.value) {
 
-                    const parsed = JSON.parse(select.value);
+                        inputTelefono.value = "";
+                        return;
+                    }
 
-                    inputContacto.value = parsed.data.nombre || "";
-                    inputTelefono.value = parsed.data.telefono || "";
+                    const contacto =
+                        JSON.parse(select.value);
+
+                    inputTelefono.value =
+                        contacto.telefono || "";
                 };
 
             } catch (err) {
 
                 console.error(err);
 
-                select.innerHTML = `<option value="UNICO">CONTACTO ÚNICO</option>`;
+                // =========================================
+                // FALLBACK
+                // =========================================
+                select.innerHTML = "";
 
-                inputContacto.value = tarea.contacto || "";
-                inputTelefono.value = tarea.tel_contacto || "";
+                const opt =
+                    document.createElement("option");
+
+                opt.value =
+                    JSON.stringify(contactoPrincipal);
+
+                opt.textContent =
+                    `${contactoPrincipal.nombre} - ${contactoPrincipal.telefono}`;
+
+                select.appendChild(opt);
+
+                select.selectedIndex = 0;
+
+                inputTelefono.value =
+                    contactoPrincipal.telefono || "";
             }
+        }
+
+        async function guardarTarea() {
+
+            try {
+
+                // =========================================
+                // ESTADO
+                // =========================================
+                const estado =
+                    document.getElementById("m_estado").value;
+
+                // =========================================
+                // FECHA PROXIMA
+                // =========================================
+                const fechaInput =
+                    document.getElementById("m_fecha_proxima").value;
+
+                // =========================================
+                // CONTACTO SELECCIONADO
+                // =========================================
+                const contactoSelect =
+                    document.getElementById("contactoSelect");
+
+                let contactoFinal = "";
+                let telFinal = "";
+
+                if (contactoSelect.value) {
+
+                    const contacto =
+                        JSON.parse(contactoSelect.value);
+
+                    contactoFinal =
+                        contacto.nombre || "";
+
+                    telFinal =
+                        contacto.telefono || "";
+
+                } else {
+
+                    contactoFinal =
+                        window.tareaActual.contacto || "";
+
+                    telFinal =
+                        window.tareaActual.tel_contacto || "";
+                }
+
+                // =========================================
+                // BODY
+                // =========================================
+                const body = {
+
+                    cliente_id:
+                        window.tareaActual.cliente_id,
+
+                    contacto:
+                        contactoFinal,
+
+                    tel_contacto:
+                        telFinal,
+
+                    tipo:
+                        document.getElementById("m_tipo").value,
+
+                    nota:
+                        document.getElementById("m_nota").value,
+
+                    proxima_accion:
+                        document.getElementById("m_proxima_accion").value,
+
+                    fecha_proxima:
+                        fechaInput || null,
+
+                    fecha:
+                        new Date().toISOString(),
+
+                    asesor:
+                        localStorage.getItem("user"),
+
+                    estado:
+                        estado
+                };
+
+                // =========================================
+                // CREAR SEGUIMIENTO NUEVO
+                // =========================================
+                const res = await fetch("/api/seguimientos", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization":
+                            "Bearer " + localStorage.getItem("token")
+                    },
+
+                    body: JSON.stringify(body)
+                });
+
+                const data = await res.json();
+
+                if (!data.success) {
+
+                    alert("Error guardando seguimiento");
+                    return;
+                }
+
+                // =========================================
+                // CERRAR SEGUIMIENTOS VENCIDOS
+                // =========================================
+                await fetch("/api/seguimientos/cerrar-vencidos", {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization":
+                            "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                // =========================================
+                // RECARGAR
+                // =========================================
+                await cargarTareasHoy();
+
+                // =========================================
+                // CERRAR MODAL
+                // =========================================
+                cerrarModalTarea();
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert("Error servidor");
+            }
+        }
+
+        function renderTareasHoy(tareas) {
+
+            const container =
+                document.getElementById("taskList");
+
+            container.innerHTML = "";
+
+            // =========================================
+            // SIN TAREAS
+            // =========================================
+            if (!tareas || tareas.length === 0) {
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                No hay tareas para hoy
+            </div>
+        `;
+
+                return;
+            }
+
+            // =========================================
+            // VALIDAR ROL
+            // =========================================
+            const esAdmin =
+                localStorage.getItem("rol") === "ADMIN";
+
+            // =========================================
+            // RENDER
+            // =========================================
+            tareas.forEach((t, index) => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "task-item";
+
+                // =========================================
+                // CLICK ABRIR MODAL
+                // =========================================
+                div.onclick = () => {
+
+                    window.tareaActualIndex = index;
+
+                    abrirTarea(t);
+                };
+
+                div.innerHTML = `
+
+            <div class="task-title">
+                ${t.cliente || "Sin cliente"}
+            </div>
+
+            <div class="task-action">
+                ${t.proxima_accion || "SEGUIMIENTO"}
+            </div>
+
+            <div class="task-footer">
+
+                ${esAdmin
+                        ?
+                        `
+                    <span class="task-asesor">
+                        ${t.asesor || "Sin asesor"}
+                    </span>
+                    `
+                        :
+                        `
+                    <span></span>
+                    `
+                    }
+
+                <span>
+                    ${formatearFecha(t.fecha_proxima)}
+                </span>
+
+                <span class="task-state">
+                    ${t.estado || "ACTIVO"}
+                </span>
+
+            </div>
+        `;
+
+                container.appendChild(div);
+            });
+        }
+
+        function cerrarModalTarea() {
+
+            const modal =
+                document.getElementById("modalTarea");
+
+            // =========================================
+            // VALIDAR DATOS
+            // =========================================
+            if (modalTieneDatos()) {
+
+                const confirmar = confirm(
+                    "Hay información sin guardar. ¿Desea cerrar el modal?"
+                );
+
+                if (!confirmar) {
+                    return;
+                }
+            }
+
+            // =========================================
+            // OCULTAR MODAL
+            // =========================================
+            modal.classList.add("hidden");
+
+            // =========================================
+            // LIMPIAR CAMPOS
+            // =========================================
+            document.getElementById("modalCliente").innerText = "";
+
+            document.getElementById("contactoSelect").innerHTML =
+                `<option value="">Seleccione contacto</option>`;
+
+            document.getElementById("modalTelefono").value = "";
+
+            document.getElementById("m_fecha_proxima").value = "";
+
+            document.getElementById("m_tipo").value = "LLAMADA";
+
+            document.getElementById("m_estado").value = "ACTIVO";
+
+            document.getElementById("m_nota").value = "";
+
+            document.getElementById("m_proxima_accion").value = "";
+
+            // =========================================
+            // RESET VARIABLES
+            // =========================================
+            window.tareaActual = null;
         }
 
         // =========================================
@@ -1609,27 +1954,106 @@ MODAL TAREAS NUEVO
             const accion =
                 document.getElementById("m_proxima_accion").value.trim();
 
-            return nota !== "" || accion !== "";
+            const fecha =
+                document.getElementById("m_fecha_proxima").value.trim();
+
+            const tipo =
+                document.getElementById("m_tipo").value;
+
+            const estado =
+                document.getElementById("m_estado").value;
+
+            // =========================================
+            // VALIDAR CAMPOS ESCRITOS
+            // =========================================
+            return (
+                nota !== "" ||
+                accion !== "" ||
+                fecha !== "" ||
+                tipo !== "LLAMADA" ||
+                estado !== "ACTIVO"
+            );
         }
 
         // =========================================
-        // CERRAR MODAL
+        // ANTERIOR
         // =========================================
-        function cerrarModalTarea() {
+        function tareaAnterior() {
 
+            // =========================================
+            // VALIDAR PRIMER REGISTRO
+            // =========================================
+            if (window.tareaActualIndex <= 0) {
+
+                return;
+            }
+
+            // =========================================
+            // VALIDAR DATOS SIN GUARDAR
+            // =========================================
             if (modalTieneDatos()) {
 
                 const confirmar = confirm(
-                    "Hay información sin guardar. ¿Desea cerrar el modal?"
+                    "Hay información sin guardar. ¿Desea continuar?"
                 );
 
-                if (!confirmar) return;
+                if (!confirmar) {
+                    return;
+                }
             }
 
-            document
-                .getElementById("modalTarea")
-                .classList
-                .add("hidden");
+            // =========================================
+            // ANTERIOR
+            // =========================================
+            window.tareaActualIndex--;
+
+            abrirTarea(
+                window.tareasHoy[
+                window.tareaActualIndex
+                ]
+            );
+        }
+
+        // =========================================
+        // SIGUIENTE
+        // =========================================
+        function tareaSiguiente() {
+
+            // =========================================
+            // VALIDAR ÚLTIMO REGISTRO
+            // =========================================
+            if (
+                window.tareaActualIndex >=
+                window.tareasHoy.length - 1
+            ) {
+
+                return;
+            }
+
+            // =========================================
+            // VALIDAR DATOS SIN GUARDAR
+            // =========================================
+            if (modalTieneDatos()) {
+
+                const confirmar = confirm(
+                    "Hay información sin guardar. ¿Desea continuar?"
+                );
+
+                if (!confirmar) {
+                    return;
+                }
+            }
+
+            // =========================================
+            // SIGUIENTE
+            // =========================================
+            window.tareaActualIndex++;
+
+            abrirTarea(
+                window.tareasHoy[
+                window.tareaActualIndex
+                ]
+            );
         }
 
         // =========================================
@@ -1648,161 +2072,105 @@ MODAL TAREAS NUEVO
                 }
             }
         });
-        
-        // =========================================
-        // SIGUIENTE
-        // =========================================
-        function tareaSiguiente() {
 
-            if (
-                window.tareaActualIndex <
-                window.tareasHoy.length - 1
-            ) {
-
-                window.tareaActualIndex++;
-
-                abrirTarea(
-                    window.tareasHoy[
-                    window.tareaActualIndex
-                    ]
-                );
-            }
-        }
-
-        // =========================================
-        // ANTERIOR
-        // =========================================
-        function tareaAnterior() {
-
-            if (window.tareaActualIndex > 0) {
-
-                window.tareaActualIndex--;
-
-                abrirTarea(
-                    window.tareasHoy[
-                    window.tareaActualIndex
-                    ]
-                );
-            }
-        }
-
-        // =========================================
-        // GUARDAR
-        // =========================================
-        async function guardarTarea() {
+        async function cargarTareasHoy() {
 
             try {
 
-                const estado = document.getElementById("m_estado").value;
+                const res = await fetch("/api/seguimientos/tareas-hoy", {
 
-                // =========================================
-                // FECHA PRÓXIMA
-                // =========================================
-                const hoy = new Date();
+                    method: "GET",
 
-                let dias = 5;
-
-                if (estado === "STAND BY") dias = 30;
-                if (estado === "TERMINADO") dias = 0;
-
-                const fechaProxima = new Date();
-                fechaProxima.setDate(hoy.getDate() + dias);
-
-                // =========================================
-                // CONTACTO SELECCIONADO
-                // =========================================
-                const contactoSelect = document.getElementById("contactoSelect");
-
-                let contacto = null;
-                let tel = "";
-
-                if (contactoSelect.value) {
-
-                    contacto = JSON.parse(contactoSelect.value);
-                    tel = contacto.telefono || "";
-                }
-
-                // fallback seguro (si no hay contactos en cliente_contactos)
-                const contactoFinal =
-                    contacto?.nombre ||
-                    window.tareaActual.contacto ||
-                    "";
-
-                const telFinal =
-                    tel ||
-                    window.tareaActual.tel_contacto ||
-                    "";
-
-                // =========================================
-                // BODY
-                // =========================================
-                const body = {
-
-                    cliente_id: window.tareaActual.cliente_id,
-
-                    contacto: contactoFinal,
-
-                    tel_contacto: telFinal,
-
-                    tipo: document.getElementById("m_tipo").value,
-
-                    nota: document.getElementById("m_nota").value,
-
-                    proxima_accion: document.getElementById("m_proxima_accion").value,
-
-                    fecha_proxima: fechaProxima.toISOString().slice(0, 10),
-
-                    fecha: new Date().toISOString(),
-
-                    asesor: localStorage.getItem("user"),
-
-                    estado: estado
-                };
-
-                // =========================================
-                // CERRAR ANTERIORES
-                // =========================================
-                await fetch(`/api/seguimientos/cerrar-por-cliente/${window.tareaActual.cliente_id}`, {
-                    method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": "Bearer " + localStorage.getItem("token")
                     }
                 });
 
-                // =========================================
-                // CREAR SEGUIMIENTO
-                // =========================================
-                const res = await fetch(`/api/seguimientos`, {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + localStorage.getItem("token")
-                    },
-
-                    body: JSON.stringify(body)
-                });
-
                 const data = await res.json();
 
+                const container =
+                    document.getElementById("taskList");
+
+                // =========================================
+                // ERROR API
+                // =========================================
                 if (!data.success) {
-                    alert("Error guardando seguimiento");
+
+                    container.innerHTML = `
+                <div class="task-item empty">
+                    Error cargando tareas
+                </div>
+            `;
+
                     return;
                 }
 
                 // =========================================
-                // REFRESH
+                // LIMPIAR CALENDARIO GLOBAL
                 // =========================================
-                await cargarTareasHoy();
+                window.tareasCalendario = {};
 
-                cerrarModalTarea();
+                // =========================================
+                // GUARDAR TAREAS
+                // =========================================
+                window.tareasHoy = data.data || [];
+
+                // =========================================
+                // RECORRER TAREAS
+                // =========================================
+                window.tareasHoy.forEach(t => {
+
+                    if (!t.fecha_proxima) {
+                        return;
+                    }
+
+                    const fecha =
+                        String(t.fecha_proxima).substring(0, 10);
+
+                    // =========================================
+                    // CREAR FECHA SI NO EXISTE
+                    // =========================================
+                    if (!window.tareasCalendario[fecha]) {
+
+                        window.tareasCalendario[fecha] = [];
+                    }
+
+                    // =========================================
+                    // PUSH
+                    // =========================================
+                    window.tareasCalendario[fecha].push(t);
+                });
+
+                // =========================================
+                // RENDER
+                // =========================================
+                renderTareasHoy(window.tareasHoy);
+
+                // =========================================
+                // KPI
+                // =========================================
+                const pendientes =
+                    document.getElementById("seguimientosPendientes");
+
+                if (pendientes) {
+
+                    pendientes.innerText =
+                        window.tareasHoy.length;
+                }
 
             } catch (err) {
 
                 console.error(err);
-                alert("Error servidor");
+
+                const container =
+                    document.getElementById("taskList");
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                Error cargando tareas
+            </div>
+        `;
             }
         }
 
@@ -1936,281 +2304,6 @@ MODAL TAREAS NUEVO
                     maximumFractionDigits: 0
                 }
             ).format(valor || 0);
-        }
-
-        async function cargarTareasHoy() {
-
-            try {
-
-                const res = await fetch("/api/seguimientos/tareas-hoy", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + localStorage.getItem("token")
-                    }
-                });
-
-                const data = await res.json();
-
-                const container = document.getElementById("taskList");
-
-                if (!data.success) {
-
-                    container.innerHTML = `
-                <div class="task-item empty">
-                    Error cargando tareas
-                </div>
-            `;
-
-                    return;
-                }
-
-                // =========================================
-                // DATA GLOBAL (LISTA HOY)
-                // =========================================
-                window.tareasHoy = data.data || [];
-
-                // =========================================
-                // DATA FUTURA (CALENDARIO)
-                // =========================================
-                window.tareasCalendario = window.tareasCalendario || {};
-
-                window.tareasHoy.forEach(t => {
-
-                    if (!t.fecha_proxima) return;
-
-                    const fecha = t.fecha_proxima;
-
-                    if (!window.tareasCalendario[fecha]) {
-                        window.tareasCalendario[fecha] = [];
-                    }
-
-                    window.tareasCalendario[fecha].push(t);
-                });
-
-                // =========================================
-                // RENDER LISTA HOY
-                // =========================================
-                renderTareasHoy(window.tareasHoy);
-
-                // =========================================
-                // KPI PENDIENTES
-                // =========================================
-                const pendientes = document.getElementById("seguimientosPendientes");
-
-                if (pendientes) {
-                    pendientes.innerText = window.tareasHoy.length;
-                }
-
-            } catch (err) {
-
-                console.error(err);
-
-                const container = document.getElementById("taskList");
-
-                container.innerHTML = `
-            <div class="task-item empty">
-                Error cargando tareas
-            </div>
-        `;
-            }
-        }
-
-        function renderTareasHoy(tareas) {
-
-            const container =
-                document.getElementById("taskList");
-
-            container.innerHTML = "";
-
-            // =========================================
-            // SIN TAREAS
-            // =========================================
-            if (!tareas || tareas.length === 0) {
-
-                container.innerHTML = `
-            <div class="task-item empty">
-                No hay tareas para hoy
-            </div>
-        `;
-
-                return;
-            }
-
-            // =========================================
-            // VALIDAR ROL
-            // =========================================
-            const esAdmin =
-                localStorage.getItem("rol") === "ADMIN";
-
-            // =========================================
-            // RENDER
-            // =========================================
-            tareas.forEach(t => {
-
-                const div =
-                    document.createElement("div");
-
-                div.className = "task-item";
-
-                // =========================================
-                // CLICK ABRIR MODAL
-                // =========================================
-                div.onclick = () => abrirTarea(t);
-
-                div.innerHTML = `
-
-            <div class="task-title">
-                ${t.cliente || "Sin cliente"}
-            </div>
-
-            <div class="task-action">
-                ${t.proxima_accion || "SEGUIMIENTO"}
-            </div>
-
-            <div class="task-footer">
-
-                ${esAdmin
-                        ?
-                        `
-                    <span class="task-asesor">
-                        ${t.asesor || "Sin asesor"}
-                    </span>
-                    `
-                        :
-                        `
-                    <span></span>
-                    `
-                    }
-
-                <span>
-                    ${formatearFecha(t.fecha_proxima)}
-                </span>
-
-                <span class="task-state">
-                    ${t.estado || "ACTIVO"}
-                </span>
-
-            </div>
-        `;
-
-                container.appendChild(div);
-            });
-        }
-
-        function abrirTarea(tarea) {
-
-            // =========================================
-            // GUARDAR TAREA ACTUAL
-            // =========================================
-            window.tareaActual = tarea;
-
-            // =========================================
-            // GUARDAR ÍNDICE
-            // =========================================
-            window.tareaActualIndex =
-                window.tareasHoy.findIndex(
-                    t => t.id === tarea.id
-                );
-
-            // =========================================
-            // ABRIR MODAL
-            // =========================================
-            document
-                .getElementById("modalTarea")
-                .classList
-                .remove("hidden");
-
-            // =========================================
-            // HEADER
-            // =========================================
-            document.getElementById("modalCliente").innerText =
-                tarea.cliente || "Sin cliente";
-
-            document.getElementById("modalContacto").innerText =
-                tarea.contacto || "Sin contacto";
-
-            document.getElementById("modalTelefono").innerText =
-                tarea.tel_contacto || "Sin teléfono";
-
-            // =========================================
-            // FORMULARIO
-            // =========================================
-            document.getElementById("m_tipo").value =
-                tarea.tipo || "LLAMADA";
-
-            document.getElementById("m_nota").value =
-                tarea.nota || "";
-
-            document.getElementById("m_proxima_accion").value =
-                tarea.proxima_accion || "";
-
-            document.getElementById("m_fecha_proxima").value =
-                tarea.fecha_proxima
-                    ? tarea.fecha_proxima.split("T")[0]
-                    : "";
-
-            document.getElementById("m_estado").value =
-                tarea.estado || "ACTIVO";
-        }
-
-        // =========================================
-        // GUARDAR TAREA
-        // =========================================
-        async function guardarTarea() {
-
-            try {
-
-                const body = {
-
-                    cliente_id: window.tareaActual.cliente_id,
-                    contacto: window.tareaActual.contacto,
-                    tel_contacto: window.tareaActual.tel_contacto,
-
-                    tipo: document.getElementById("m_tipo").value,
-                    nota: document.getElementById("m_nota").value,
-                    proxima_accion: document.getElementById("m_proxima_accion").value,
-
-                    estado: document.getElementById("m_estado").value,
-
-                    fecha: new Date().toISOString()
-                };
-
-                // 1. CREAR NUEVO SEGUIMIENTO
-                const res = await fetch(`/api/seguimientos`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + localStorage.getItem("token")
-                    },
-                    body: JSON.stringify(body)
-                });
-
-                const data = await res.json();
-
-                if (!data.success) {
-                    alert("Error creando seguimiento");
-                    return;
-                }
-
-                // 2. CERRAR ANTERIORES DEL CLIENTE
-                await fetch(`/api/seguimientos/cerrar-anteriores/${window.tareaActual.cliente_id}`, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": "Bearer " + localStorage.getItem("token")
-                    }
-                });
-
-                // 3. RECARGAR TAREAS
-                await cargarTareasHoy();
-
-                // 4. SIGUIENTE
-                tareaSiguiente();
-
-            } catch (err) {
-                console.error(err);
-                alert("Error servidor");
-            }
         }
 
         function formatearFecha(fecha) {
