@@ -2453,6 +2453,51 @@ MODAL TAREAS NUEVO
                 pendientes.innerText =
                     tareas.length;
             }
+
+            // =========================================
+            // KPI SOLO EN VISTA DÍA DEL CALENDARIO
+            // =========================================
+            const calendar = window.crmCalendar;
+
+            if (calendar && calendar.view.type === "timeGridDay") {
+
+                const tareasDelDia = tareas || [];
+
+                // SEGUIMIENTOS HOY (día activo del calendario)
+                const seguimientosHoyEl =
+                    document.getElementById("seguimientosHoy");
+
+                if (seguimientosHoyEl) {
+                    seguimientosHoyEl.innerText =
+                        tareasDelDia.filter(t => t.estado === "ACTIVO").length;
+                }
+
+                // COTIZACIONES HOY (si vienen dentro de la tarea o dataset global)
+                const cotizacionesHoyEl =
+                    document.getElementById("cotizacionesHoy");
+
+                if (cotizacionesHoyEl && window.tareasHoy) {
+
+                    cotizacionesHoyEl.innerText =
+                        window.tareasHoy.filter(t =>
+                            t.tipo === "COTIZACION" &&
+                            String(t.fecha_proxima).substring(0, 10) === fecha
+                        ).length;
+                }
+
+                // PEDIDOS HOY
+                const pedidosHoyEl =
+                    document.getElementById("pedidosHoy");
+
+                if (pedidosHoyEl && window.tareasHoy) {
+
+                    pedidosHoyEl.innerText =
+                        window.tareasHoy.filter(t =>
+                            t.tipo === "PEDIDO" &&
+                            String(t.fecha_proxima).substring(0, 10) === fecha
+                        ).length;
+                }
+            }
         }
 
         // =========================================
