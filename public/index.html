@@ -2297,22 +2297,15 @@ MODAL TAREAS NUEVO
 
             try {
 
-                // =========================================
-                // TAREAS PANEL
-                // =========================================
-                const res = await fetch(
-                    "/api/seguimientos/tareas-hoy",
-                    {
+                const res = await fetch("/api/seguimientos/tareas-hoy", {
 
-                        method: "GET",
+                    method: "GET",
 
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        }
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
                     }
-                );
+                });
 
                 const data = await res.json();
 
@@ -2334,15 +2327,61 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // GUARDAR SOLO LISTA LATERAL
+                // LIMPIAR CALENDARIO GLOBAL
                 // =========================================
-                window.tareasHoy =
-                    Array.isArray(data.data)
-                        ? data.data
-                        : [];
+                window.tareasCalendario = {};
 
                 // =========================================
-                // RENDER PANEL
+                // GUARDAR TAREAS
+                // =========================================
+                window.tareasHoy = data.data || [];
+
+                // =========================================
+                // RECORRER TAREAS
+                // =========================================
+                window.tareasHoy.forEach(t => {
+
+                    // =========================================
+                    // VALIDAR FECHA
+                    // =========================================
+                    if (!t.fecha_proxima) {
+                        return;
+                    }
+
+                    // =========================================
+                    // SOLO ACTIVOS
+                    // =========================================
+                    if (t.estado !== "ACTIVO") {
+                        return;
+                    }
+
+                    const fecha =
+                        String(t.fecha_proxima).substring(0, 10);
+
+                    // =========================================
+                    // CREAR FECHA
+                    // =========================================
+                    if (!window.tareasCalendario[fecha]) {
+
+                        window.tareasCalendario[fecha] = {
+                            total: 0,
+                            tareas: []
+                        };
+                    }
+
+                    // =========================================
+                    // CONTADOR
+                    // =========================================
+                    window.tareasCalendario[fecha].total++;
+
+                    // =========================================
+                    // PUSH TAREA
+                    // =========================================
+                    window.tareasCalendario[fecha].tareas.push(t);
+                });
+
+                // =========================================
+                // RENDER TAREAS DEL DIA ACTUAL
                 // =========================================
                 renderTareasHoy(window.tareasHoy);
 
@@ -2350,24 +2389,25 @@ MODAL TAREAS NUEVO
                 // KPI
                 // =========================================
                 const pendientes =
-                    document.getElementById(
-                        "seguimientosPendientes"
-                    );
+                    document.getElementById("seguimientosPendientes");
 
                 if (pendientes) {
 
                     pendientes.innerText =
                         window.tareasHoy.filter(
-
                             t => t.estado === "ACTIVO"
-
                         ).length;
                 }
 
                 // =========================================
-                // CARGAR CALENDARIO GLOBAL
+                // REFRESH CALENDARIO
                 // =========================================
-                await cargarEventosCalendario();
+                if (
+                    typeof renderCalendarioTareas === "function"
+                ) {
+
+                    renderCalendarioTareas();
+                }
 
             } catch (err) {
 
@@ -2381,122 +2421,6 @@ MODAL TAREAS NUEVO
                 Error cargando tareas
             </div>
         `;
-            }
-        }
-
-
-        // =========================================
-        // EVENTOS CALENDARIO
-        // =========================================
-        async function cargarEventosCalendario() {
-
-            try {
-
-                // =========================================
-                // TODOS LOS ACTIVOS
-                // =========================================
-                const res = await fetch(
-                    "/api/seguimientos/calendario",
-                    {
-
-                        method: "GET",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        }
-                    }
-                );
-
-                const data = await res.json();
-
-                // =========================================
-                // RESET
-                // =========================================
-                window.tareasCalendario = {};
-
-                // =========================================
-                // VALIDAR
-                // =========================================
-                if (
-
-                    !data.success ||
-                    !Array.isArray(data.data)
-
-                ) {
-
-                    return;
-                }
-
-                // =========================================
-                // RECORRER
-                // =========================================
-                data.data.forEach(t => {
-
-                    // =========================================
-                    // VALIDAR
-                    // =========================================
-                    if (!t.fecha_proxima) {
-                        return;
-                    }
-
-                    // =========================================
-                    // SOLO ACTIVOS
-                    // =========================================
-                    if (t.estado !== "ACTIVO") {
-                        return;
-                    }
-
-                    // =========================================
-                    // FECHA NORMALIZADA
-                    // =========================================
-                    const fecha =
-                        String(t.fecha_proxima)
-                            .substring(0, 10);
-
-                    // =========================================
-                    // CREAR
-                    // =========================================
-                    if (!window.tareasCalendario[fecha]) {
-
-                        window.tareasCalendario[fecha] = {
-
-                            total: 0,
-
-                            tareas: []
-                        };
-                    }
-
-                    // =========================================
-                    // CONTADOR
-                    // =========================================
-                    window.tareasCalendario[fecha].total++;
-
-                    // =========================================
-                    // PUSH
-                    // =========================================
-                    window.tareasCalendario[fecha]
-                        .tareas
-                        .push(t);
-                });
-
-                // =========================================
-                // REFRESH CALENDARIO
-                // =========================================
-                if (
-
-                    typeof renderCalendarioTareas ===
-                    "function"
-
-                ) {
-
-                    renderCalendarioTareas();
-                }
-
-            } catch (err) {
-
-                console.error(err);
             }
         }
 
