@@ -2298,7 +2298,7 @@ MODAL TAREAS NUEVO
             try {
 
                 // =========================================
-                // TAREAS PANEL (AHORA POR FECHA ACTIVA)
+                // TAREAS PANEL (POR FECHA ACTIVA)
                 // =========================================
                 const res = await fetch(
                     `/api/seguimientos/tareas-dia?fecha=${window.fechaActiva}`,
@@ -2332,7 +2332,7 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // GUARDAR SOLO LISTA LATERAL
+                // GUARDAR LISTA PANEL
                 // =========================================
                 window.tareasHoy =
                     Array.isArray(data.data)
@@ -2345,7 +2345,7 @@ MODAL TAREAS NUEVO
                 renderTareasHoy(window.tareasHoy);
 
                 // =========================================
-                // KPI LOCAL (DEL DÍA ACTIVO)
+                // KPI LOCAL (DÍA ACTIVO)
                 // =========================================
                 const pendientes =
                     document.getElementById("seguimientosPendientes");
@@ -2359,9 +2359,26 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // CARGAR CALENDARIO GLOBAL
+                // 🔥 IMPORTANTE: ACTUALIZAR CALENDARIO GLOBAL
                 // =========================================
-                await cargarEventosCalendario();
+                if (!window.tareasCalendario) {
+                    window.tareasCalendario = {};
+                }
+
+                // Agrupar SOLO el día activo (para que el calendario no quede vacío)
+                const agrupadoDia = {
+                    total: window.tareasHoy.length,
+                    tareas: window.tareasHoy
+                };
+
+                window.tareasCalendario[window.fechaActiva] = agrupadoDia;
+
+                // =========================================
+                // REFRESCAR CALENDARIO
+                // =========================================
+                if (window.crmCalendar) {
+                    window.crmCalendar.refetchEvents();
+                }
 
             } catch (err) {
 
