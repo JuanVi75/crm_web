@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    window.fechaActiva = new Date().toISOString().split("T")[0];
 
     const calendarEl =
         document.getElementById("calendar");
@@ -30,6 +31,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             return `${y}-${m}-${d}`;
         }
+
+        // =========================================
+        // FESTIVOS
+        // =========================================
+        const festivos =
+            generarFestivosColombia(
+                2000,
+                2050
+            );
 
         // =====================================
         // ADD HOLIDAY
@@ -263,15 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // =========================================
-    // FESTIVOS
-    // =========================================
-    const festivos =
-        generarFestivosColombia(
-            2025,
-            2035
-        );
-
-    // =========================================
     // CALENDAR
     // =========================================
     const calendar =
@@ -338,59 +339,63 @@ document.addEventListener("DOMContentLoaded", function () {
                 const eventos = [...festivos];
 
                 // =================================
+                // VALIDACIÓN SEGURA
+                // =================================
+                if (
+                    !window.tareasCalendario ||
+                    typeof window.tareasCalendario !== "object"
+                ) {
+                    successCallback(eventos);
+                    return;
+                }
+
+                // =================================
                 // TAREAS CRM
                 // =================================
-                if (window.tareasCalendario) {
+                Object.keys(window.tareasCalendario).forEach(fecha => {
 
-                    Object.keys(window.tareasCalendario)
-                        .forEach(fecha => {
+                    const dataDia =
+                        window.tareasCalendario[fecha];
 
-                            const dataDia =
-                                window.tareasCalendario[fecha];
+                    if (
+                        !dataDia ||
+                        typeof dataDia !== "object"
+                    ) {
+                        return;
+                    }
 
-                            if (!dataDia) {
-                                return;
-                            }
+                    const total =
+                        Number(dataDia.total) || 0;
 
-                            const total =
-                                dataDia.total || 0;
+                    // =========================
+                    // SOLO SI HAY PENDIENTES
+                    // =========================
+                    if (total <= 0) {
+                        return;
+                    }
 
-                            // =========================
-                            // SOLO SI HAY PENDIENTES
-                            // =========================
-                            if (total <= 0) {
-                                return;
-                            }
+                    // =========================
+                    // COLOR SEGUN CANTIDAD
+                    // =========================
+                    let color = "#2563eb";
 
-                            // =========================
-                            // COLOR SEGUN CANTIDAD
-                            // =========================
-                            let color = "#2563eb";
+                    if (total >= 10) {
+                        color = "#dc2626";
+                    } else if (total >= 5) {
+                        color = "#d97706";
+                    }
 
-                            if (total >= 5) {
-                                color = "#d97706";
-                            }
+                    // =========================
+                    // EVENTO
+                    // =========================
+                    eventos.push({
 
-                            if (total >= 10) {
-                                color = "#dc2626";
-                            }
-
-                            // =========================
-                            // EVENTO
-                            // =========================
-                            eventos.push({
-
-                                title:
-                                    `📌 ${total} pendientes`,
-
-                                start: fecha,
-
-                                allDay: true,
-
-                                color: color
-                            });
-                        });
-                }
+                        title: `📌 ${total} pendientes`,
+                        start: fecha,
+                        allDay: true,
+                        color: color
+                    });
+                });
 
                 successCallback(eventos);
             },
@@ -400,18 +405,34 @@ document.addEventListener("DOMContentLoaded", function () {
             // =====================================
             dateClick: function (info) {
 
-                const fecha =
-                    info.dateStr;
+                const fecha = info.dateStr;
 
                 // =================================
-                // CARGAR TAREAS DEL DIA
+                // GUARDAR FECHA GLOBAL
                 // =================================
-                if (
-                    typeof cargarTareasPorFecha ===
-                    "function"
-                ) {
+                window.fechaActiva = fecha;
 
+                // =================================
+                // TAREAS DEL DÍA
+                // =================================
+                if (typeof cargarTareasPorFecha === "function") {
                     cargarTareasPorFecha(fecha);
+                }
+
+                // =================================
+                // KPI (forzar sincronización)
+                // =================================
+                if (typeof cargarKPIs === "function") {
+                    cargarKPIs(fecha);
+                }
+
+                // =================================
+                // FORZAR CONSISTENCIA VISUAL (IMPORTANTE)
+                // =================================
+                const calendar = window.crmCalendar;
+
+                if (calendar) {
+                    calendar.gotoDate(fecha);
                 }
             },
 
@@ -642,6 +663,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // RENDER
     // =========================================
     calendar.render();
+
+    const hoy = new Date().toISOString().split("T")[0];
+
+    window.fechaActiva = hoy;
+
+    calendar.changeView("timeGridDay");
+
+    cargarTareasPorFecha(hoy);
 
     // =========================================
     // RESIZE
