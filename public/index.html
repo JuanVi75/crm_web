@@ -21,94 +21,74 @@
         }
 
         /* =========================================
-MODAL TAREAS
+MODAL
 ========================================= */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.82);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999999;
-        }
-
-        .modal-overlay.hidden {
-            display: none;
-        }
 
         .modal-box {
-            width: 760px;
-            max-width: 95%;
-            max-height: 92vh;
+            width: 95%;
+            max-width: 650px;
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 16px;
             overflow: hidden;
-            background: #111827;
-            border: 1px solid #1e293b;
-            border-radius: 22px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
         }
 
+        /* =========================================
+TIPOGRAFIA GENERAL
+========================================= */
+
+        .modal-box,
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea,
+        .modal-box button,
+        .modal-box label {
+            font-family: Aptos, sans-serif;
+            font-size: 12px;
+        }
+
+        /* =========================================
+HEADER
+========================================= */
+
         .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #1e293b;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
+            margin-bottom: 12px;
         }
 
         .modal-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #f8fafc;
-            line-height: 1.2;
-        }
-
-        .modal-subtitle {
-            margin-top: 6px;
-            font-size: 13px;
-            color: #94a3b8;
-        }
-
-        .modal-close {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 10px;
-            background: #1e293b;
-            color: #cbd5e1;
-            cursor: pointer;
-            font-size: 18px;
-            transition: 0.2s;
-        }
-
-        .modal-close:hover {
-            background: #ef4444;
             color: white;
+            font-size: 16px;
+            font-weight: 600;
         }
+
+        /* =========================================
+BODY
+========================================= */
 
         .modal-body {
-            padding: 24px;
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 10px;
         }
+
+        /* =========================================
+FORM GROUP
+========================================= */
 
         .form-group {
             display: flex;
             flex-direction: column;
+            gap: 4px;
         }
 
         .form-group label {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 8px;
+            color: #cbd5e1;
             font-weight: 600;
         }
+
+        /* =========================================
+INPUTS
+========================================= */
 
         .form-group input,
         .form-group select,
@@ -116,49 +96,50 @@ MODAL TAREAS
             width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 6px;
+            border-radius: 10px;
+            padding: 8px;
             color: white;
             outline: none;
-            font-size: 12px;
-            transition: 0.2s;
+            box-sizing: border-box;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #2563eb;
-            background: #0f172a;
-        }
+        /* =========================================
+TEXTAREA PEQUEÑO
+========================================= */
 
         .form-group textarea {
-            resize: vertical;
-            min-height: 130px;
+            resize: none;
+            min-height: 55px;
+            max-height: 55px;
         }
 
-        .form-row {
+        /* =========================================
+FILA 3 COLUMNAS
+========================================= */
+
+        .form-row-3 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
         }
+
+        /* =========================================
+FOOTER
+========================================= */
 
         .modal-footer {
-            padding: 20px 24px;
-            border-top: 1px solid #1e293b;
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
         }
 
         .modal-btn {
             border: none;
-            border-radius: 12px;
-            padding: 13px 18px;
-            font-size: 13px;
-            font-weight: 600;
+            border-radius: 10px;
+            padding: 9px 12px;
             cursor: pointer;
-            transition: 0.2s;
+            font-weight: 600;
         }
 
         .primary-btn {
@@ -166,26 +147,14 @@ MODAL TAREAS
             color: white;
         }
 
-        .primary-btn:hover {
-            background: #1d4ed8;
-        }
-
         .secondary-btn {
             background: #334155;
             color: white;
         }
 
-        .secondary-btn:hover {
-            background: #475569;
-        }
-
         .danger-btn {
             background: #dc2626;
             color: white;
-        }
-
-        .danger-btn:hover {
-            background: #b91c1c;
         }
 
 
@@ -1354,8 +1323,8 @@ HIDDEN
     </script>
 
     <!-- =========================================
-        MODAL TAREAS (AJUSTADO)
-    ========================================= -->
+MODAL TAREAS NUEVO
+========================================= -->
     <div class="modal-overlay hidden" id="modalTarea">
 
         <div class="modal-box">
@@ -1364,96 +1333,121 @@ HIDDEN
             <div class="modal-header">
 
                 <div class="modal-title" id="modalCliente">
-                    Cliente
+                    CLIENTE
                 </div>
-
-                <button class="modal-close" onclick="cerrarModalTarea()">
-                    ✕
-                </button>
 
             </div>
 
             <!-- BODY -->
             <div class="modal-body">
 
-                <!-- CONTACTOS -->
-                <div class="form-group" id="grupoSelectContacto">
+                <!-- CONTACTO -->
+                <div class="form-group">
 
-                    <label>Contactos del Cliente</label>
+                    <label>CONTACTO</label>
 
                     <select id="contactoSelect">
-                        <option value="">Seleccione contacto</option>
+                        <option value="">Cargando contactos...</option>
                     </select>
 
                 </div>
 
-                <!-- CONTACTO + TELEFONO -->
-                <div class="form-row">
-
-                    <div class="form-group">
-                        <label>Contacto</label>
-                        <input type="text" id="modalContacto" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Teléfono</label>
-                        <input type="text" id="modalTelefono" readonly>
-                    </div>
-
-                </div>
-
-                <!-- TIPO -->
+                <!-- TELEFONO -->
                 <div class="form-group">
 
-                    <label>Tipo</label>
+                    <label>TEL CONTACTO</label>
 
-                    <select id="m_tipo">
-                        <option value="LLAMADA">LLAMADA</option>
-                        <option value="LLAMADA">FACEBOOK</option>
-                        <option value="VISITA">VISITA</option>
-                        <option value="WHATSAPP">WHATSAPP</option>
-                        <option value="EMAIL">EMAIL</option>
-                        <option value="COTIZACION">COTIZACION</option>
-                    </select>
+                    <input type="text" id="modalTelefono" readonly>
 
                 </div>
 
-                <!-- NOTA (MAS PEQUEÑO) -->
-                <div class="form-group">
+                <!-- FECHA + TIPO + ESTADO -->
+                <div class="form-row-3">
 
-                    <label>Nota</label>
-                    <textarea id="m_nota" rows="1"></textarea>
-
-                </div>
-
-                <!-- PROXIMA ACCION (SIEMPRE VACIO) -->
-                <div class="form-group">
-
-                    <label>Próxima Acción</label>
-                    <input type="text" id="m_proxima_accion" value="">
-                </div>
-
-                <!-- FECHA + ESTADO -->
-                <div class="form-row">
-
+                    <!-- FECHA -->
                     <div class="form-group">
 
-                        <label>Próxima Fecha</label>
+                        <label>PROXIMA FECHA</label>
+
                         <input type="date" id="m_fecha_proxima">
 
                     </div>
 
-                    <div class="form-group">
+                    <!-- TIPO -->
+                    <div class="form-group small-field">
 
-                        <label>Estado</label>
+                        <label>TIPO</label>
 
-                        <select id="m_estado">
-                            <option value="ACTIVO" selected>ACTIVO</option>
-                            <option value="STAND BY">STAND BY</option>
-                            <option value="TERMINADO">TERMINADO</option>
+                        <select id="m_tipo">
+
+                            <option value="LLAMADA" selected>
+                                LLAMADA
+                            </option>
+
+                            <option value="WHATSAPP">
+                                WHATSAPP
+                            </option>
+
+                            <option value="FACEBOOK">
+                                FACEBOOK
+                            </option>
+
+                            <option value="VISITA">
+                                VISITA
+                            </option>
+
+                            <option value="EMAIL">
+                                EMAIL
+                            </option>
+
+                            <option value="COTIZACION">
+                                COTIZACION
+                            </option>
+
                         </select>
 
                     </div>
+
+                    <!-- ESTADO -->
+                    <div class="form-group small-field">
+
+                        <label>ESTADO</label>
+
+                        <select id="m_estado">
+
+                            <option value="ACTIVO" selected>
+                                ACTIVO
+                            </option>
+
+                            <option value="STAND BY">
+                                STAND BY
+                            </option>
+
+                            <option value="TERMINADO">
+                                TERMINADO
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- NOTA -->
+                <div class="form-group">
+
+                    <label>NOTA</label>
+
+                    <textarea id="m_nota" rows="2" placeholder=""></textarea>
+
+                </div>
+
+                <!-- PROXIMA ACCION -->
+                <div class="form-group">
+
+                    <label>PROXIMA ACCION</label>
+
+                    <input type="text" id="m_proxima_accion" value="">
 
                 </div>
 
@@ -1463,20 +1457,19 @@ HIDDEN
             <div class="modal-footer">
 
                 <button class="modal-btn secondary-btn" onclick="tareaAnterior()">
-                    ⬅ Anterior
-                </button>
+                    < </button>
 
-                <button class="modal-btn primary-btn" onclick="guardarTarea()">
-                    💾 Guardar
-                </button>
+                        <button class="modal-btn primary-btn" onclick="guardarTarea()">
+                            GUARDAR
+                        </button>
 
-                <button class="modal-btn primary-btn" onclick="tareaSiguiente()">
-                    ➡ Siguiente
-                </button>
+                        <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">
+                            >
+                        </button>
 
-                <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
-                    ✕ Cerrar
-                </button>
+                        <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
+                            CERRAR
+                        </button>
 
             </div>
 
@@ -1606,30 +1599,56 @@ HIDDEN
         }
 
         // =========================================
+        // VALIDAR SI HAY DATOS
+        // =========================================
+        function modalTieneDatos() {
+
+            const nota =
+                document.getElementById("m_nota").value.trim();
+
+            const accion =
+                document.getElementById("m_proxima_accion").value.trim();
+
+            return nota !== "" || accion !== "";
+        }
+
+        // =========================================
         // CERRAR MODAL
         // =========================================
         function cerrarModalTarea() {
 
-            document.getElementById("modalTarea").classList.add("hidden");
+            if (modalTieneDatos()) {
 
-            window.tareaActual = null;
+                const confirmar = confirm(
+                    "Hay información sin guardar. ¿Desea cerrar el modal?"
+                );
 
-            const select = document.getElementById("contactoSelect");
-
-            if (select) {
-                select.innerHTML = `<option value="">Seleccione contacto</option>`;
+                if (!confirmar) return;
             }
 
-            document.getElementById("modalContacto").innerText = "Seleccionar";
-            document.getElementById("modalTelefono").innerText = "--";
-
-            document.getElementById("m_nota").value = "";
-            document.getElementById("m_proxima_accion").value = "";
-            document.getElementById("m_fecha_proxima").value = "";
-            document.getElementById("m_tipo").value = "LLAMADA";
-            document.getElementById("m_estado").value = "ACTIVO";
+            document
+                .getElementById("modalTarea")
+                .classList
+                .add("hidden");
         }
 
+        // =========================================
+        // CERRAR CON ESC
+        // =========================================
+        document.addEventListener("keydown", function (e) {
+
+            if (e.key === "Escape") {
+
+                const modal =
+                    document.getElementById("modalTarea");
+
+                if (!modal.classList.contains("hidden")) {
+
+                    cerrarModalTarea();
+                }
+            }
+        });
+        
         // =========================================
         // SIGUIENTE
         // =========================================
