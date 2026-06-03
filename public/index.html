@@ -2327,40 +2327,27 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
+                // VALIDAR DATA
+                // =========================================
+                const tareas = Array.isArray(data.data)
+                    ? data.data
+                    : [];
+
+                // =========================================
                 // LIMPIAR CALENDARIO GLOBAL
                 // =========================================
                 window.tareasCalendario = {};
 
                 // =========================================
-                // GUARDAR TAREAS
+                // AGRUPAR TAREAS POR FECHA
                 // =========================================
-                window.tareasHoy = data.data || [];
+                tareas.forEach(t => {
 
-                // =========================================
-                // RECORRER TAREAS
-                // =========================================
-                window.tareasHoy.forEach(t => {
+                    if (!t.fecha_proxima) return;
+                    if (t.estado !== "ACTIVO") return;
 
-                    // =========================================
-                    // VALIDAR FECHA
-                    // =========================================
-                    if (!t.fecha_proxima) {
-                        return;
-                    }
+                    const fecha = String(t.fecha_proxima).substring(0, 10);
 
-                    // =========================================
-                    // SOLO ACTIVOS
-                    // =========================================
-                    if (t.estado !== "ACTIVO") {
-                        return;
-                    }
-
-                    const fecha =
-                        String(t.fecha_proxima).substring(0, 10);
-
-                    // =========================================
-                    // CREAR FECHA
-                    // =========================================
                     if (!window.tareasCalendario[fecha]) {
 
                         window.tareasCalendario[fecha] = {
@@ -2369,24 +2356,27 @@ MODAL TAREAS NUEVO
                         };
                     }
 
-                    // =========================================
-                    // CONTADOR
-                    // =========================================
                     window.tareasCalendario[fecha].total++;
-
-                    // =========================================
-                    // PUSH TAREA
-                    // =========================================
                     window.tareasCalendario[fecha].tareas.push(t);
                 });
 
                 // =========================================
-                // RENDER TAREAS DEL DIA ACTUAL
+                // GUARDAR GLOBAL
                 // =========================================
-                renderTareasHoy(window.tareasHoy);
+                window.tareasHoy = tareas;
 
                 // =========================================
-                // KPI
+                // RENDER LISTA SEGÚN FECHA ACTIVA
+                // =========================================
+                const fechaActiva = window.fechaActiva;
+
+                const tareasDelDia =
+                    (window.tareasCalendario[fechaActiva]?.tareas) || [];
+
+                renderTareasHoy(tareasDelDia);
+
+                // =========================================
+                // KPI DEL DÍA ACTIVO (NO TOTAL GLOBAL)
                 // =========================================
                 const pendientes =
                     document.getElementById("seguimientosPendientes");
@@ -2394,19 +2384,14 @@ MODAL TAREAS NUEVO
                 if (pendientes) {
 
                     pendientes.innerText =
-                        window.tareasHoy.filter(
-                            t => t.estado === "ACTIVO"
-                        ).length;
+                        tareasDelDia.filter(t => t.estado === "ACTIVO").length;
                 }
 
                 // =========================================
                 // REFRESH CALENDARIO
                 // =========================================
-                if (
-                    typeof renderCalendarioTareas === "function"
-                ) {
-
-                    renderCalendarioTareas();
+                if (window.crmCalendar) {
+                    window.crmCalendar.refetchEvents();
                 }
 
             } catch (err) {
