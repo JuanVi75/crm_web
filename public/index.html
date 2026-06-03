@@ -1514,7 +1514,7 @@ MODAL TAREAS NUEVO
             try {
 
                 // =========================================
-                // VALIDAR TAREA
+                // VALIDAR
                 // =========================================
                 if (!tarea) {
 
@@ -1524,17 +1524,17 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // RESET VALIDACION GUARDADO
+                // RESET GUARDADO
                 // =========================================
                 window.seguimientoGuardado = false;
 
                 // =========================================
-                // GUARDAR TAREA ACTUAL
+                // GUARDAR ACTUAL
                 // =========================================
                 window.tareaActual = tarea;
 
                 // =========================================
-                // GUARDAR INDEX
+                // INDEX
                 // =========================================
                 window.tareaActualIndex =
                     window.tareasHoy.findIndex(
@@ -1544,10 +1544,10 @@ MODAL TAREAS NUEVO
                 // =========================================
                 // MODAL
                 // =========================================
-                const modal =
-                    document.getElementById("modalTarea");
-
-                modal.classList.remove("hidden");
+                document
+                    .getElementById("modalTarea")
+                    .classList
+                    .remove("hidden");
 
                 // =========================================
                 // CLIENTE
@@ -1556,19 +1556,16 @@ MODAL TAREAS NUEVO
                     tarea.cliente || "SIN CLIENTE";
 
                 // =========================================
-                // CAMPOS
+                // LIMPIAR CAMPOS
                 // =========================================
                 document.getElementById("m_nota").value = "";
 
                 document.getElementById("m_proxima_accion").value = "";
-                
-                document.getElementById("m_fecha_proxima").value =
-                    tarea.fecha_proxima
-                        ? String(tarea.fecha_proxima).substring(0, 10)
-                        : "";
+
+                document.getElementById("m_fecha_proxima").value = "";
 
                 document.getElementById("m_tipo").value =
-                    tarea.tipo || "LLAMADA";
+                    "LLAMADA";
 
                 document.getElementById("m_estado").value =
                     "ACTIVO";
@@ -1583,23 +1580,24 @@ MODAL TAREAS NUEVO
                     document.getElementById("modalTelefono");
 
                 // =========================================
-                // RESET
+                // RESET UI
                 // =========================================
                 select.innerHTML = "";
 
                 inputTelefono.value = "";
 
                 // =========================================
-                // CONTACTO PRINCIPAL
+                // OPTION DEFAULT
                 // =========================================
-                const contactoPrincipal = {
+                const optDefault =
+                    document.createElement("option");
 
-                    nombre:
-                        tarea.contacto || "",
+                optDefault.value = "";
 
-                    telefono:
-                        tarea.tel_contacto || ""
-                };
+                optDefault.textContent =
+                    "SELECCIONE CONTACTO";
+
+                select.appendChild(optDefault);
 
                 // =========================================
                 // CONSULTAR CONTACTOS
@@ -1611,24 +1609,31 @@ MODAL TAREAS NUEVO
                 const contactos = await res.json();
 
                 // =========================================
-                // OPTION DEFAULT
+                // CONTACTO PRINCIPAL CLIENTE
                 // =========================================
-                select.innerHTML =
-                    `<option value="">SELECCIONE CONTACTO</option>`;
+                if (
+                    tarea.contacto ||
+                    tarea.tel_contacto
+                ) {
 
-                // =========================================
-                // CONTACTO PRINCIPAL
-                // =========================================
-                const optPrincipal =
-                    document.createElement("option");
+                    const optPrincipal =
+                        document.createElement("option");
 
-                optPrincipal.value =
-                    JSON.stringify(contactoPrincipal);
+                    optPrincipal.value =
+                        JSON.stringify({
 
-                optPrincipal.textContent =
-                    `${contactoPrincipal.nombre} - ${contactoPrincipal.telefono}`;
+                            nombre:
+                                tarea.contacto || "",
 
-                select.appendChild(optPrincipal);
+                            telefono:
+                                tarea.tel_contacto || ""
+                        });
+
+                    optPrincipal.textContent =
+                        `${tarea.contacto || ""} - ${tarea.tel_contacto || ""}`;
+
+                    select.appendChild(optPrincipal);
+                }
 
                 // =========================================
                 // CONTACTOS ADICIONALES
@@ -1642,8 +1647,8 @@ MODAL TAREAS NUEVO
                         // =========================================
                         if (
 
-                            c.nombre === contactoPrincipal.nombre &&
-                            c.telefono === contactoPrincipal.telefono
+                            c.nombre === tarea.contacto &&
+                            c.telefono === tarea.tel_contacto
 
                         ) {
 
@@ -1653,14 +1658,15 @@ MODAL TAREAS NUEVO
                         const opt =
                             document.createElement("option");
 
-                        opt.value = JSON.stringify({
+                        opt.value =
+                            JSON.stringify({
 
-                            nombre:
-                                c.nombre || "",
+                                nombre:
+                                    c.nombre || "",
 
-                            telefono:
-                                c.telefono || ""
-                        });
+                                telefono:
+                                    c.telefono || ""
+                            });
 
                         opt.textContent =
                             `${c.nombre || ""} - ${c.telefono || ""}`;
@@ -1670,22 +1676,11 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // SELECCIONAR PRINCIPAL
+                // SIEMPRE VACIO
                 // =========================================
-                if (select.options.length > 1) {
+                select.selectedIndex = 0;
 
-                    select.selectedIndex = 1;
-
-                } else {
-
-                    select.selectedIndex = 0;
-                }
-
-                // =========================================
-                // TELEFONO
-                // =========================================
-                inputTelefono.value =
-                    contactoPrincipal.telefono || "";
+                inputTelefono.value = "";
 
                 // =========================================
                 // CAMBIO CONTACTO
