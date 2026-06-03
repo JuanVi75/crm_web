@@ -2407,6 +2407,28 @@ MODAL TAREAS NUEVO
             </div>
         `;
             }
+            // =========================================
+            // AUTO-LOAD DEL DÍA ACTIVO (CRÍTICO)
+            // =========================================
+            if (!window.fechaActiva) {
+                window.fechaActiva =
+                    new Date().toISOString().split("T")[0];
+            }
+
+            const tareasDelDia =
+                (window.tareasCalendario[window.fechaActiva]?.tareas) || [];
+
+            renderTareasHoy(tareasDelDia);
+
+            const pendientes =
+                document.getElementById("seguimientosPendientes");
+
+            if (pendientes) {
+
+                pendientes.innerText =
+                    tareasDelDia.filter(t => t.estado === "ACTIVO").length;
+            }
+
         }
 
         function cargarTareasPorFecha(fecha) {
