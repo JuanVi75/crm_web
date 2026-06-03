@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 successCallback(eventos);
-            }
+            },
             // =====================================
             // CLICK FECHA
             // =====================================
@@ -422,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (typeof cargarKPIs === "function") {
                     cargarKPIs();
                 }
-            }
+            },
             // =====================================
             // EVENTOS CRM
             // =====================================
