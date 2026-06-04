@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    window.fechaActiva = new Date().toISOString().split("T")[0];
+
+    window.fechaActiva =
+        new Date().toISOString().split("T")[0];
 
     const calendarEl =
         document.getElementById("calendar");
@@ -31,15 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             return `${y}-${m}-${d}`;
         }
-
-        // =========================================
-        // FESTIVOS
-        // =========================================
-        const festivos =
-            generarFestivosColombia(
-                2026,
-                2040
-            );
 
         // =====================================
         // ADD HOLIDAY
@@ -273,6 +266,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // =========================================
+    // FESTIVOS
+    // =========================================
+    const festivos =
+        generarFestivosColombia(
+            2026,
+            2040
+        );
+
+    // =========================================
     // CALENDAR
     // =========================================
     const calendar =
@@ -282,77 +284,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
             initialView: "dayGridMonth",
 
-            // =====================================
-            // ALTURA RESPONSIVE REAL
-            // =====================================
             height: "100%",
-
             contentHeight: "100%",
-
             expandRows: true,
-
             stickyHeaderDates: true,
-
             handleWindowResize: true,
 
-            // =====================================
-            // SCROLL
-            // =====================================
             slotMinTime: "00:00:00",
-
             slotMaxTime: "24:00:00",
-
             scrollTime: "06:00:00",
-
             slotDuration: "00:30:00",
 
             slotLabelFormat: {
 
                 hour: "2-digit",
-
                 minute: "2-digit",
-
                 hour12: true
             },
 
             eventTimeFormat: {
 
                 hour: "2-digit",
-
                 minute: "2-digit",
-
                 hour12: true
             },
 
             nowIndicator: true,
 
-            // =====================================
-            // TEXTOS
-            // =====================================
             allDayText: "KPI's:",
 
             // =====================================
             // EVENTS
             // =====================================
-            events: function (fetchInfo, successCallback) {
+            events: function (
+                fetchInfo,
+                successCallback
+            ) {
 
                 const eventos = [...festivos];
 
-                // =================================
-                // VALIDACIÓN SEGURA
-                // =================================
                 if (
                     !window.tareasCalendario ||
                     typeof window.tareasCalendario !== "object"
                 ) {
+
                     successCallback(eventos);
                     return;
                 }
 
-                // =================================
-                // TAREAS CRM
-                // =================================
-                Object.keys(window.tareasCalendario).forEach(fecha => {
+                Object.keys(
+                    window.tareasCalendario
+                ).forEach(fecha => {
 
                     const dataDia =
                         window.tareasCalendario[fecha];
@@ -367,32 +349,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     const total =
                         Number(dataDia.total) || 0;
 
-                    // =========================
-                    // SOLO SI HAY PENDIENTES
-                    // =========================
-                    if (total <= 0) {
-                        return;
-                    }
-
-                    // =========================
-                    // COLOR SEGUN CANTIDAD
-                    // =========================
+                    // =================================
+                    // MOSTRAR TODOS LOS DÍAS
+                    // =================================
                     let color = "#2563eb";
 
                     if (total >= 10) {
+
                         color = "#dc2626";
+
                     } else if (total >= 5) {
+
                         color = "#d97706";
+
+                    } else if (total <= 0) {
+
+                        color = "#6b7280";
                     }
 
-                    // =========================
-                    // EVENTO
-                    // =========================
                     eventos.push({
 
-                        title: `📌 ${total} pendientes`,
+                        title:
+                            total > 0
+                                ? `📌 ${total} pendientes`
+                                : `✔ Sin tareas`,
+
                         start: fecha,
+
                         allDay: true,
+
                         color: color
                     });
                 });
@@ -407,60 +392,64 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const fecha = info.dateStr;
 
-                // =================================
-                // GUARDAR FECHA GLOBAL
-                // =================================
                 window.fechaActiva = fecha;
 
-                // =================================
-                // TAREAS DEL DÍA
-                // =================================
-                if (typeof cargarTareasPorFecha === "function") {
+                if (
+                    typeof cargarTareasPorFecha ===
+                    "function"
+                ) {
+
                     cargarTareasPorFecha(fecha);
                 }
 
-                // =================================
-                // KPI (forzar sincronización)
-                // =================================
-                if (typeof cargarKPIs === "function") {
+                if (
+                    typeof cargarKPIs ===
+                    "function"
+                ) {
+
                     cargarKPIs(fecha);
                 }
 
-                // =================================
-                // FORZAR CONSISTENCIA VISUAL (IMPORTANTE)
-                // =================================
-                const calendar = window.crmCalendar;
+                const calendar =
+                    window.crmCalendar;
 
                 if (calendar) {
+
                     calendar.gotoDate(fecha);
                 }
             },
 
             // =====================================
-            // EVENTOS CRM
+            // EVENTOS
             // =====================================
             eventDidMount: function (info) {
 
                 // FESTIVOS
-                if (info.event.backgroundColor === "#b91c1c") {
+                if (
+                    info.event.backgroundColor ===
+                    "#b91c1c"
+                ) {
 
-                    info.el.style.fontSize = "10px";
+                    info.el.style.fontSize =
+                        "10px";
 
                     return;
                 }
 
-                // =================================
-                // EVENTOS CRM
-                // =================================
-                info.el.style.border = "none";
+                info.el.style.border =
+                    "none";
 
-                info.el.style.padding = "2px 4px";
+                info.el.style.padding =
+                    "2px 4px";
 
-                info.el.style.fontSize = "11px";
+                info.el.style.fontSize =
+                    "11px";
 
-                info.el.style.fontWeight = "600";
+                info.el.style.fontWeight =
+                    "600";
 
-                info.el.style.borderRadius = "6px";
+                info.el.style.borderRadius =
+                    "6px";
             },
 
             // =====================================
@@ -483,9 +472,7 @@ document.addEventListener("DOMContentLoaded", function () {
             buttonText: {
 
                 today: "Hoy",
-
                 month: "Mes",
-
                 day: "Día"
             },
 
@@ -517,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
 
             // =====================================
-            // MES COLORES
+            // COLORES DEL MES
             // =====================================
             dayCellDidMount: function (info) {
 
@@ -550,6 +537,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     info.el.style.background =
                         "#7f1d1d";
+
+                    info.el.style.color =
+                        "white";
                 }
 
                 // SABADO
@@ -557,6 +547,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     info.el.style.background =
                         "#1e3a8a";
+
+                    info.el.style.color =
+                        "white";
                 }
 
                 // FESTIVO
@@ -564,6 +557,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     info.el.style.background =
                         "#b91c1c";
+
+                    info.el.style.color =
+                        "white";
                 }
 
                 // HOY
@@ -587,7 +583,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 setTimeout(() => {
 
+                    // =================================
                     // HEADERS
+                    // =================================
                     document.querySelectorAll(
                         ".fc-col-header-cell"
                     ).forEach(header => {
@@ -603,7 +601,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     // =================================
-                    // SCROLL INTERNO REAL
+                    // SCROLL
                     // =================================
                     document.querySelectorAll(
                         ".fc-scroller"
@@ -620,18 +618,50 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     // =================================
-                    // DIA
+                    // SEMANA / DIA
                     // =================================
                     if (
 
                         calendar.view.type ===
                         "timeGridDay"
+
                     ) {
 
                         document.querySelectorAll(
                             ".fc-col-header-cell"
                         ).forEach(header => {
 
+                            const text =
+                                header.innerText
+                                    .toLowerCase();
+
+                            // DOMINGO
+                            if (
+                                text.includes("dom")
+                            ) {
+
+                                header.style.background =
+                                    "#7f1d1d";
+
+                                header.style.color =
+                                    "white";
+                            }
+
+                            // SABADO
+                            if (
+                                text.includes("sáb")
+                                ||
+                                text.includes("sab")
+                            ) {
+
+                                header.style.background =
+                                    "#1e3a8a";
+
+                                header.style.color =
+                                    "white";
+                            }
+
+                            // HOY
                             if (
                                 header.classList.contains(
                                     "fc-day-today"
@@ -657,20 +687,36 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================
     // GLOBAL
     // =========================================
-    window.crmCalendar = calendar;
+    window.crmCalendar =
+        calendar;
 
     // =========================================
     // RENDER
     // =========================================
     calendar.render();
 
-    const hoy = new Date().toISOString().split("T")[0];
+    const hoy =
+        new Date().toISOString().split("T")[0];
 
     window.fechaActiva = hoy;
 
     calendar.changeView("timeGridDay");
 
-    cargarTareasPorFecha(hoy);
+    if (
+        typeof cargarTareasPorFecha ===
+        "function"
+    ) {
+
+        cargarTareasPorFecha(hoy);
+    }
+
+    if (
+        typeof cargarKPIs ===
+        "function"
+    ) {
+
+        cargarKPIs(hoy);
+    }
 
     // =========================================
     // RESIZE
