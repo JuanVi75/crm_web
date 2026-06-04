@@ -2736,12 +2736,26 @@ MODAL TAREAS NUEVO
                     hoy;
 
                 // =========================================
-                // 🔥 ÚNICA FUENTE DE DATOS KPIs
+                // FUENTE REAL DE DATOS (CALENDARIO + BACKEND)
                 // =========================================
-                const tareas =
-                    Array.isArray(data.tareas)
-                        ? data.tareas
-                        : [];
+                const tareasCalendario =
+                    Object.values(window.tareasCalendario || {})
+                        .flatMap(d => d.tareas || []);
+
+                const tareasBackend =
+                    Array.isArray(data.tareas) ? data.tareas : [];
+
+                const mapa = new Map();
+
+                tareasBackend.forEach(t => {
+                    if (t && t.id != null) mapa.set(t.id, t);
+                });
+
+                tareasCalendario.forEach(t => {
+                    if (t && t.id != null) mapa.set(t.id, t);
+                });
+
+                const tareas = Array.from(mapa.values());
 
                 // =========================================
                 // HOY REAL
@@ -2752,12 +2766,6 @@ MODAL TAREAS NUEVO
                         String(t.fecha).substring(0, 10) === hoy
                     ).length;
 
-                const seguimientosPendientes =
-                    tareas.filter(t =>
-                        t.estado === "ACTIVO" &&
-                        t.fecha_proxima &&
-                        String(t.fecha_proxima).substring(0, 10) <= hoy
-                    ).length;
                 const cotizacionesHoyReal =
                     tareas.filter(t =>
                         t.tipo === "COTIZACION" &&
@@ -2823,7 +2831,7 @@ MODAL TAREAS NUEVO
                 set("seguimientosPendientes", pendientesFecha);
 
                 // =========================================
-                // KPI GLOBALES (BACKEND)
+                // KPI GLOBALES
                 // =========================================
                 const cotMes =
                     document.getElementById("cotizacionesMes");
