@@ -2802,12 +2802,6 @@ MODAL TAREAS NUEVO
                         .split("T")[0];
 
                 // =========================================
-                // DATA GLOBAL
-                // =========================================
-                const tareasGlobales =
-                    window.tareasHoy || [];
-
-                // =========================================
                 // HOY REAL
                 // =========================================
                 const hoy =
@@ -2816,13 +2810,23 @@ MODAL TAREAS NUEVO
                         .split("T")[0];
 
                 // =========================================
+                // TODAS LAS TAREAS
+                // =========================================
+                const tareasGlobales =
+                    Object.values(
+                        window.tareasCalendario || {}
+                    ).flatMap(
+                        d => d.tareas || []
+                    );
+
+                // =========================================
                 // KPI GLOBAL
                 // =========================================
                 if (!isDayView) {
 
                     // =====================================
                     // SEGUIMIENTOS HOY
-                    // USA FECHA CREACION
+                    // FECHA CREACION = HOY
                     // =====================================
                     const seguimientosHoy =
                         tareasGlobales.filter(t => {
@@ -2932,30 +2936,6 @@ MODAL TAREAS NUEVO
                             cotizacionesHoy.length;
                     }
 
-                    const valorCotizacionesHoyEl =
-                        document.getElementById(
-                            "valorCotizacionesHoy"
-                        );
-
-                    if (valorCotizacionesHoyEl) {
-
-                        valorCotizacionesHoyEl.innerText =
-                            formatearCOP(
-
-                                cotizacionesHoy.reduce(
-                                    (acc, t) =>
-
-                                        acc +
-
-                                        Number(
-                                            t.valor || 0
-                                        ),
-
-                                    0
-                                )
-                            );
-                    }
-
                     // =====================================
                     // PEDIDOS HOY
                     // =====================================
@@ -2991,30 +2971,6 @@ MODAL TAREAS NUEVO
 
                         pedidosHoyEl.innerText =
                             pedidosHoy.length;
-                    }
-
-                    const valorPedidosHoyEl =
-                        document.getElementById(
-                            "valorPedidosHoy"
-                        );
-
-                    if (valorPedidosHoyEl) {
-
-                        valorPedidosHoyEl.innerText =
-                            formatearCOP(
-
-                                pedidosHoy.reduce(
-                                    (acc, t) =>
-
-                                        acc +
-
-                                        Number(
-                                            t.valor || 0
-                                        ),
-
-                                    0
-                                )
-                            );
                     }
                 }
 
@@ -3058,7 +3014,7 @@ MODAL TAREAS NUEVO
 
                     // =====================================
                     // PENDIENTES
-                    // FECHA_PROXIMA <= HOY
+                    // FECHA_PROXIMA <= FECHA ACTIVA
                     // =====================================
                     const pendientes =
                         tareasGlobales.filter(t => {
@@ -3082,7 +3038,7 @@ MODAL TAREAS NUEVO
                                     t.fecha_proxima
                                 ).substring(0, 10)
 
-                                <= hoy
+                                <= fechaActiva
                             );
 
                         });
@@ -3099,8 +3055,8 @@ MODAL TAREAS NUEVO
                     }
 
                     // =====================================
-                    // COTIZACIONES HOY
-                    // FECHA CREACION = FECHA SELECCIONADA
+                    // COTIZACIONES
+                    // FECHA CREACION = FECHA ACTIVA
                     // =====================================
                     const cotizaciones =
                         tareasGlobales.filter(t => {
@@ -3136,32 +3092,9 @@ MODAL TAREAS NUEVO
                             cotizaciones.length;
                     }
 
-                    const valorCotizacionesHoyEl =
-                        document.getElementById(
-                            "valorCotizacionesHoy"
-                        );
-
-                    if (valorCotizacionesHoyEl) {
-
-                        valorCotizacionesHoyEl.innerText =
-                            formatearCOP(
-
-                                cotizaciones.reduce(
-                                    (acc, t) =>
-
-                                        acc +
-
-                                        Number(
-                                            t.valor || 0
-                                        ),
-
-                                    0
-                                )
-                            );
-                    }
-
                     // =====================================
-                    // PEDIDOS HOY
+                    // PEDIDOS
+                    // FECHA CREACION = FECHA ACTIVA
                     // =====================================
                     const pedidos =
                         tareasGlobales.filter(t => {
@@ -3195,30 +3128,6 @@ MODAL TAREAS NUEVO
 
                         pedidosHoyEl.innerText =
                             pedidos.length;
-                    }
-
-                    const valorPedidosHoyEl =
-                        document.getElementById(
-                            "valorPedidosHoy"
-                        );
-
-                    if (valorPedidosHoyEl) {
-
-                        valorPedidosHoyEl.innerText =
-                            formatearCOP(
-
-                                pedidos.reduce(
-                                    (acc, t) =>
-
-                                        acc +
-
-                                        Number(
-                                            t.valor || 0
-                                        ),
-
-                                    0
-                                )
-                            );
                     }
                 }
 
