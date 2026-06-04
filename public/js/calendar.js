@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     window.fechaActiva = new Date().toISOString().split("T")[0];
 
-    const calendarEl =
-        document.getElementById("calendar");
+    const calendarEl = document.getElementById("calendar");
 
     // =========================================
-    // GENERAR FESTIVOS COLOMBIA
+    // FESTIVOS COLOMBIA
     // =========================================
     function generarFestivosColombia(yearStart, yearEnd) {
 
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             addHoliday("Año Nuevo", new Date(year, 0, 1));
             addHoliday("Día del Trabajo", new Date(year, 4, 1));
-                addHoliday("20 de Julio", new Date(year, 6, 20));
+            addHoliday("20 de Julio", new Date(year, 6, 20));
             addHoliday("Batalla de Boyacá", new Date(year, 7, 7));
             addHoliday("Inmaculada Concepción", new Date(year, 11, 8));
             addHoliday("Navidad", new Date(year, 11, 25));
@@ -106,416 +106,125 @@ document.addEventListener("DOMContentLoaded", function () {
         return festivos;
     }
 
+    // 👇 FIX CRÍTICO
+    window.festivos = generarFestivosColombia(2025, 2040);
+
     // =========================================
     // CALENDAR
     // =========================================
-    const calendar =
-        new FullCalendar.Calendar(calendarEl, {
+    const calendar = new FullCalendar.Calendar(calendarEl, {
 
-            locale: "es",
+        locale: "es",
+        initialView: "dayGridMonth",
 
-            initialView: "dayGridMonth",
+        height: "100%",
+        contentHeight: "100%",
+        expandRows: true,
 
-            // =====================================
-            // ALTURA RESPONSIVE REAL
-            // =====================================
-            height: "100%",
+        events: function (fetchInfo, successCallback) {
 
-            contentHeight: "100%",
+            const eventos = [...(window.festivos || [])];
 
-            expandRows: true,
-
-            stickyHeaderDates: true,
-
-            handleWindowResize: true,
-
-            // =====================================
-            // SCROLL
-            // =====================================
-            slotMinTime: "00:00:00",
-
-            slotMaxTime: "24:00:00",
-
-            scrollTime: "06:00:00",
-
-            slotDuration: "00:30:00",
-
-            slotLabelFormat: {
-
-                hour: "2-digit",
-
-                minute: "2-digit",
-
-                hour12: true
-            },
-
-            eventTimeFormat: {
-
-                hour: "2-digit",
-
-                minute: "2-digit",
-
-                hour12: true
-            },
-
-            nowIndicator: true,
-
-            // =====================================
-            // TEXTOS
-            // =====================================
-            allDayText: "Todo el Día",
-
-            events: function (fetchInfo, successCallback) {
-
-                const eventos = [...festivos];
-
-                if (
-                    !window.tareasCalendario ||
-                    typeof window.tareasCalendario !== "object"
-                ) {
-                    successCallback(eventos);
-                    return;
-                }
-
-                Object.keys(window.tareasCalendario).forEach(fecha => {
-
-                    const dataDia = window.tareasCalendario[fecha];
-
-                    if (!dataDia || typeof dataDia !== "object") return;
-
-                    const total = Number(dataDia.total) || 0;
-
-                    // =========================
-                    // SIEMPRE CREAR EVENTO (INCLUSO SI ES 0)
-                    // =========================
-
-                    let color = "#2563eb";
-
-                    if (total >= 10) {
-                        color = "#dc2626";
-                    } else if (total >= 5) {
-                        color = "#d97706";
-                    }
-
-                    eventos.push({
-
-                        title: total > 0
-                            ? `📌 ${total} pendientes`
-                            : `✔ Sin tareas`,
-
-                        start: fecha,
-                        allDay: true,
-                        color: total > 0 ? color : "#6b7280"
-                    });
-                });
-
+            if (!window.tareasCalendario || typeof window.tareasCalendario !== "object") {
                 successCallback(eventos);
-            },
-            // =====================================
-            // CLICK FECHA
-            // =====================================
-            dateClick: function (info) {
-
-                const fecha = info.dateStr;
-
-                // =================================
-                // FECHA GLOBAL ÚNICA
-                // =================================
-                window.fechaActiva = fecha;
-
-                const calendar = window.crmCalendar;
-
-                // =================================
-                // SINCRONIZAR VISTA SI ESTÁS EN DÍA
-                // =================================
-                const isDayView =
-                    calendar && calendar.view.type === "timeGridDay";
-
-                if (isDayView) {
-
-                    // mover calendario sin romper evento
-                    calendar.changeView("timeGridDay", fecha);
-                } else {
-
-                    // solo navegación normal en mes
-                    if (calendar) {
-                        calendar.gotoDate(fecha);
-                    }
-                }
-
-                // =================================
-                // TAREAS DEL DÍA
-                // =================================
-                if (typeof cargarTareasPorFecha === "function") {
-                    cargarTareasPorFecha(fecha);
-                }
-
-                // =================================
-                // KPI (SIN PARAMETRO, USA FECHA ACTIVA)
-                // =================================
-                if (typeof cargarKPIs === "function") {
-                    cargarKPIs();
-                }
-            },
-            // =====================================
-            // EVENTOS CRM
-            // =====================================
-            eventDidMount: function (info) {
-
-                // FESTIVOS
-                if (info.event.backgroundColor === "#b91c1c") {
-
-                    info.el.style.fontSize = "10px";
-
-                    return;
-                }
-
-                // =================================
-                // EVENTOS CRM
-                // =================================
-                info.el.style.border = "none";
-
-                info.el.style.padding = "2px 4px";
-
-                info.el.style.fontSize = "11px";
-
-                info.el.style.fontWeight = "600";
-
-                info.el.style.borderRadius = "6px";
-            },
-
-            // =====================================
-            // HEADER
-            // =====================================
-            headerToolbar: {
-
-                left:
-                    "prev,next today customYearPicker",
-
-                center: "title",
-
-                right:
-                    "dayGridMonth,timeGridDay"
-            },
-
-            // =====================================
-            // BUTTONS
-            // =====================================
-            buttonText: {
-
-                today: "Hoy",
-
-                month: "Mes",
-
-                day: "Día"
-            },
-
-            // =====================================
-            // YEAR PICKER
-            // =====================================
-            customButtons: {
-
-                customYearPicker: {
-
-                    text: "Año",
-
-                    click: function () {
-
-                        const year =
-                            prompt(
-                                "Ingrese el año:",
-                                new Date().getFullYear()
-                            );
-
-                        if (year) {
-
-                            calendar.gotoDate(
-                                year + "-01-01"
-                            );
-                        }
-                    }
-                }
-            },
-
-            // =====================================
-            // MES COLORES
-            // =====================================
-            dayCellDidMount: function (info) {
-
-                if (
-                    calendar.view.type !==
-                    "dayGridMonth"
-                ) {
-                    return;
-                }
-
-                const date = info.date;
-
-                const day =
-                    date.getDay();
-
-                const today =
-                    new Date();
-
-                const dateStr =
-                    date.toISOString()
-                        .split("T")[0];
-
-                const isHoliday =
-                    festivos.some(
-                        f => f.start === dateStr
-                    );
-
-                // DOMINGO
-                if (day === 0) {
-
-                    info.el.style.background =
-                        "#7f1d1d";
-                }
-
-                // SABADO
-                if (day === 6) {
-
-                    info.el.style.background =
-                        "#1e3a8a";
-                }
-
-                // FESTIVO
-                if (isHoliday) {
-
-                    info.el.style.background =
-                        "#b91c1c";
-                }
-
-                // HOY
-                if (
-                    date.toDateString() ===
-                    today.toDateString()
-                ) {
-
-                    info.el.style.background =
-                        "#facc15";
-
-                    info.el.style.color =
-                        "#000";
-                }
-            },
-
-            // =====================================
-            // VISTAS
-            // =====================================
-            datesSet: function () {
-
-                setTimeout(() => {
-
-                    const calendar = window.crmCalendar;
-
-                    if (!calendar) return;
-
-                    // =================================
-                    // FECHA REAL DEL CALENDARIO
-                    // =================================
-                    const fechaVisible =
-                        calendar.getDate()
-                            .toISOString()
-                            .split("T")[0];
-
-                    // =================================
-                    // SINCRONIZAR FECHA GLOBAL
-                    // =================================
-                    window.fechaActiva = fechaVisible;
-
-                    // =================================
-                    // RECARGAR TAREAS DEL DÍA
-                    // =================================
-                    if (typeof cargarTareasPorFecha === "function") {
-                        cargarTareasPorFecha(fechaVisible);
-                    }
-
-                    // =================================
-                    // KPI SOLO EN VISTA DÍA
-                    // =================================
-                    if (calendar.view.type === "timeGridDay") {
-
-                        if (typeof cargarKPIs === "function") {
-                            cargarKPIs();
-                        }
-                    }
-
-                    // =================================
-                    // ESTILOS HEADER
-                    // =================================
-                    document.querySelectorAll(
-                        ".fc-col-header-cell"
-                    ).forEach(header => {
-
-                        header.style.background = "white";
-                        header.style.color = "#111827";
-                        header.style.fontWeight = "600";
-                    });
-
-                    // =================================
-                    // SCROLL FIX
-                    // =================================
-                    document.querySelectorAll(
-                        ".fc-scroller"
-                    ).forEach(scroller => {
-
-                        scroller.style.overflowY = "auto";
-                        scroller.style.overflowX = "hidden";
-                        scroller.style.maxHeight = "100%";
-                    });
-
-                    // =================================
-                    // HIGHLIGHT HOY EN VISTA DÍA
-                    // =================================
-                    if (calendar.view.type === "timeGridDay") {
-
-                        document.querySelectorAll(
-                            ".fc-col-header-cell"
-                        ).forEach(header => {
-
-                            if (
-                                header.classList.contains("fc-day-today")
-                            ) {
-                                header.style.background = "#facc15";
-                                header.style.color = "#000";
-                            }
-                        });
-                    }
-
-                }, 50);
+                return;
             }
 
-        });
+            Object.keys(window.tareasCalendario).forEach(fecha => {
 
-    // =========================================
-    // GLOBAL
-    // =========================================
+                const dataDia = window.tareasCalendario[fecha];
+                if (!dataDia) return;
+
+                const total = Number(dataDia.total) || 0;
+
+                let color = "#2563eb";
+                if (total >= 10) color = "#dc2626";
+                else if (total >= 5) color = "#d97706";
+
+                eventos.push({
+                    title: total > 0 ? `📌 ${total} pendientes` : `✔ Sin tareas`,
+                    start: fecha,
+                    allDay: true,
+                    color: total > 0 ? color : "#6b7280"
+                });
+            });
+
+            successCallback(eventos);
+        },
+
+        dateClick: function (info) {
+
+            const fecha = info.dateStr;
+            window.fechaActiva = fecha;
+
+            const calendar = window.crmCalendar;
+
+            if (calendar && calendar.view.type === "timeGridDay") {
+                calendar.changeView("timeGridDay", fecha);
+            } else if (calendar) {
+                calendar.gotoDate(fecha);
+            }
+
+            if (typeof cargarTareasPorFecha === "function") {
+                cargarTareasPorFecha(fecha);
+            }
+
+            if (typeof cargarKPIs === "function") {
+                cargarKPIs();
+            }
+        },
+
+        datesSet: function () {
+
+            setTimeout(() => {
+
+                const calendar = window.crmCalendar;
+                if (!calendar) return;
+
+                const fechaVisible =
+                    calendar.getDate().toISOString().split("T")[0];
+
+                window.fechaActiva = fechaVisible;
+
+                if (typeof cargarTareasPorFecha === "function") {
+                    cargarTareasPorFecha(fechaVisible);
+                }
+
+                if (calendar.view.type === "timeGridDay") {
+                    if (typeof cargarKPIs === "function") {
+                        cargarKPIs();
+                    }
+                }
+
+            }, 50);
+        },
+
+        headerToolbar: {
+            left: "prev,next today customYearPicker",
+            center: "title",
+            right: "dayGridMonth,timeGridDay"
+        },
+
+        customButtons: {
+            customYearPicker: {
+                text: "Año",
+                click: function () {
+                    const year = prompt("Ingrese el año:", new Date().getFullYear());
+                    if (year) calendar.gotoDate(year + "-01-01");
+                }
+            }
+        }
+    });
+
     window.crmCalendar = calendar;
 
-    // =========================================
-    // RENDER
-    // =========================================
     calendar.render();
 
     const hoy = new Date().toISOString().split("T")[0];
-
     window.fechaActiva = hoy;
 
     calendar.changeView("timeGridDay");
 
     cargarTareasPorFecha(hoy);
-
-    // =========================================
-    // RESIZE
-    // =========================================
-    window.addEventListener(
-        "resize",
-        () => {
-
-            calendar.updateSize();
-        }
-    );
 
 });
