@@ -12,8 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
         yearEnd
     ) {
 
-        let festivos = [];
-
         // =====================================
         // FORMAT DATE
         // =====================================
