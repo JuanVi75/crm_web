@@ -7,88 +7,39 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================
     // GENERAR FESTIVOS COLOMBIA
     // =========================================
-    function generarFestivosColombia(
-        yearStart,
-        yearEnd
-    ) {
+    function generarFestivosColombia(yearStart, yearEnd) {
 
-        let festivos = [];
+        const festivos = [];
 
-        // =====================================
-        // FORMAT DATE
-        // =====================================
         function formatDate(date) {
-
             const y = date.getFullYear();
-
-            const m =
-                String(date.getMonth() + 1)
-                    .padStart(2, "0");
-
-            const d =
-                String(date.getDate())
-                    .padStart(2, "0");
-
+            const m = String(date.getMonth() + 1).padStart(2, "0");
+            const d = String(date.getDate()).padStart(2, "0");
             return `${y}-${m}-${d}`;
         }
 
-        // =========================================
-        // FESTIVOS
-        // =========================================
-        const festivos =
-            generarFestivosColombia(
-                2000,
-                2050
-            );
-
-        // =====================================
-        // ADD HOLIDAY
-        // =====================================
         function addHoliday(title, date) {
-
             festivos.push({
-
-                title: title,
-
+                title,
                 start: formatDate(date),
-
                 allDay: true,
-
                 color: "#b91c1c"
             });
         }
 
-        // =====================================
-        // NEXT MONDAY
-        // =====================================
         function nextMonday(date) {
-
             const day = date.getDay();
-
             if (day !== 1) {
-
-                const diff =
-                    (8 - day) % 7;
-
-                date.setDate(
-                    date.getDate() + diff
-                );
+                const diff = (8 - day) % 7;
+                date.setDate(date.getDate() + diff);
             }
-
             return date;
         }
 
-        // =====================================
-        // EASTER
-        // =====================================
         function easterDate(year) {
-
             const f = Math.floor;
-
             const G = year % 19;
-
             const C = f(year / 100);
-
             const H =
                 (C - f(C / 4) -
                     f((8 * C + 13) / 25) +
@@ -105,168 +56,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const L = I - J;
 
-            const month =
-                3 + f((L + 40) / 44);
-
-            const day =
-                L + 28 -
-                31 * f(month / 4);
+            const month = 3 + f((L + 40) / 44);
+            const day = L + 28 - 31 * f(month / 4);
 
             return new Date(year, month - 1, day);
         }
 
-        // =====================================
-        // YEARS
-        // =====================================
         for (let year = yearStart; year <= yearEnd; year++) {
 
-            // FIJOS
-            addHoliday(
-                "Año Nuevo",
-                new Date(year, 0, 1)
-            );
+            addHoliday("Año Nuevo", new Date(year, 0, 1));
+            addHoliday("Día del Trabajo", new Date(year, 4, 1));
+                addHoliday("20 de Julio", new Date(year, 6, 20));
+            addHoliday("Batalla de Boyacá", new Date(year, 7, 7));
+            addHoliday("Inmaculada Concepción", new Date(year, 11, 8));
+            addHoliday("Navidad", new Date(year, 11, 25));
 
-            addHoliday(
-                "Día del Trabajo",
-                new Date(year, 4, 1)
-            );
+            addHoliday("Reyes Magos", nextMonday(new Date(year, 0, 6)));
+            addHoliday("San José", nextMonday(new Date(year, 2, 19)));
+            addHoliday("San Pedro y San Pablo", nextMonday(new Date(year, 5, 29)));
+            addHoliday("Asunción", nextMonday(new Date(year, 7, 15)));
+            addHoliday("Día de la Raza", nextMonday(new Date(year, 9, 12)));
+            addHoliday("Todos los Santos", nextMonday(new Date(year, 10, 1)));
+            addHoliday("Independencia Cartagena", nextMonday(new Date(year, 10, 11)));
 
-            addHoliday(
-                "20 de Julio",
-                new Date(year, 6, 20)
-            );
+            const easter = easterDate(year);
 
-            addHoliday(
-                "Batalla de Boyacá",
-                new Date(year, 7, 7)
-            );
+            const juevesSanto = new Date(easter);
+            juevesSanto.setDate(easter.getDate() - 3);
 
-            addHoliday(
-                "Inmaculada Concepción",
-                new Date(year, 11, 8)
-            );
+            const viernesSanto = new Date(easter);
+            viernesSanto.setDate(easter.getDate() - 2);
 
-            addHoliday(
-                "Navidad",
-                new Date(year, 11, 25)
-            );
+            addHoliday("Jueves Santo", juevesSanto);
+            addHoliday("Viernes Santo", viernesSanto);
 
-            // EMILIANI
-            addHoliday(
-                "Reyes Magos",
-                nextMonday(
-                    new Date(year, 0, 6)
-                )
-            );
+            const ascension = new Date(easter);
+            ascension.setDate(easter.getDate() + 43);
+            addHoliday("Ascensión", nextMonday(ascension));
 
-            addHoliday(
-                "San José",
-                nextMonday(
-                    new Date(year, 2, 19)
-                )
-            );
+            const corpus = new Date(easter);
+            corpus.setDate(easter.getDate() + 64);
+            addHoliday("Corpus Christi", nextMonday(corpus));
 
-            addHoliday(
-                "San Pedro y San Pablo",
-                nextMonday(
-                    new Date(year, 5, 29)
-                )
-            );
-
-            addHoliday(
-                "Asunción",
-                nextMonday(
-                    new Date(year, 7, 15)
-                )
-            );
-
-            addHoliday(
-                "Día de la Raza",
-                nextMonday(
-                    new Date(year, 9, 12)
-                )
-            );
-
-            addHoliday(
-                "Todos los Santos",
-                nextMonday(
-                    new Date(year, 10, 1)
-                )
-            );
-
-            addHoliday(
-                "Independencia Cartagena",
-                nextMonday(
-                    new Date(year, 10, 11)
-                )
-            );
-
-            // PASCUA
-            const easter =
-                easterDate(year);
-
-            const juevesSanto =
-                new Date(easter);
-
-            juevesSanto.setDate(
-                easter.getDate() - 3
-            );
-
-            const viernesSanto =
-                new Date(easter);
-
-            viernesSanto.setDate(
-                easter.getDate() - 2
-            );
-
-            addHoliday(
-                "Jueves Santo",
-                juevesSanto
-            );
-
-            addHoliday(
-                "Viernes Santo",
-                viernesSanto
-            );
-
-            // ASCENSION
-            const ascension =
-                new Date(easter);
-
-            ascension.setDate(
-                easter.getDate() + 43
-            );
-
-            addHoliday(
-                "Ascensión",
-                nextMonday(ascension)
-            );
-
-            // CORPUS
-            const corpus =
-                new Date(easter);
-
-            corpus.setDate(
-                easter.getDate() + 64
-            );
-
-            addHoliday(
-                "Corpus Christi",
-                nextMonday(corpus)
-            );
-
-            // CORAZON
-            const corazon =
-                new Date(easter);
-
-            corazon.setDate(
-                easter.getDate() + 71
-            );
-
-            addHoliday(
-                "Sagrado Corazón",
-                nextMonday(corazon)
-            );
+            const corazon = new Date(easter);
+            corazon.setDate(easter.getDate() + 71);
+            addHoliday("Sagrado Corazón", nextMonday(corazon));
         }
 
         return festivos;
