@@ -2406,36 +2406,91 @@ MODAL TAREAS NUEVO
                 }
             }
         }
+
         function cargarTareasPorFecha(fecha) {
 
             // =========================================
             // VALIDAR DATA
             // =========================================
             if (!window.tareasCalendario) {
+
                 renderTareasHoy([]);
+
                 return;
             }
 
+            // =========================================
+            // FECHA GLOBAL
+            // =========================================
             window.fechaActiva = fecha;
 
+            // =========================================
+            // DATA FECHA
+            // =========================================
             const dataFecha =
                 window.tareasCalendario[fecha];
 
-            if (!dataFecha || !Array.isArray(dataFecha.tareas)) {
+            // =========================================
+            // SIN DATA
+            // =========================================
+            if (
+                !dataFecha ||
+                !Array.isArray(dataFecha.tareas)
+            ) {
 
                 renderTareasHoy([]);
 
                 const pendientes =
-                    document.getElementById("seguimientosPendientes");
+                    document.getElementById(
+                        "seguimientosPendientes"
+                    );
 
                 if (pendientes) {
+
                     pendientes.innerText = 0;
+                }
+
+                // =====================================
+                // LIMPIAR KPI'S
+                // =====================================
+                const seguimientosHoyEl =
+                    document.getElementById(
+                        "seguimientosHoy"
+                    );
+
+                if (seguimientosHoyEl) {
+
+                    seguimientosHoyEl.innerText = 0;
+                }
+
+                const cotizacionesHoyEl =
+                    document.getElementById(
+                        "cotizacionesHoy"
+                    );
+
+                if (cotizacionesHoyEl) {
+
+                    cotizacionesHoyEl.innerText = 0;
+                }
+
+                const pedidosHoyEl =
+                    document.getElementById(
+                        "pedidosHoy"
+                    );
+
+                if (pedidosHoyEl) {
+
+                    pedidosHoyEl.innerText = 0;
                 }
 
                 return;
             }
 
-            const tareas = dataFecha.tareas || [];
+            // =========================================
+            // TAREAS
+            // =========================================
+            const tareas =
+                dataFecha.tareas || [];
 
             // =========================================
             // RENDER LISTA
@@ -2443,69 +2498,114 @@ MODAL TAREAS NUEVO
             renderTareasHoy(tareas);
 
             // =========================================
-            // KPI BASE (SIEMPRE)
+            // KPI BASE
             // =========================================
             const pendientes =
-                document.getElementById("seguimientosPendientes");
+                document.getElementById(
+                    "seguimientosPendientes"
+                );
 
             if (pendientes) {
+
                 pendientes.innerText =
-                    tareas.filter(t => t.estado === "ACTIVO").length;
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
+                    ).length;
             }
 
             // =========================================
-            // KPI AVANZADOS SOLO EN VISTA DÍA
+            // CALENDAR
             // =========================================
-            const calendar = window.crmCalendar;
+            const calendar =
+                window.crmCalendar;
 
-            if (!calendar || calendar.view.type !== "timeGridDay") {
+            if (
+                !calendar ||
+                calendar.view.type !== "timeGridDay"
+            ) {
                 return;
             }
 
-            const fechaStr = String(fecha).substring(0, 10);
+            // =========================================
+            // FECHA STRING
+            // =========================================
+            const fechaStr =
+                String(fecha).substring(0, 10);
 
-            const tareasHoyGlobal =
-                window.tareasHoy || [];
+            // =========================================
+            // TODAS LAS TAREAS
+            // =========================================
+            const tareasGlobales =
+                Object.values(window.tareasCalendario)
+                    .flatMap(
+                        d => d.tareas || []
+                    );
 
             // =========================================
             // SEGUIMIENTOS HOY
             // =========================================
             const seguimientosHoyEl =
-                document.getElementById("seguimientosHoy");
+                document.getElementById(
+                    "seguimientosHoy"
+                );
 
             if (seguimientosHoyEl) {
 
                 seguimientosHoyEl.innerText =
-                    tareas.filter(t => t.estado === "ACTIVO").length;
-            }
-
-            // =========================================
-            // COTIZACIONES HOY
-            // =========================================
-            const cotizacionesHoyEl =
-                document.getElementById("cotizacionesHoy");
-
-            if (cotizacionesHoyEl) {
-
-                cotizacionesHoyEl.innerText =
-                    tareasHoyGlobal.filter(t =>
-                        t.tipo === "COTIZACION" &&
-                        String(t.fecha_proxima).substring(0, 10) === fechaStr
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
                     ).length;
             }
 
             // =========================================
-            // PEDIDOS HOY
+            // COTIZACIONES
+            // =========================================
+            const cotizacionesHoyEl =
+                document.getElementById(
+                    "cotizacionesHoy"
+                );
+
+            if (cotizacionesHoyEl) {
+
+                cotizacionesHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
+                        t.tipo === "COTIZACION"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fechaStr
+
+                    ).length;
+            }
+
+            // =========================================
+            // PEDIDOS
             // =========================================
             const pedidosHoyEl =
-                document.getElementById("pedidosHoy");
+                document.getElementById(
+                    "pedidosHoy"
+                );
 
             if (pedidosHoyEl) {
 
                 pedidosHoyEl.innerText =
-                    tareasHoyGlobal.filter(t =>
-                        t.tipo === "PEDIDO" &&
-                        String(t.fecha_proxima).substring(0, 10) === fechaStr
+                    tareasGlobales.filter(t =>
+
+                        t.tipo === "PEDIDO"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fechaStr
+
                     ).length;
             }
         }
@@ -2631,117 +2731,423 @@ MODAL TAREAS NUEVO
         let tareaActualIndex = null;
         let tareasHoyGlobal = [];
 
-        async function cargarKPIs() {
+        async function cargarKPIs(fechaSeleccionada = null) {
 
             try {
 
                 const res = await fetch(API, {
+
                     headers: {
-                        "Authorization": "Bearer " + localStorage.getItem("token")
+
+                        "Authorization":
+                            "Bearer " +
+                            localStorage.getItem("token")
                     }
                 });
 
-                const data = await res.json();
+                const data =
+                    await res.json();
 
                 // =========================================
-                // CLIENTES (GLOBAL)
+                // CLIENTES
                 // =========================================
-                document.getElementById("totalClientes").innerText =
-                    data.totalClientes || 0;
+                const totalClientesEl =
+                    document.getElementById(
+                        "totalClientes"
+                    );
 
-                // SOLO KPI GLOBAL (NO SOBREESCRIBIR POR FECHA AQUÍ)
-                document.getElementById("seguimientosPendientes").innerText =
-                    data.seguimientosPendientes || 0;
+                if (totalClientesEl) {
 
-                // =========================================
-                // KPI SOLO SI NO ESTAMOS EN VISTA DÍA
-                // =========================================
-                const calendar = window.crmCalendar;
-
-                const isDayView =
-                    calendar && calendar.view.type === "timeGridDay";
-
-                if (!isDayView) {
-
-                    document.getElementById("seguimientosHoy").innerText =
-                        data.seguimientosHoy || 0;
-
-                    document.getElementById("cotizacionesHoy").innerText =
-                        data.cotizacionesHoy || 0;
-
-                    document.getElementById("pedidosHoy").innerText =
-                        data.pedidosHoy || 0;
-
-                    document.getElementById("valorCotizacionesHoy").innerText =
-                        formatearCOP(data.valorCotizacionesHoy || 0);
-
-                    document.getElementById("valorPedidosHoy").innerText =
-                        formatearCOP(data.valorPedidosHoy || 0);
+                    totalClientesEl.innerText =
+                        data.totalClientes || 0;
                 }
 
                 // =========================================
-                // COTIZACIONES (GLOBAL + MES)
+                // CALENDAR
                 // =========================================
-                document.getElementById("cotizacionesMes").innerText =
-                    data.cotizacionesTotal || 0;
+                const calendar =
+                    window.crmCalendar;
 
-                document.getElementById("valorCotizacionesMes").innerText =
-                    formatearCOP(data.valorCotizaciones || 0);
+                const isDayView =
+                    calendar &&
+                    calendar.view.type ===
+                    "timeGridDay";
 
                 // =========================================
-                // PEDIDOS (GLOBAL)
+                // FECHA ACTIVA
+                // =========================================
+                const fechaActiva =
+
+                    fechaSeleccionada
+
+                    ||
+
+                    window.fechaActiva
+
+                    ||
+
+                    new Date()
+                        .toISOString()
+                        .split("T")[0];
+
+                // =========================================
+                // KPI GLOBAL
+                // =========================================
+                if (!isDayView) {
+
+                    const pendientesEl =
+                        document.getElementById(
+                            "seguimientosPendientes"
+                        );
+
+                    if (pendientesEl) {
+
+                        pendientesEl.innerText =
+                            data.seguimientosPendientes || 0;
+                    }
+
+                    const seguimientosHoyEl =
+                        document.getElementById(
+                            "seguimientosHoy"
+                        );
+
+                    if (seguimientosHoyEl) {
+
+                        seguimientosHoyEl.innerText =
+                            data.seguimientosHoy || 0;
+                    }
+
+                    const cotizacionesHoyEl =
+                        document.getElementById(
+                            "cotizacionesHoy"
+                        );
+
+                    if (cotizacionesHoyEl) {
+
+                        cotizacionesHoyEl.innerText =
+                            data.cotizacionesHoy || 0;
+                    }
+
+                    const pedidosHoyEl =
+                        document.getElementById(
+                            "pedidosHoy"
+                        );
+
+                    if (pedidosHoyEl) {
+
+                        pedidosHoyEl.innerText =
+                            data.pedidosHoy || 0;
+                    }
+
+                    const valorCotizacionesHoyEl =
+                        document.getElementById(
+                            "valorCotizacionesHoy"
+                        );
+
+                    if (valorCotizacionesHoyEl) {
+
+                        valorCotizacionesHoyEl.innerText =
+                            formatearCOP(
+                                data.valorCotizacionesHoy || 0
+                            );
+                    }
+
+                    const valorPedidosHoyEl =
+                        document.getElementById(
+                            "valorPedidosHoy"
+                        );
+
+                    if (valorPedidosHoyEl) {
+
+                        valorPedidosHoyEl.innerText =
+                            formatearCOP(
+                                data.valorPedidosHoy || 0
+                            );
+                    }
+                }
+
+                // =========================================
+                // KPI POR FECHA
+                // =========================================
+                if (isDayView) {
+
+                    const dataFecha =
+                        window.tareasCalendario?.[
+                        fechaActiva
+                        ];
+
+                    const tareas =
+                        dataFecha?.tareas || [];
+
+                    const tareasGlobales =
+                        Object.values(
+                            window.tareasCalendario || {}
+                        ).flatMap(
+                            d => d.tareas || []
+                        );
+
+                    // =====================================
+                    // PENDIENTES
+                    // =====================================
+                    const pendientesEl =
+                        document.getElementById(
+                            "seguimientosPendientes"
+                        );
+
+                    if (pendientesEl) {
+
+                        pendientesEl.innerText =
+                            tareas.filter(
+                                t =>
+                                    t.estado ===
+                                    "ACTIVO"
+                            ).length;
+                    }
+
+                    // =====================================
+                    // SEGUIMIENTOS
+                    // =====================================
+                    const seguimientosHoyEl =
+                        document.getElementById(
+                            "seguimientosHoy"
+                        );
+
+                    if (seguimientosHoyEl) {
+
+                        seguimientosHoyEl.innerText =
+                            tareas.filter(
+                                t =>
+                                    t.estado ===
+                                    "ACTIVO"
+                            ).length;
+                    }
+
+                    // =====================================
+                    // COTIZACIONES
+                    // =====================================
+                    const cotizaciones =
+                        tareasGlobales.filter(t =>
+
+                            t.tipo ===
+                            "COTIZACION"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fechaActiva
+
+                        );
+
+                    const cotizacionesHoyEl =
+                        document.getElementById(
+                            "cotizacionesHoy"
+                        );
+
+                    if (cotizacionesHoyEl) {
+
+                        cotizacionesHoyEl.innerText =
+                            cotizaciones.length;
+                    }
+
+                    const valorCotizacionesHoyEl =
+                        document.getElementById(
+                            "valorCotizacionesHoy"
+                        );
+
+                    if (valorCotizacionesHoyEl) {
+
+                        valorCotizacionesHoyEl.innerText =
+                            formatearCOP(
+
+                                cotizaciones.reduce(
+                                    (acc, t) =>
+
+                                        acc +
+
+                                        Number(
+                                            t.valor || 0
+                                        ),
+
+                                    0
+                                )
+                            );
+                    }
+
+                    // =====================================
+                    // PEDIDOS
+                    // =====================================
+                    const pedidos =
+                        tareasGlobales.filter(t =>
+
+                            t.tipo ===
+                            "PEDIDO"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fechaActiva
+
+                        );
+
+                    const pedidosHoyEl =
+                        document.getElementById(
+                            "pedidosHoy"
+                        );
+
+                    if (pedidosHoyEl) {
+
+                        pedidosHoyEl.innerText =
+                            pedidos.length;
+                    }
+
+                    const valorPedidosHoyEl =
+                        document.getElementById(
+                            "valorPedidosHoy"
+                        );
+
+                    if (valorPedidosHoyEl) {
+
+                        valorPedidosHoyEl.innerText =
+                            formatearCOP(
+
+                                pedidos.reduce(
+                                    (acc, t) =>
+
+                                        acc +
+
+                                        Number(
+                                            t.valor || 0
+                                        ),
+
+                                    0
+                                )
+                            );
+                    }
+                }
+
+                // =========================================
+                // COTIZACIONES GLOBALES
+                // =========================================
+                const cotizacionesMesEl =
+                    document.getElementById(
+                        "cotizacionesMes"
+                    );
+
+                if (cotizacionesMesEl) {
+
+                    cotizacionesMesEl.innerText =
+                        data.cotizacionesTotal || 0;
+                }
+
+                const valorCotizacionesMesEl =
+                    document.getElementById(
+                        "valorCotizacionesMes"
+                    );
+
+                if (valorCotizacionesMesEl) {
+
+                    valorCotizacionesMesEl.innerText =
+                        formatearCOP(
+                            data.valorCotizaciones || 0
+                        );
+                }
+
+                // =========================================
+                // PEDIDOS GLOBALES
                 // =========================================
                 const pedidosTotalEl =
-                    document.getElementById("pedidosTotal");
-
-                const valorPedidosEl =
-                    document.getElementById("valorPedidos");
+                    document.getElementById(
+                        "pedidosTotal"
+                    );
 
                 if (pedidosTotalEl) {
+
                     pedidosTotalEl.innerText =
                         data.pedidosTotal || 0;
                 }
 
-                if (valorPedidosEl) {
-                    valorPedidosEl.innerText =
-                        formatearCOP(data.valorPedidos || 0);
-                }
+                const valorPedidosEl =
+                    document.getElementById(
+                        "valorPedidos"
+                    );
 
-                // =========================================
-                // SI ESTAMOS EN VISTA DÍA → NO PISAR KPI POR FECHA
-                // =========================================
-                // (los KPI del día los controla cargarTareasPorFecha)
+                if (valorPedidosEl) {
+
+                    valorPedidosEl.innerText =
+                        formatearCOP(
+                            data.valorPedidos || 0
+                        );
+                }
 
             } catch (err) {
 
                 console.error(err);
 
-                document.getElementById("totalClientes").innerText = 0;
-                document.getElementById("seguimientosHoy").innerText = 0;
-                document.getElementById("seguimientosPendientes").innerText = 0;
+                document.getElementById(
+                    "totalClientes"
+                ).innerText = 0;
 
-                document.getElementById("cotizacionesMes").innerText = 0;
-                document.getElementById("valorCotizacionesMes").innerText = "$0";
+                document.getElementById(
+                    "seguimientosHoy"
+                ).innerText = 0;
 
-                document.getElementById("cotizacionesHoy").innerText = 0;
-                document.getElementById("valorCotizacionesHoy").innerText = "$0";
+                document.getElementById(
+                    "seguimientosPendientes"
+                ).innerText = 0;
+
+                document.getElementById(
+                    "cotizacionesMes"
+                ).innerText = 0;
+
+                document.getElementById(
+                    "valorCotizacionesMes"
+                ).innerText = "$0";
+
+                document.getElementById(
+                    "cotizacionesHoy"
+                ).innerText = 0;
+
+                document.getElementById(
+                    "valorCotizacionesHoy"
+                ).innerText = "$0";
 
                 const pedidosTotalEl =
-                    document.getElementById("pedidosTotal");
+                    document.getElementById(
+                        "pedidosTotal"
+                    );
 
                 const valorPedidosEl =
-                    document.getElementById("valorPedidos");
+                    document.getElementById(
+                        "valorPedidos"
+                    );
 
                 const pedidosHoyEl =
-                    document.getElementById("pedidosHoy");
+                    document.getElementById(
+                        "pedidosHoy"
+                    );
 
                 const valorPedidosHoyEl =
-                    document.getElementById("valorPedidosHoy");
+                    document.getElementById(
+                        "valorPedidosHoy"
+                    );
 
-                if (pedidosTotalEl) pedidosTotalEl.innerText = 0;
-                if (valorPedidosEl) valorPedidosEl.innerText = "$0";
-                if (pedidosHoyEl) pedidosHoyEl.innerText = 0;
-                if (valorPedidosHoyEl) valorPedidosHoyEl.innerText = "$0";
+                if (pedidosTotalEl)
+                    pedidosTotalEl.innerText = 0;
+
+                if (valorPedidosEl)
+                    valorPedidosEl.innerText = "$0";
+
+                if (pedidosHoyEl)
+                    pedidosHoyEl.innerText = 0;
+
+                if (valorPedidosHoyEl)
+                    valorPedidosHoyEl.innerText = "$0";
             }
         }
 
