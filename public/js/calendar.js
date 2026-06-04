@@ -753,10 +753,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     // FECHA ACTIVA (CORREGIDA)
                     // =================================
                     const fechaActualVista =
-                        calendar.view.activeStart
+                        calendar.getDate()
                             .toISOString()
                             .split("T")[0];
-
                     window.fechaActiva = fechaActualVista;
 
                     // =================================
