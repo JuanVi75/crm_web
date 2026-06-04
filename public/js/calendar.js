@@ -769,7 +769,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     // =================================
-                    // SINCRONIZAR FECHA ACTIVA
+                    // SINCRONIZAR FECHA ACTIVA (CORREGIDO)
                     // =================================
                     const fechaActualVista =
                         calendar.getDate()
@@ -780,55 +780,44 @@ document.addEventListener("DOMContentLoaded", function () {
                         fechaActualVista;
 
                     // =================================
-                    // RECARGAR TAREAS AUTOMATICAMENTE
+                    // RECARGA CONTROLADA (FIX IMPORTANTE)
                     // =================================
-                    if (
-                        calendar.view.type === "timeGridDay"
-                    ) {
+                    const esVistaDia =
+                        calendar.view.type === "timeGridDay";
 
-                        if (
-                            typeof cargarTareasPorFecha ===
-                            "function"
-                        ) {
+                    if (esVistaDia) {
 
-                            cargarTareasPorFecha(
-                                fechaActualVista
-                            );
+                        if (typeof cargarTareasPorFecha === "function") {
+
+                            cargarTareasPorFecha(fechaActualVista);
                         }
 
-                        if (
-                            typeof cargarKPIs ===
-                            "function"
-                        ) {
+                        if (typeof cargarKPIs === "function") {
 
-                            cargarKPIs(
-                                fechaActualVista
-                            );
+                            // 🔥 FIX: evitar doble ejecución si ya se llamó desde dateClick
+                            if (window.__kpiLock !== fechaActualVista) {
+
+                                window.__kpiLock = fechaActualVista;
+
+                                cargarKPIs(fechaActualVista);
+                            }
                         }
                     }
 
                     // =================================
-                    // SEMANA / DIA
+                    // SEMANA / DIA ESTILOS
                     // =================================
-                    if (
-
-                        calendar.view.type ===
-                        "timeGridDay"
-
-                    ) {
+                    if (esVistaDia) {
 
                         document.querySelectorAll(
                             ".fc-col-header-cell"
                         ).forEach(header => {
 
                             const text =
-                                header.innerText
-                                    .toLowerCase();
+                                header.innerText.toLowerCase();
 
                             // DOMINGO
-                            if (
-                                text.includes("dom")
-                            ) {
+                            if (text.includes("dom")) {
 
                                 header.style.background =
                                     "#7f1d1d";
@@ -839,8 +828,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             // SABADO
                             if (
-                                text.includes("sáb")
-                                ||
+                                text.includes("sáb") ||
                                 text.includes("sab")
                             ) {
 
@@ -853,9 +841,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             // HOY
                             if (
-                                header.classList.contains(
-                                    "fc-day-today"
-                                )
+                                header.classList.contains("fc-day-today")
                             ) {
 
                                 header.style.background =
@@ -864,14 +850,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                 header.style.color =
                                     "#000";
                             }
-
                         });
                     }
 
                 }, 50);
-
             }
-
         });
 
     // =========================================
