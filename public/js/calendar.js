@@ -450,9 +450,150 @@ document.addEventListener("DOMContentLoaded", function () {
                     "6px";
 
                 // =================================
-                // KPI VISTA DIA (ELIMINADO)
+                // KPI VISTA DIA
                 // =================================
-                // ❌ Se removió toda lógica de KPIs de aquí
+                const calendar =
+                    window.crmCalendar;
+
+                if (
+                    !calendar ||
+                    calendar.view.type !==
+                    "timeGridDay"
+                ) {
+                    return;
+                }
+
+                const fechaEvento =
+                    info.event.startStr
+                        .substring(0, 10);
+
+                const fechaActiva =
+                    window.fechaActiva;
+
+                if (
+                    fechaEvento !==
+                    fechaActiva
+                ) {
+                    return;
+                }
+
+                // =================================
+                // TAREAS FECHA
+                // =================================
+                const tareas =
+                    Object.values(
+                        window.tareasCalendario || {}
+                    ).flatMap(
+                        d => d.tareas || []
+                    );
+
+                // =================================
+                // SEGUIMIENTOS
+                // =================================
+                const seguimientos =
+                    tareas.filter(t => {
+
+                        if (!t.fecha) {
+                            return false;
+                        }
+
+                        return (
+
+                            String(
+                                t.fecha
+                            ).substring(0, 10)
+
+                            === fechaActiva
+                        );
+
+                    }).length;
+
+                // =================================
+                // COTIZACIONES
+                // =================================
+                const cotizaciones =
+                    tareas.filter(t => {
+
+                        if (!t.fecha) {
+                            return false;
+                        }
+
+                        return (
+
+                            t.tipo ===
+                            "COTIZACION"
+
+                            &&
+
+                            String(
+                                t.fecha
+                            ).substring(0, 10)
+
+                            === fechaActiva
+                        );
+
+                    }).length;
+
+                // =================================
+                // PEDIDOS
+                // =================================
+                const pedidos =
+                    tareas.filter(t => {
+
+                        if (!t.fecha) {
+                            return false;
+                        }
+
+                        return (
+
+                            t.tipo ===
+                            "PEDIDO"
+
+                            &&
+
+                            String(
+                                t.fecha
+                            ).substring(0, 10)
+
+                            === fechaActiva
+                        );
+
+                    }).length;
+
+                // =================================
+                // KPI HEADER CALENDARIO
+                // =================================
+                const allDay =
+                    document.querySelector(
+                        ".fc-timegrid-axis-cushion"
+                    );
+
+                if (allDay) {
+
+                    allDay.innerHTML = `
+            <div style="
+                display:flex;
+                flex-direction:column;
+                gap:4px;
+                font-size:11px;
+                font-weight:600;
+                padding:4px;
+                line-height:1.2;
+            ">
+                <div>
+                    📞 Seg: ${seguimientos}
+                </div>
+
+                <div>
+                    📄 Cot: ${cotizaciones}
+                </div>
+
+                <div>
+                    📦 Ped: ${pedidos}
+                </div>
+            </div>
+        `;
+                }
             },
 
             // =====================================
@@ -619,7 +760,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.fechaActiva = fechaActualVista;
 
                     // =================================
-                    // KPIs (SIN RENDER UI AQUÍ)
+                    // KPIs (SIEMPRE SIN DEPENDER DE VISTA)
                     // =================================
                     if (typeof cargarKPIs === "function") {
                         cargarKPIs(fechaActualVista);
