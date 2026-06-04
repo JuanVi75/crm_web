@@ -394,28 +394,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 window.fechaActiva = fecha;
 
-                if (
-                    typeof cargarTareasPorFecha ===
-                    "function"
-                ) {
-
-                    cargarTareasPorFecha(fecha);
-                }
-
-                if (
-                    typeof cargarKPIs ===
-                    "function"
-                ) {
-
-                    cargarKPIs(fecha);
-                }
-
                 const calendar =
                     window.crmCalendar;
 
+                // =================================
+                // IR A FECHA
+                // =================================
                 if (calendar) {
-
                     calendar.gotoDate(fecha);
+                }
+
+                // =================================
+                // SOLO TAREAS (NO KPIs AQUÍ)
+                // =================================
+                if (typeof cargarTareasPorFecha === "function") {
+                    cargarTareasPorFecha(fecha);
                 }
             },
 
@@ -737,120 +730,75 @@ document.addEventListener("DOMContentLoaded", function () {
                     // =================================
                     // HEADERS
                     // =================================
-                    document.querySelectorAll(
-                        ".fc-col-header-cell"
-                    ).forEach(header => {
+                    document.querySelectorAll(".fc-col-header-cell")
+                        .forEach(header => {
 
-                        header.style.background =
-                            "white";
-
-                        header.style.color =
-                            "#111827";
-
-                        header.style.fontWeight =
-                            "600";
-                    });
+                            header.style.background = "white";
+                            header.style.color = "#111827";
+                            header.style.fontWeight = "600";
+                        });
 
                     // =================================
                     // SCROLL
                     // =================================
-                    document.querySelectorAll(
-                        ".fc-scroller"
-                    ).forEach(scroller => {
+                    document.querySelectorAll(".fc-scroller")
+                        .forEach(scroller => {
 
-                        scroller.style.overflowY =
-                            "auto";
-
-                        scroller.style.overflowX =
-                            "hidden";
-
-                        scroller.style.maxHeight =
-                            "100%";
-                    });
+                            scroller.style.overflowY = "auto";
+                            scroller.style.overflowX = "hidden";
+                            scroller.style.maxHeight = "100%";
+                        });
 
                     // =================================
-                    // SINCRONIZAR FECHA ACTIVA (CORREGIDO)
+                    // FECHA ACTIVA (CORREGIDA)
                     // =================================
                     const fechaActualVista =
-                        calendar.getDate()
+                        calendar.view.activeStart
                             .toISOString()
                             .split("T")[0];
 
-                    window.fechaActiva =
-                        fechaActualVista;
+                    window.fechaActiva = fechaActualVista;
 
                     // =================================
-                    // RECARGA CONTROLADA (FIX IMPORTANTE)
+                    // KPIs (SIEMPRE SIN DEPENDER DE VISTA)
+                    // =================================
+                    if (typeof cargarKPIs === "function") {
+                        cargarKPIs(fechaActualVista);
+                    }
+
+                    if (typeof cargarTareasPorFecha === "function") {
+                        cargarTareasPorFecha(fechaActualVista);
+                    }
+
+                    // =================================
+                    // ESTILOS SOLO VISTA DÍA
                     // =================================
                     const esVistaDia =
                         calendar.view.type === "timeGridDay";
 
                     if (esVistaDia) {
 
-                        if (typeof cargarTareasPorFecha === "function") {
+                        document.querySelectorAll(".fc-col-header-cell")
+                            .forEach(header => {
 
-                            cargarTareasPorFecha(fechaActualVista);
-                        }
+                                const text =
+                                    header.innerText.toLowerCase();
 
-                        if (typeof cargarKPIs === "function") {
+                                if (text.includes("dom")) {
+                                    header.style.background = "#7f1d1d";
+                                    header.style.color = "white";
+                                }
 
-                            // 🔥 FIX: evitar doble ejecución si ya se llamó desde dateClick
-                            if (window.__kpiLock !== fechaActualVista) {
+                                if (text.includes("sab")) {
+                                    header.style.background = "#1e3a8a";
+                                    header.style.color = "white";
+                                }
 
-                                window.__kpiLock = fechaActualVista;
-
-                                cargarKPIs(fechaActualVista);
-                            }
-                        }
-                    }
-
-                    // =================================
-                    // SEMANA / DIA ESTILOS
-                    // =================================
-                    if (esVistaDia) {
-
-                        document.querySelectorAll(
-                            ".fc-col-header-cell"
-                        ).forEach(header => {
-
-                            const text =
-                                header.innerText.toLowerCase();
-
-                            // DOMINGO
-                            if (text.includes("dom")) {
-
-                                header.style.background =
-                                    "#7f1d1d";
-
-                                header.style.color =
-                                    "white";
-                            }
-
-                            // SABADO
-                            if (
-                                text.includes("sáb") ||
-                                text.includes("sab")
-                            ) {
-
-                                header.style.background =
-                                    "#1e3a8a";
-
-                                header.style.color =
-                                    "white";
-                            }
-
-                            // HOY
-                            if (
-                                header.classList.contains("fc-day-today")
-                            ) {
-
-                                header.style.background =
-                                    "#facc15";
-
-                                header.style.color =
-                                    "#000";
-                            }
-                        });
+                                if (header.classList.contains("fc-day-today")) {
+                                    header.style.background = "#facc15";
+                                    header.style.color = "#000";
+                                }
+                            });
                     }
 
                 }, 50);
@@ -868,28 +816,28 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================
     calendar.render();
 
+    // =========================================
+    // FECHA BASE
+    // =========================================
     const hoy =
         new Date().toISOString().split("T")[0];
 
     window.fechaActiva = hoy;
 
+    // =========================================
+    // CAMBIO DE VISTA
+    // =========================================
     calendar.changeView("timeGridDay");
 
-    if (
-        typeof cargarTareasPorFecha ===
-        "function"
-    ) {
-
+    // =========================================
+    // SOLO CARGA DE TAREAS (NO KPIs)
+    // =========================================
+    if (typeof cargarTareasPorFecha === "function") {
         cargarTareasPorFecha(hoy);
     }
 
-    if (
-        typeof cargarKPIs ===
-        "function"
-    ) {
-
-        cargarKPIs(hoy);
-    }
+    // ❌ ELIMINADO:
+    // cargarKPIs(hoy);
 
     // =========================================
     // RESIZE
