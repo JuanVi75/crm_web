@@ -2449,9 +2449,12 @@ MODAL TAREAS NUEVO
 
             // =========================================
             // KPI: SEGUIMIENTOS HOY
+            // TODAS LAS TAREAS DEL DIA
             // =========================================
             const seguimientosHoyEl =
-                document.getElementById("seguimientosHoy");
+                document.getElementById(
+                    "seguimientosHoy"
+                );
 
             if (seguimientosHoyEl) {
 
@@ -2461,35 +2464,53 @@ MODAL TAREAS NUEVO
 
             // =========================================
             // KPI: PENDIENTES
+            // SOLO ACTIVOS
             // =========================================
             const pendientesEl =
-                document.getElementById("seguimientosPendientes");
+                document.getElementById(
+                    "seguimientosPendientes"
+                );
 
             if (pendientesEl) {
 
                 pendientesEl.innerText =
-                    tareas.filter(t => t.estado === "ACTIVO").length;
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
+                    ).length;
             }
 
             // =========================================
             // TODAS LAS TAREAS GLOBALES
             // =========================================
             const tareasGlobales =
-                Object.values(window.tareasCalendario || {})
-                    .flatMap(d => d.tareas || []);
+                Object.values(window.tareasCalendario)
+                    .flatMap(
+                        d => d.tareas || []
+                    );
 
             // =========================================
             // COTIZACIONES
             // =========================================
             const cotizacionesHoyEl =
-                document.getElementById("cotizacionesHoy");
+                document.getElementById(
+                    "cotizacionesHoy"
+                );
 
             if (cotizacionesHoyEl) {
 
                 cotizacionesHoyEl.innerText =
                     tareasGlobales.filter(t =>
-                        t.tipo === "COTIZACION" &&
-                        String(t.fecha_proxima).substring(0, 10) === fecha
+
+                        t.tipo === "COTIZACION"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
                     ).length;
             }
 
@@ -2497,14 +2518,25 @@ MODAL TAREAS NUEVO
             // PEDIDOS
             // =========================================
             const pedidosHoyEl =
-                document.getElementById("pedidosHoy");
+                document.getElementById(
+                    "pedidosHoy"
+                );
 
             if (pedidosHoyEl) {
 
                 pedidosHoyEl.innerText =
                     tareasGlobales.filter(t =>
-                        t.tipo === "PEDIDO" &&
-                        String(t.fecha_proxima).substring(0, 10) === fecha
+
+                        t.tipo === "PEDIDO"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
                     ).length;
             }
 
@@ -2512,40 +2544,80 @@ MODAL TAREAS NUEVO
             // VALOR COTIZACIONES
             // =========================================
             const valorCotizacionesHoyEl =
-                document.getElementById("valorCotizacionesHoy");
+                document.getElementById(
+                    "valorCotizacionesHoy"
+                );
 
             if (valorCotizacionesHoyEl) {
 
                 const totalCotizaciones =
                     tareasGlobales
                         .filter(t =>
-                            t.tipo === "COTIZACION" &&
-                            String(t.fecha_proxima).substring(0, 10) === fecha
+
+                            t.tipo === "COTIZACION"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fecha
+
                         )
-                        .reduce((acc, t) => acc + Number(t.valor || 0), 0);
+                        .reduce((acc, t) => {
+
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
+
+                        }, 0);
 
                 valorCotizacionesHoyEl.innerText =
-                    formatearCOP(totalCotizaciones);
+                    formatearCOP(
+                        totalCotizaciones
+                    );
             }
 
             // =========================================
             // VALOR PEDIDOS
             // =========================================
             const valorPedidosHoyEl =
-                document.getElementById("valorPedidosHoy");
+                document.getElementById(
+                    "valorPedidosHoy"
+                );
 
             if (valorPedidosHoyEl) {
 
                 const totalPedidos =
                     tareasGlobales
                         .filter(t =>
-                            t.tipo === "PEDIDO" &&
-                            String(t.fecha_proxima).substring(0, 10) === fecha
+
+                            t.tipo === "PEDIDO"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fecha
+
                         )
-                        .reduce((acc, t) => acc + Number(t.valor || 0), 0);
+                        .reduce((acc, t) => {
+
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
+
+                        }, 0);
 
                 valorPedidosHoyEl.innerText =
-                    formatearCOP(totalPedidos);
+                    formatearCOP(
+                        totalPedidos
+                    );
             }
         }
 
@@ -2670,7 +2742,7 @@ MODAL TAREAS NUEVO
         let tareaActualIndex = null;
         let tareasHoyGlobal = [];
 
-        async function cargarKPIs() {
+        async function cargarKPIs(fechaSeleccionada = null) {
 
             try {
 
@@ -2695,92 +2767,145 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // HOY REAL
+                // CALENDARIO
+                // =========================================
+                const calendar = window.crmCalendar;
+
+                const isDayView =
+                    calendar &&
+                    calendar.view.type === "timeGridDay";
+
+                // =========================================
+                // FECHAS BASE
                 // =========================================
                 const hoy =
                     new Date().toISOString().split("T")[0];
 
+                const fechaBase =
+                    fechaSeleccionada ||
+                    window.fechaActiva ||
+                    hoy;
+
                 // =========================================
-                // VALIDAR TAREAS
+                // TAREAS GLOBALES
                 // =========================================
                 const tareasGlobales =
                     Object.values(window.tareasCalendario || {})
                         .flatMap(d => d.tareas || []);
 
                 // =========================================
-                // FUNCIÓN FECHA SEGURA
+                // ===============================
+                // 🟦 KPI HOY REAL (FIJO)
+                // ===============================
                 // =========================================
-                const getFecha = (t) =>
-                    t.fecha || t.fecha_proxima;
+
+                const seguimientosHoyReal = tareasGlobales.filter(t =>
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === hoy
+                ).length;
+
+                const cotizacionesHoyReal = tareasGlobales.filter(t =>
+                    t.tipo === "COTIZACION" &&
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === hoy
+                ).length;
+
+                const pedidosHoyReal = tareasGlobales.filter(t =>
+                    t.tipo === "PEDIDO" &&
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === hoy
+                ).length;
 
                 // =========================================
-                // KPI HOY REAL
+                // ===============================
+                // 📅 KPI FECHA SELECCIONADA
+                // ===============================
                 // =========================================
-                const seguimientosHoyReal =
-                    tareasGlobales.filter(t =>
-                        getFecha(t) &&
-                        String(getFecha(t)).substring(0, 10) === hoy
-                    ).length;
 
-                const cotizacionesHoyReal =
-                    tareasGlobales.filter(t =>
-                        t.tipo === "COTIZACION" &&
-                        getFecha(t) &&
-                        String(getFecha(t)).substring(0, 10) === hoy
-                    ).length;
+                const seguimientosFecha = tareasGlobales.filter(t =>
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === fechaBase
+                ).length;
 
-                const pedidosHoyReal =
-                    tareasGlobales.filter(t =>
-                        t.tipo === "PEDIDO" &&
-                        getFecha(t) &&
-                        String(getFecha(t)).substring(0, 10) === hoy
-                    ).length;
+                const cotizacionesFecha = tareasGlobales.filter(t =>
+                    t.tipo === "COTIZACION" &&
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === fechaBase
+                ).length;
 
-                const pendientesHoyReal =
-                    tareasGlobales.filter(t =>
-                        t.estado === "ACTIVO" &&
-                        t.fecha_proxima &&
-                        String(t.fecha_proxima).substring(0, 10) <= hoy
-                    ).length;
+                const pedidosFecha = tareasGlobales.filter(t =>
+                    t.tipo === "PEDIDO" &&
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === fechaBase
+                ).length;
+
+                const pendientesFecha = tareasGlobales.filter(t =>
+                    t.estado === "ACTIVO" &&
+                    t.fecha_proxima &&
+                    String(t.fecha_proxima).substring(0, 10) <= fechaBase
+                ).length;
 
                 // =========================================
-                // RENDER KPI HOY REAL
+                // 🟦 RENDER HOY REAL (FIJO)
                 // =========================================
+
+                const elSeguimientosHoyReal =
+                    document.getElementById("seguimientosHoyReal");
+
+                if (elSeguimientosHoyReal) {
+                    elSeguimientosHoyReal.innerText = seguimientosHoyReal;
+                }
+
+                const elCotizacionesHoyReal =
+                    document.getElementById("cotizacionesHoyReal");
+
+                if (elCotizacionesHoyReal) {
+                    elCotizacionesHoyReal.innerText = cotizacionesHoyReal;
+                }
+
+                const elPedidosHoyReal =
+                    document.getElementById("pedidosHoyReal");
+
+                if (elPedidosHoyReal) {
+                    elPedidosHoyReal.innerText = pedidosHoyReal;
+                }
+
+                // =========================================
+                // 📅 RENDER FECHA SELECCIONADA
+                // =========================================
+
                 const elSeguimientos =
                     document.getElementById("seguimientosHoy");
 
                 if (elSeguimientos) {
-                    elSeguimientos.innerText =
-                        seguimientosHoyReal;
+                    elSeguimientos.innerText = seguimientosFecha;
                 }
 
                 const elCotizaciones =
                     document.getElementById("cotizacionesHoy");
 
                 if (elCotizaciones) {
-                    elCotizaciones.innerText =
-                        cotizacionesHoyReal;
+                    elCotizaciones.innerText = cotizacionesFecha;
                 }
 
                 const elPedidos =
                     document.getElementById("pedidosHoy");
 
                 if (elPedidos) {
-                    elPedidos.innerText =
-                        pedidosHoyReal;
+                    elPedidos.innerText = pedidosFecha;
                 }
 
                 const elPendientes =
                     document.getElementById("seguimientosPendientes");
 
                 if (elPendientes) {
-                    elPendientes.innerText =
-                        pendientesHoyReal;
+                    elPendientes.innerText = pendientesFecha;
                 }
 
                 // =========================================
-                // KPI MES / TOTALES (BACKEND)
+                // KPI GLOBALES (BACKEND)
                 // =========================================
+
                 const cotMes =
                     document.getElementById("cotizacionesMes");
 
@@ -2823,6 +2948,10 @@ MODAL TAREAS NUEVO
                 };
 
                 setZero("totalClientes");
+                setZero("seguimientosHoyReal");
+                setZero("cotizacionesHoyReal");
+                setZero("pedidosHoyReal");
+
                 setZero("seguimientosHoy");
                 setZero("cotizacionesHoy");
                 setZero("pedidosHoy");
@@ -2833,6 +2962,18 @@ MODAL TAREAS NUEVO
                 setZero("pedidosTotal", "0");
                 setZero("valorPedidos", "$0");
             }
+        }
+
+        function formatearCOP(valor) {
+
+            return new Intl.NumberFormat(
+                "es-CO",
+                {
+                    style: "currency",
+                    currency: "COP",
+                    maximumFractionDigits: 0
+                }
+            ).format(valor || 0);
         }
 
         function formatearFecha(fecha) {
