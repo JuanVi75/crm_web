@@ -2297,33 +2297,18 @@ MODAL TAREAS NUEVO
 
             try {
 
-                const res = await fetch(
-                    "/api/seguimientos/tareas-hoy",
-                    {
-
-                        method: "GET",
-
-                        headers: {
-
-                            "Content-Type":
-                                "application/json",
-
-                            "Authorization":
-                                "Bearer " +
-                                localStorage.getItem(
-                                    "token"
-                                )
-                        }
+                const res = await fetch("/api/seguimientos/tareas-hoy", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
                     }
-                );
+                });
 
-                const data =
-                    await res.json();
+                const data = await res.json();
 
                 const container =
-                    document.getElementById(
-                        "taskList"
-                    );
+                    document.getElementById("taskList");
 
                 if (!data.success) {
 
@@ -2354,199 +2339,60 @@ MODAL TAREAS NUEVO
 
                 window.tareasHoy.forEach(t => {
 
-                    if (!t.fecha_proxima)
-                        return;
+                    if (!t.fecha_proxima) return;
 
                     const fecha =
-                        String(
-                            t.fecha_proxima
-                        ).substring(0, 10);
+                        String(t.fecha_proxima)
+                            .substring(0, 10);
 
-                    // =====================================
-                    // CREAR FECHA
-                    // =====================================
-                    if (
-                        !window
-                            .tareasCalendario[
-                        fecha
-                        ]
-                    ) {
+                    if (!window.tareasCalendario[fecha]) {
 
-                        window
-                            .tareasCalendario[
-                            fecha
-                        ] = {
+                        window.tareasCalendario[fecha] = {
 
                             total: 0,
-
-                            pendientes: 0,
 
                             tareas: []
                         };
                     }
 
                     // =====================================
-                    // GUARDAR TODAS LAS TAREAS
+                    // TOTAL SOLO ACTIVOS
                     // =====================================
-                    window
-                        .tareasCalendario[
-                        fecha
-                    ]
+                    if (t.estado === "ACTIVO") {
+
+                        window.tareasCalendario[fecha].total++;
+                    }
+
+                    // =====================================
+                    // GUARDAR TODAS LAS TAREAS
+                    // (ACTIVAS + FUTURAS + TERMINADAS)
+                    // =====================================
+                    window.tareasCalendario[fecha]
                         .tareas
                         .push(t);
-
-                    // =====================================
-                    // TOTAL GENERAL
-                    // =====================================
-                    window
-                        .tareasCalendario[
-                        fecha
-                    ]
-                        .total++;
-
-                    // =====================================
-                    // SOLO ACTIVOS
-                    // =====================================
-                    if (
-                        t.estado ===
-                        "ACTIVO"
-                    ) {
-
-                        window
-                            .tareasCalendario[
-                            fecha
-                        ]
-                            .pendientes++;
-                    }
                 });
 
                 // =========================================
                 // FECHA ACTIVA
                 // =========================================
                 const fechaActiva =
-
                     window.fechaActiva
-
                     ||
-
                     new Date()
                         .toISOString()
                         .split("T")[0];
 
                 // =========================================
-                // TAREAS FECHA ACTIVA
+                // CARGAR FECHA ACTIVA
                 // =========================================
-                const dataFecha =
-
-                    window
-                        .tareasCalendario?.[
-                    fechaActiva
-                    ]
-
-                    ||
-
-                    {
-
-                        total: 0,
-
-                        pendientes: 0,
-
-                        tareas: []
-                    };
-
-                const tareasDelDia =
-                    dataFecha.tareas || [];
-
-                // =========================================
-                // RENDER LISTA
-                // =========================================
-                if (
-                    typeof renderTareasHoy ===
-                    "function"
-                ) {
-
-                    renderTareasHoy(
-                        tareasDelDia
-                    );
-                }
-
-                // =========================================
-                // KPI PENDIENTES
-                // =========================================
-                const pendientes =
-                    document.getElementById(
-                        "seguimientosPendientes"
-                    );
-
-                if (pendientes) {
-
-                    pendientes.innerText =
-                        dataFecha.pendientes || 0;
-                }
-
-                // =========================================
-                // KPI SEGUIMIENTOS
-                // =========================================
-                const seguimientosHoyEl =
-                    document.getElementById(
-                        "seguimientosHoy"
-                    );
-
-                if (seguimientosHoyEl) {
-
-                    seguimientosHoyEl.innerText =
-                        tareasDelDia.length;
-                }
-
-                // =========================================
-                // KPI COTIZACIONES
-                // =========================================
-                const cotizacionesHoyEl =
-                    document.getElementById(
-                        "cotizacionesHoy"
-                    );
-
-                if (cotizacionesHoyEl) {
-
-                    cotizacionesHoyEl.innerText =
-
-                        tareasDelDia.filter(
-                            t =>
-
-                                t.tipo ===
-                                "COTIZACION"
-                        ).length;
-                }
-
-                // =========================================
-                // KPI PEDIDOS
-                // =========================================
-                const pedidosHoyEl =
-                    document.getElementById(
-                        "pedidosHoy"
-                    );
-
-                if (pedidosHoyEl) {
-
-                    pedidosHoyEl.innerText =
-
-                        tareasDelDia.filter(
-                            t =>
-
-                                t.tipo ===
-                                "PEDIDO"
-                        ).length;
-                }
+                cargarTareasPorFecha(fechaActiva);
 
                 // =========================================
                 // REFRESH CALENDARIO
                 // =========================================
-                if (
-                    window.crmCalendar
-                ) {
+                if (window.crmCalendar) {
 
-                    window.crmCalendar
-                        .refetchEvents();
+                    window.crmCalendar.refetchEvents();
                 }
 
             } catch (err) {
@@ -2554,9 +2400,7 @@ MODAL TAREAS NUEVO
                 console.error(err);
 
                 const container =
-                    document.getElementById(
-                        "taskList"
-                    );
+                    document.getElementById("taskList");
 
                 if (container) {
 
@@ -2566,6 +2410,214 @@ MODAL TAREAS NUEVO
                 </div>
             `;
                 }
+            }
+        }
+
+        function cargarTareasPorFecha(fecha) {
+
+            // =========================================
+            // VALIDAR DATA
+            // =========================================
+            if (!window.tareasCalendario) {
+
+                renderTareasHoy([]);
+
+                return;
+            }
+
+            // =========================================
+            // FECHA GLOBAL
+            // =========================================
+            window.fechaActiva = fecha;
+
+            // =========================================
+            // DATA FECHA
+            // =========================================
+            const dataFecha =
+                window.tareasCalendario[fecha];
+
+            // =========================================
+            // TAREAS DEL DIA
+            // =========================================
+            const tareas =
+                dataFecha?.tareas || [];
+
+            // =========================================
+            // RENDER
+            // =========================================
+            renderTareasHoy(tareas);
+
+            // =========================================
+            // KPI: SEGUIMIENTOS HOY
+            // TODAS LAS TAREAS DEL DIA
+            // =========================================
+            const seguimientosHoyEl =
+                document.getElementById(
+                    "seguimientosHoy"
+                );
+
+            if (seguimientosHoyEl) {
+
+                seguimientosHoyEl.innerText =
+                    tareas.length;
+            }
+
+            // =========================================
+            // KPI: PENDIENTES
+            // SOLO ACTIVOS
+            // =========================================
+            const pendientesEl =
+                document.getElementById(
+                    "seguimientosPendientes"
+                );
+
+            if (pendientesEl) {
+
+                pendientesEl.innerText =
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
+                    ).length;
+            }
+
+            // =========================================
+            // TODAS LAS TAREAS GLOBALES
+            // =========================================
+            const tareasGlobales =
+                Object.values(window.tareasCalendario)
+                    .flatMap(
+                        d => d.tareas || []
+                    );
+
+            // =========================================
+            // COTIZACIONES
+            // =========================================
+            const cotizacionesHoyEl =
+                document.getElementById(
+                    "cotizacionesHoy"
+                );
+
+            if (cotizacionesHoyEl) {
+
+                cotizacionesHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
+                        t.tipo === "COTIZACION"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
+                    ).length;
+            }
+
+            // =========================================
+            // PEDIDOS
+            // =========================================
+            const pedidosHoyEl =
+                document.getElementById(
+                    "pedidosHoy"
+                );
+
+            if (pedidosHoyEl) {
+
+                pedidosHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
+                        t.tipo === "PEDIDO"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
+                    ).length;
+            }
+
+            // =========================================
+            // VALOR COTIZACIONES
+            // =========================================
+            const valorCotizacionesHoyEl =
+                document.getElementById(
+                    "valorCotizacionesHoy"
+                );
+
+            if (valorCotizacionesHoyEl) {
+
+                const totalCotizaciones =
+                    tareasGlobales
+                        .filter(t =>
+
+                            t.tipo === "COTIZACION"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fecha
+
+                        )
+                        .reduce((acc, t) => {
+
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
+
+                        }, 0);
+
+                valorCotizacionesHoyEl.innerText =
+                    formatearCOP(
+                        totalCotizaciones
+                    );
+            }
+
+            // =========================================
+            // VALOR PEDIDOS
+            // =========================================
+            const valorPedidosHoyEl =
+                document.getElementById(
+                    "valorPedidosHoy"
+                );
+
+            if (valorPedidosHoyEl) {
+
+                const totalPedidos =
+                    tareasGlobales
+                        .filter(t =>
+
+                            t.tipo === "PEDIDO"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fecha
+
+                        )
+                        .reduce((acc, t) => {
+
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
+
+                        }, 0);
+
+                valorPedidosHoyEl.innerText =
+                    formatearCOP(
+                        totalPedidos
+                    );
             }
         }
 
