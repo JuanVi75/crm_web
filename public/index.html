@@ -2748,10 +2748,16 @@ MODAL TAREAS NUEVO
                 // =========================================
                 const seguimientosHoyReal =
                     tareas.filter(t =>
-                        (t.fecha || t.fecha_proxima) &&
-                        String((t.fecha || t.fecha_proxima)).substring(0, 10) === hoy
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
                     ).length;
 
+                const seguimientosPendientes =
+                    tareas.filter(t =>
+                        t.estado === "ACTIVO" &&
+                        t.fecha_proxima &&
+                        String(t.fecha_proxima).substring(0, 10) <= hoy
+                    ).length;
                 const cotizacionesHoyReal =
                     tareas.filter(t =>
                         t.tipo === "COTIZACION" &&
