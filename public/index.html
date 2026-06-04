@@ -2695,40 +2695,45 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // HOY REAL (FIJO)
+                // HOY REAL
                 // =========================================
                 const hoy =
                     new Date().toISOString().split("T")[0];
 
                 // =========================================
-                // TAREAS GLOBALES
+                // VALIDAR TAREAS
                 // =========================================
                 const tareasGlobales =
                     Object.values(window.tareasCalendario || {})
                         .flatMap(d => d.tareas || []);
 
                 // =========================================
-                // KPI HOY REAL (FIJO)
+                // FUNCIÓN FECHA SEGURA
                 // =========================================
+                const getFecha = (t) =>
+                    t.fecha || t.fecha_proxima;
 
+                // =========================================
+                // KPI HOY REAL
+                // =========================================
                 const seguimientosHoyReal =
                     tareasGlobales.filter(t =>
-                        t.fecha &&
-                        String(t.fecha).substring(0, 10) === hoy
+                        getFecha(t) &&
+                        String(getFecha(t)).substring(0, 10) === hoy
                     ).length;
 
                 const cotizacionesHoyReal =
                     tareasGlobales.filter(t =>
                         t.tipo === "COTIZACION" &&
-                        t.fecha &&
-                        String(t.fecha).substring(0, 10) === hoy
+                        getFecha(t) &&
+                        String(getFecha(t)).substring(0, 10) === hoy
                     ).length;
 
                 const pedidosHoyReal =
                     tareasGlobales.filter(t =>
                         t.tipo === "PEDIDO" &&
-                        t.fecha &&
-                        String(t.fecha).substring(0, 10) === hoy
+                        getFecha(t) &&
+                        String(getFecha(t)).substring(0, 10) === hoy
                     ).length;
 
                 const pendientesHoyReal =
@@ -2741,39 +2746,41 @@ MODAL TAREAS NUEVO
                 // =========================================
                 // RENDER KPI HOY REAL
                 // =========================================
-
-                const elSeguimientosHoyReal =
+                const elSeguimientos =
                     document.getElementById("seguimientosHoy");
 
-                if (elSeguimientosHoyReal) {
-                    elSeguimientosHoyReal.innerText = seguimientosHoyReal;
+                if (elSeguimientos) {
+                    elSeguimientos.innerText =
+                        seguimientosHoyReal;
                 }
 
-                const elCotizacionesHoyReal =
+                const elCotizaciones =
                     document.getElementById("cotizacionesHoy");
 
-                if (elCotizacionesHoyReal) {
-                    elCotizacionesHoyReal.innerText = cotizacionesHoyReal;
+                if (elCotizaciones) {
+                    elCotizaciones.innerText =
+                        cotizacionesHoyReal;
                 }
 
-                const elPedidosHoyReal =
+                const elPedidos =
                     document.getElementById("pedidosHoy");
 
-                if (elPedidosHoyReal) {
-                    elPedidosHoyReal.innerText = pedidosHoyReal;
+                if (elPedidos) {
+                    elPedidos.innerText =
+                        pedidosHoyReal;
                 }
 
-                const elPendientesHoyReal =
+                const elPendientes =
                     document.getElementById("seguimientosPendientes");
 
-                if (elPendientesHoyReal) {
-                    elPendientesHoyReal.innerText = pendientesHoyReal;
+                if (elPendientes) {
+                    elPendientes.innerText =
+                        pendientesHoyReal;
                 }
 
                 // =========================================
                 // KPI MES / TOTALES (BACKEND)
                 // =========================================
-
                 const cotMes =
                     document.getElementById("cotizacionesMes");
 
