@@ -329,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // =====================================
             // TEXTOS
             // =====================================
-            allDayText: "Todo el Día",
+            allDayText: "KPI's:",
 
             // =====================================
             // EVENTS
@@ -519,9 +519,6 @@ document.addEventListener("DOMContentLoaded", function () {
             // =====================================
             // MES COLORES
             // =====================================
-             // =====================================
-            // MES COLORES
-            // =====================================
             dayCellDidMount: function (info) {
 
                 if (
@@ -531,8 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                const date =
-                    info.date;
+                const date = info.date;
 
                 const day =
                     date.getDay();
@@ -554,9 +550,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     info.el.style.background =
                         "#7f1d1d";
-
-                    info.el.style.color =
-                        "#fff";
                 }
 
                 // SABADO
@@ -564,9 +557,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     info.el.style.background =
                         "#1e3a8a";
-
-                    info.el.style.color =
-                        "#fff";
                 }
 
                 // FESTIVO
@@ -574,9 +564,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     info.el.style.background =
                         "#b91c1c";
-
-                    info.el.style.color =
-                        "#fff";
                 }
 
                 // HOY
