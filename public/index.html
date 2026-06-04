@@ -2313,6 +2313,7 @@ MODAL TAREAS NUEVO
                 if (!data.success) {
 
                     if (container) {
+
                         container.innerHTML = `
                     <div class="task-item empty">
                         Error cargando tareas
@@ -2324,7 +2325,7 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // GUARDAR BASE
+                // GUARDAR TAREAS GLOBALES
                 // =========================================
                 window.tareasHoy =
                     Array.isArray(data.data)
@@ -2332,56 +2333,66 @@ MODAL TAREAS NUEVO
                         : [];
 
                 // =========================================
-                // RECONSTRUIR CALENDARIO SIN ESTADO VACÍO
+                // RECONSTRUIR MAPA CALENDARIO
                 // =========================================
-                const nuevoCalendario = {};
+                window.tareasCalendario = {};
 
                 window.tareasHoy.forEach(t => {
 
                     if (!t.fecha_proxima) return;
 
                     const fecha =
-                        String(t.fecha_proxima).substring(0, 10);
+                        String(t.fecha_proxima)
+                            .substring(0, 10);
 
-                    if (!nuevoCalendario[fecha]) {
+                    if (!window.tareasCalendario[fecha]) {
 
-                        nuevoCalendario[fecha] = {
+                        window.tareasCalendario[fecha] = {
+
                             total: 0,
+
                             tareas: []
                         };
                     }
 
+                    // =====================================
+                    // TOTAL SOLO ACTIVOS
+                    // =====================================
                     if (t.estado === "ACTIVO") {
-                        nuevoCalendario[fecha].total++;
+
+                        window.tareasCalendario[fecha].total++;
                     }
 
-                    nuevoCalendario[fecha].tareas.push(t);
+                    // =====================================
+                    // GUARDAR TODAS LAS TAREAS
+                    // (ACTIVAS + FUTURAS + TERMINADAS)
+                    // =====================================
+                    window.tareasCalendario[fecha]
+                        .tareas
+                        .push(t);
                 });
-
-                // 🔥 REEMPLAZO SEGURO (UNA SOLA VEZ)
-                window.tareasCalendario = nuevoCalendario;
 
                 // =========================================
                 // FECHA ACTIVA
                 // =========================================
                 const fechaActiva =
-                    window.fechaActiva ||
-                    new Date().toISOString().split("T")[0];
+                    window.fechaActiva
+                    ||
+                    new Date()
+                        .toISOString()
+                        .split("T")[0];
 
                 // =========================================
-                // RENDER DEPENDIENTE
+                // CARGAR FECHA ACTIVA
                 // =========================================
                 cargarTareasPorFecha(fechaActiva);
 
+                // =========================================
+                // REFRESH CALENDARIO
+                // =========================================
                 if (window.crmCalendar) {
-                    window.crmCalendar.refetchEvents();
-                }
 
-                // =========================================
-                // KPIs (IMPORTANTE: DESPUÉS DE DATA)
-                // =========================================
-                if (typeof cargarKPIsGlobales === "function") {
-                    cargarKPIsGlobales();
+                    window.crmCalendar.refetchEvents();
                 }
 
             } catch (err) {
@@ -2392,6 +2403,7 @@ MODAL TAREAS NUEVO
                     document.getElementById("taskList");
 
                 if (container) {
+
                     container.innerHTML = `
                 <div class="task-item empty">
                     Error cargando tareas
@@ -2730,63 +2742,121 @@ MODAL TAREAS NUEVO
         let tareaActualIndex = null;
         let tareasHoyGlobal = [];
 
-        async function cargarKPIsGlobales() {
+        async function cargarKPIs() {
 
-            const res = await fetch(API, {
-                headers: {
-                    "Authorization":
-                        "Bearer " + localStorage.getItem("token")
+            try {
+
+                const res = await fetch(API, {
+                    headers: {
+                        "Authorization":
+                            "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                const data = await res.json();
+
+                // =========================================
+                // FECHA ACTUAL FIJA
+                // =========================================
+                const hoy =
+                    new Date().toISOString().split("T")[0];
+
+                // =========================================
+                // DATA BASE
+                // =========================================
+                const tareas =
+                    Object.values(window.tareasCalendario || {})
+                        .flatMap(d => d.tareas || []);
+
+                // =========================================
+                // CLIENTES
+                // =========================================
+                const clientesEl =
+                    document.getElementById("totalClientes");
+
+                if (clientesEl) {
+                    clientesEl.innerText =
+                        data.totalClientes || 0;
                 }
-            });
 
-            const data = await res.json();
+                // =========================================
+                // SEGUIMIENTOS HOY (fecha = hoy)
+                // =========================================
+                const seguimientosHoy =
+                    tareas.filter(t =>
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
-            const hoy =
-                new Date().toISOString().split("T")[0];
+                // =========================================
+                // SEGUIMIENTOS PENDIENTES
+                // fecha_proxima <= hoy
+                // =========================================
+                const seguimientosPendientes =
+                    tareas.filter(t =>
+                        t.fecha_proxima &&
+                        String(t.fecha_proxima).substring(0, 10) <= hoy
+                    ).length;
 
-            const tareasGlobales =
-                Object.values(window.tareasCalendario || {})
-                    .flatMap(d => d.tareas || []);
+                // =========================================
+                // COTIZACIONES HOY
+                // =========================================
+                const cotizacionesHoy =
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
-            const getFecha = (t) =>
-                t.fecha || t.fecha_proxima;
+                // =========================================
+                // PEDIDOS HOY
+                // =========================================
+                const pedidosHoy =
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
-            const seguimientosHoy =
-                tareasGlobales.filter(t =>
-                    getFecha(t) &&
-                    String(getFecha(t)).substring(0, 10) === hoy
-                ).length;
+                // =========================================
+                // RENDER KPI SUPERIOR
+                // =========================================
+                const set = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val;
+                };
 
-            const cotizacionesHoy =
-                tareasGlobales.filter(t =>
-                    t.tipo === "COTIZACION" &&
-                    getFecha(t) &&
-                    String(getFecha(t)).substring(0, 10) === hoy
-                ).length;
+                set("seguimientosHoy", seguimientosHoy);
+                set("seguimientosPendientes", seguimientosPendientes);
+                set("cotizacionesHoy", cotizacionesHoy);
+                set("pedidosHoy", pedidosHoy);
 
-            const pedidosHoy =
-                tareasGlobales.filter(t =>
-                    t.tipo === "PEDIDO" &&
-                    getFecha(t) &&
-                    String(getFecha(t)).substring(0, 10) === hoy
-                ).length;
+                // =========================================
+                // KPI BACKEND (MES / TOTALES)
+                // =========================================
+                set("cotizacionesMes", data.cotizacionesTotal || 0);
+                set("pedidosTotal", data.pedidosTotal || 0);
 
-            const pendientesHoy =
-                tareasGlobales.filter(t =>
-                    t.estado === "ACTIVO" &&
-                    t.fecha_proxima &&
-                    String(t.fecha_proxima).substring(0, 10) <= hoy
-                ).length;
+                const valCot =
+                    document.getElementById("valorCotizacionesMes");
 
-            document.getElementById("seguimientosHoy").innerText = seguimientosHoy;
-            document.getElementById("cotizacionesHoy").innerText = cotizacionesHoy;
-            document.getElementById("pedidosHoy").innerText = pedidosHoy;
-            document.getElementById("seguimientosPendientes").innerText = pendientesHoy;
+                if (valCot) {
+                    valCot.innerText =
+                        formatearCOP(data.valorCotizaciones || 0);
+                }
 
-            document.getElementById("cotizacionesMes").innerText = data.cotizacionesTotal || 0;
-            document.getElementById("valorCotizacionesMes").innerText = formatearCOP(data.valorCotizaciones || 0);
-            document.getElementById("pedidosTotal").innerText = data.pedidosTotal || 0;
-            document.getElementById("valorPedidos").innerText = formatearCOP(data.valorPedidos || 0);
+                const valPed =
+                    document.getElementById("valorPedidos");
+
+                if (valPed) {
+                    valPed.innerText =
+                        formatearCOP(data.valorPedidos || 0);
+                }
+
+            } catch (err) {
+
+                console.error(err);
+            }
         }
 
         function formatearCOP(valor) {
