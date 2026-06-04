@@ -424,7 +424,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // =====================================
             eventDidMount: function (info) {
 
+                // =================================
                 // FESTIVOS
+                // =================================
                 if (
                     info.event.backgroundColor ===
                     "#b91c1c"
@@ -436,6 +438,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
+                // =================================
+                // EVENTOS CRM
+                // =================================
                 info.el.style.border =
                     "none";
 
@@ -450,6 +455,152 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 info.el.style.borderRadius =
                     "6px";
+
+                // =================================
+                // KPI VISTA DIA
+                // =================================
+                const calendar =
+                    window.crmCalendar;
+
+                if (
+                    !calendar ||
+                    calendar.view.type !==
+                    "timeGridDay"
+                ) {
+                    return;
+                }
+
+                const fechaEvento =
+                    info.event.startStr
+                        .substring(0, 10);
+
+                const fechaActiva =
+                    window.fechaActiva;
+
+                if (
+                    fechaEvento !==
+                    fechaActiva
+                ) {
+                    return;
+                }
+
+                // =================================
+                // TAREAS FECHA
+                // =================================
+                const tareas =
+                    Object.values(
+                        window.tareasCalendario || {}
+                    ).flatMap(
+                        d => d.tareas || []
+                    );
+
+                // =================================
+                // SEGUIMIENTOS
+                // =================================
+                const seguimientos =
+                    tareas.filter(t => {
+
+                        if (!t.fecha) {
+                            return false;
+                        }
+
+                        return (
+
+                            String(
+                                t.fecha
+                            ).substring(0, 10)
+
+                            === fechaActiva
+                        );
+
+                    }).length;
+
+                // =================================
+                // COTIZACIONES
+                // =================================
+                const cotizaciones =
+                    tareas.filter(t => {
+
+                        if (!t.fecha) {
+                            return false;
+                        }
+
+                        return (
+
+                            t.tipo ===
+                            "COTIZACION"
+
+                            &&
+
+                            String(
+                                t.fecha
+                            ).substring(0, 10)
+
+                            === fechaActiva
+                        );
+
+                    }).length;
+
+                // =================================
+                // PEDIDOS
+                // =================================
+                const pedidos =
+                    tareas.filter(t => {
+
+                        if (!t.fecha) {
+                            return false;
+                        }
+
+                        return (
+
+                            t.tipo ===
+                            "PEDIDO"
+
+                            &&
+
+                            String(
+                                t.fecha
+                            ).substring(0, 10)
+
+                            === fechaActiva
+                        );
+
+                    }).length;
+
+                // =================================
+                // KPI HEADER CALENDARIO
+                // =================================
+                const allDay =
+                    document.querySelector(
+                        ".fc-timegrid-axis-cushion"
+                    );
+
+                if (allDay) {
+
+                    allDay.innerHTML = `
+            <div style="
+                display:flex;
+                flex-direction:column;
+                gap:4px;
+                font-size:11px;
+                font-weight:600;
+                padding:4px;
+                line-height:1.2;
+            ">
+                <div>
+                    📞 Seg: ${seguimientos}
+                </div>
+
+                <div>
+                    📄 Cot: ${cotizaciones}
+                </div>
+
+                <div>
+                    📦 Ped: ${pedidos}
+                </div>
+            </div>
+        `;
+                }
             },
 
             // =====================================
@@ -622,8 +773,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     // =================================
                     const fechaActualVista =
                         calendar.getDate()
-                        .toISOString()
-                        .split("T")[0];
+                            .toISOString()
+                            .split("T")[0];
 
                     window.fechaActiva =
                         fechaActualVista;
@@ -637,7 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         if (
                             typeof cargarTareasPorFecha ===
-                                "function"
+                            "function"
                         ) {
 
                             cargarTareasPorFecha(
@@ -647,7 +798,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         if (
                             typeof cargarKPIs ===
-                                "function"
+                            "function"
                         ) {
 
                             cargarKPIs(
