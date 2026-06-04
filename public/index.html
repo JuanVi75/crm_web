@@ -2449,12 +2449,9 @@ MODAL TAREAS NUEVO
 
             // =========================================
             // KPI: SEGUIMIENTOS HOY
-            // TODAS LAS TAREAS DEL DIA
             // =========================================
             const seguimientosHoyEl =
-                document.getElementById(
-                    "seguimientosHoy"
-                );
+                document.getElementById("seguimientosHoy");
 
             if (seguimientosHoyEl) {
 
@@ -2464,53 +2461,35 @@ MODAL TAREAS NUEVO
 
             // =========================================
             // KPI: PENDIENTES
-            // SOLO ACTIVOS
             // =========================================
             const pendientesEl =
-                document.getElementById(
-                    "seguimientosPendientes"
-                );
+                document.getElementById("seguimientosPendientes");
 
             if (pendientesEl) {
 
                 pendientesEl.innerText =
-                    tareas.filter(
-                        t => t.estado === "ACTIVO"
-                    ).length;
+                    tareas.filter(t => t.estado === "ACTIVO").length;
             }
 
             // =========================================
             // TODAS LAS TAREAS GLOBALES
             // =========================================
             const tareasGlobales =
-                Object.values(window.tareasCalendario)
-                    .flatMap(
-                        d => d.tareas || []
-                    );
+                Object.values(window.tareasCalendario || {})
+                    .flatMap(d => d.tareas || []);
 
             // =========================================
             // COTIZACIONES
             // =========================================
             const cotizacionesHoyEl =
-                document.getElementById(
-                    "cotizacionesHoy"
-                );
+                document.getElementById("cotizacionesHoy");
 
             if (cotizacionesHoyEl) {
 
                 cotizacionesHoyEl.innerText =
                     tareasGlobales.filter(t =>
-
-                        t.tipo === "COTIZACION"
-
-                        &&
-
-                        String(
-                            t.fecha_proxima
-                        ).substring(0, 10)
-
-                        === fecha
-
+                        t.tipo === "COTIZACION" &&
+                        String(t.fecha_proxima).substring(0, 10) === fecha
                     ).length;
             }
 
@@ -2518,25 +2497,14 @@ MODAL TAREAS NUEVO
             // PEDIDOS
             // =========================================
             const pedidosHoyEl =
-                document.getElementById(
-                    "pedidosHoy"
-                );
+                document.getElementById("pedidosHoy");
 
             if (pedidosHoyEl) {
 
                 pedidosHoyEl.innerText =
                     tareasGlobales.filter(t =>
-
-                        t.tipo === "PEDIDO"
-
-                        &&
-
-                        String(
-                            t.fecha_proxima
-                        ).substring(0, 10)
-
-                        === fecha
-
+                        t.tipo === "PEDIDO" &&
+                        String(t.fecha_proxima).substring(0, 10) === fecha
                     ).length;
             }
 
@@ -2544,80 +2512,40 @@ MODAL TAREAS NUEVO
             // VALOR COTIZACIONES
             // =========================================
             const valorCotizacionesHoyEl =
-                document.getElementById(
-                    "valorCotizacionesHoy"
-                );
+                document.getElementById("valorCotizacionesHoy");
 
             if (valorCotizacionesHoyEl) {
 
                 const totalCotizaciones =
                     tareasGlobales
                         .filter(t =>
-
-                            t.tipo === "COTIZACION"
-
-                            &&
-
-                            String(
-                                t.fecha_proxima
-                            ).substring(0, 10)
-
-                            === fecha
-
+                            t.tipo === "COTIZACION" &&
+                            String(t.fecha_proxima).substring(0, 10) === fecha
                         )
-                        .reduce((acc, t) => {
-
-                            return acc +
-                                Number(
-                                    t.valor || 0
-                                );
-
-                        }, 0);
+                        .reduce((acc, t) => acc + Number(t.valor || 0), 0);
 
                 valorCotizacionesHoyEl.innerText =
-                    formatearCOP(
-                        totalCotizaciones
-                    );
+                    formatearCOP(totalCotizaciones);
             }
 
             // =========================================
             // VALOR PEDIDOS
             // =========================================
             const valorPedidosHoyEl =
-                document.getElementById(
-                    "valorPedidosHoy"
-                );
+                document.getElementById("valorPedidosHoy");
 
             if (valorPedidosHoyEl) {
 
                 const totalPedidos =
                     tareasGlobales
                         .filter(t =>
-
-                            t.tipo === "PEDIDO"
-
-                            &&
-
-                            String(
-                                t.fecha_proxima
-                            ).substring(0, 10)
-
-                            === fecha
-
+                            t.tipo === "PEDIDO" &&
+                            String(t.fecha_proxima).substring(0, 10) === fecha
                         )
-                        .reduce((acc, t) => {
-
-                            return acc +
-                                Number(
-                                    t.valor || 0
-                                );
-
-                        }, 0);
+                        .reduce((acc, t) => acc + Number(t.valor || 0), 0);
 
                 valorPedidosHoyEl.innerText =
-                    formatearCOP(
-                        totalPedidos
-                    );
+                    formatearCOP(totalPedidos);
             }
         }
 
