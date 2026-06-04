@@ -2725,15 +2725,6 @@ MODAL TAREAS NUEVO
                 }
 
                 // =========================================
-                // CALENDARIO
-                // =========================================
-                const calendar = window.crmCalendar;
-
-                const isDayView =
-                    calendar &&
-                    calendar.view.type === "timeGridDay";
-
-                // =========================================
                 // FECHAS BASE
                 // =========================================
                 const hoy =
@@ -2745,125 +2736,89 @@ MODAL TAREAS NUEVO
                     hoy;
 
                 // =========================================
-                // TAREAS GLOBALES
+                // 🔥 ÚNICA FUENTE DE DATOS KPIs
                 // =========================================
-                const tareasGlobales =
-                    Object.values(window.tareasCalendario || {})
-                        .flatMap(d => d.tareas || []);
-
-                // =========================================
-                // ===============================
-                // 🟦 KPI HOY REAL (FIJO)
-                // ===============================
-                // =========================================
-
-                const seguimientosHoyReal = tareasGlobales.filter(t =>
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === hoy
-                ).length;
-
-                const cotizacionesHoyReal = tareasGlobales.filter(t =>
-                    t.tipo === "COTIZACION" &&
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === hoy
-                ).length;
-
-                const pedidosHoyReal = tareasGlobales.filter(t =>
-                    t.tipo === "PEDIDO" &&
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === hoy
-                ).length;
+                const tareas =
+                    Array.isArray(data.tareas)
+                        ? data.tareas
+                        : [];
 
                 // =========================================
-                // ===============================
-                // 📅 KPI FECHA SELECCIONADA
-                // ===============================
+                // HOY REAL
                 // =========================================
+                const seguimientosHoyReal =
+                    tareas.filter(t =>
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
-                const seguimientosFecha = tareasGlobales.filter(t =>
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === fechaBase
-                ).length;
+                const cotizacionesHoyReal =
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
-                const cotizacionesFecha = tareasGlobales.filter(t =>
-                    t.tipo === "COTIZACION" &&
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === fechaBase
-                ).length;
-
-                const pedidosFecha = tareasGlobales.filter(t =>
-                    t.tipo === "PEDIDO" &&
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === fechaBase
-                ).length;
-
-                const pendientesFecha = tareasGlobales.filter(t =>
-                    t.estado === "ACTIVO" &&
-                    t.fecha_proxima &&
-                    String(t.fecha_proxima).substring(0, 10) <= fechaBase
-                ).length;
+                const pedidosHoyReal =
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
                 // =========================================
-                // 🟦 RENDER HOY REAL (FIJO)
+                // FECHA SELECCIONADA
                 // =========================================
+                const seguimientosFecha =
+                    tareas.filter(t =>
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
-                const elSeguimientosHoyReal =
-                    document.getElementById("seguimientosHoyReal");
+                const cotizacionesFecha =
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
-                if (elSeguimientosHoyReal) {
-                    elSeguimientosHoyReal.innerText = seguimientosHoyReal;
-                }
+                const pedidosFecha =
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
-                const elCotizacionesHoyReal =
-                    document.getElementById("cotizacionesHoyReal");
-
-                if (elCotizacionesHoyReal) {
-                    elCotizacionesHoyReal.innerText = cotizacionesHoyReal;
-                }
-
-                const elPedidosHoyReal =
-                    document.getElementById("pedidosHoyReal");
-
-                if (elPedidosHoyReal) {
-                    elPedidosHoyReal.innerText = pedidosHoyReal;
-                }
+                const pendientesFecha =
+                    tareas.filter(t =>
+                        t.estado === "ACTIVO" &&
+                        t.fecha_proxima &&
+                        String(t.fecha_proxima).substring(0, 10) <= fechaBase
+                    ).length;
 
                 // =========================================
-                // 📅 RENDER FECHA SELECCIONADA
+                // RENDER HOY REAL
                 // =========================================
+                const set = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val;
+                };
 
-                const elSeguimientos =
-                    document.getElementById("seguimientosHoy");
+                set("seguimientosHoyReal", seguimientosHoyReal);
+                set("cotizacionesHoyReal", cotizacionesHoyReal);
+                set("pedidosHoyReal", pedidosHoyReal);
 
-                if (elSeguimientos) {
-                    elSeguimientos.innerText = seguimientosFecha;
-                }
-
-                const elCotizaciones =
-                    document.getElementById("cotizacionesHoy");
-
-                if (elCotizaciones) {
-                    elCotizaciones.innerText = cotizacionesFecha;
-                }
-
-                const elPedidos =
-                    document.getElementById("pedidosHoy");
-
-                if (elPedidos) {
-                    elPedidos.innerText = pedidosFecha;
-                }
-
-                const elPendientes =
-                    document.getElementById("seguimientosPendientes");
-
-                if (elPendientes) {
-                    elPendientes.innerText = pendientesFecha;
-                }
+                // =========================================
+                // RENDER FECHA SELECCIONADA
+                // =========================================
+                set("seguimientosHoy", seguimientosFecha);
+                set("cotizacionesHoy", cotizacionesFecha);
+                set("pedidosHoy", pedidosFecha);
+                set("seguimientosPendientes", pendientesFecha);
 
                 // =========================================
                 // KPI GLOBALES (BACKEND)
                 // =========================================
-
                 const cotMes =
                     document.getElementById("cotizacionesMes");
 
