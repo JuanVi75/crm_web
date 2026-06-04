@@ -334,9 +334,6 @@ const getReporteSeguimientos = (req, res) => {
 // =========================================
 // TAREAS HOY
 // =========================================
-// =========================================
-// TAREAS CRM
-// =========================================
 const getTareasHoy = (req, res) => {
 
     const user = req.user || {
@@ -346,23 +343,15 @@ const getTareasHoy = (req, res) => {
 
     let sql = `
         SELECT
-            s.id,
             s.cliente_id,
-
             c.cliente,
-            c.ciudad,
 
-            s.tipo,
-            s.nota,
-            s.proxima_accion,
-            s.fecha_proxima,
-            s.fecha,
-            s.estado,
-
-            COALESCE(
-                s.asesor,
-                c.asesor
-            ) AS asesor,
+            MAX(s.id) AS id,
+            MAX(s.proxima_accion) AS proxima_accion,
+            MAX(s.fecha_proxima) AS fecha_proxima,
+            MAX(s.estado) AS estado,
+            COALESCE(MAX(s.asesor), MAX(c.asesor)) AS asesor,
+            MAX(c.ciudad) AS ciudad,
 
             cc.id AS contacto_id,
             cc.nombre AS contacto,
@@ -377,47 +366,31 @@ const getTareasHoy = (req, res) => {
             ON cc.cliente_id = s.cliente_id
             AND cc.estado = 'ACTIVO'
 
-        WHERE
-            s.fecha_proxima IS NOT NULL
-
-            AND
-
-            (
-                s.estado IS NULL
-                OR s.estado = 'ACTIVO'
-                OR s.estado = 'STAND BY'
-            )
+        WHERE s.fecha_proxima <= CURDATE()
+        AND (s.estado IS NULL OR s.estado != 'TERMINADO')
     `;
 
     let params = [];
 
-    // =========================================
-    // FILTRO ASESOR
-    // =========================================
     if (user.rol === "ASESOR") {
-
-        sql += `
-            AND s.asesor = ?
-        `;
-
+        sql += " AND s.asesor = ?";
         params.push(user.nombre);
     }
 
-    // =========================================
-    // ORDEN
-    // =========================================
     sql += `
-        ORDER BY
-            s.fecha_proxima ASC,
-            s.fecha ASC
+        GROUP BY
+            s.cliente_id,
+            cc.id,
+            cc.nombre,
+            cc.telefono,
+            c.ciudad
+        ORDER BY MAX(s.fecha_proxima) ASC
     `;
 
     db.query(sql, params, (err, rows) => {
 
         if (err) {
-
             console.error(err);
-
             return res.status(500).json({
                 success: false,
                 message: "Error cargando tareas"
