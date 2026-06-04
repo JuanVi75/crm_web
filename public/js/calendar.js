@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
         yearEnd
     ) {
 
+        let festivos = [];
+
         // =====================================
         // FORMAT DATE
         // =====================================
@@ -35,8 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // =========================================
         const festivos =
             generarFestivosColombia(
-                2000,
-                2050
+                2026,
+                2040
             );
 
         // =====================================
