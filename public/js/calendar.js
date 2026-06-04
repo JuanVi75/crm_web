@@ -618,6 +618,45 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     // =================================
+                    // SINCRONIZAR FECHA ACTIVA
+                    // =================================
+                    const fechaActualVista =
+                        calendar.getDate()
+                        .toISOString()
+                        .split("T")[0];
+
+                    window.fechaActiva =
+                        fechaActualVista;
+
+                    // =================================
+                    // RECARGAR TAREAS AUTOMATICAMENTE
+                    // =================================
+                    if (
+                        calendar.view.type === "timeGridDay"
+                    ) {
+
+                        if (
+                            typeof cargarTareasPorFecha ===
+                                "function"
+                        ) {
+
+                            cargarTareasPorFecha(
+                                fechaActualVista
+                            );
+                        }
+
+                        if (
+                            typeof cargarKPIs ===
+                                "function"
+                        ) {
+
+                            cargarKPIs(
+                                fechaActualVista
+                            );
+                        }
+                    }
+
+                    // =================================
                     // SEMANA / DIA
                     // =================================
                     if (
