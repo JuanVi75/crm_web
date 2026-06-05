@@ -941,7 +941,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-               
+                // =========================================
+                // KPI REALES
+                // =========================================
+                /*kpi.innerHTML = `
+
+                    <div>
+                        ⏳ Pend: ${pendientes}
+                    </div>
+                `;*/
+
                 frame.appendChild(kpi);
             },
 
