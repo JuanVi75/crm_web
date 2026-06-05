@@ -480,25 +480,25 @@ document.addEventListener("DOMContentLoaded", function () {
                         color = "#16a34a";
                     }
 
-                    let titulo = "";
-
-                    if (pendientes > 0) {
-
-                        titulo = `
-                            📌 ${pendientes} pendientes
-                            📞 Seg: ${kpis.seguimientos}
-                            📄 Cot: ${kpis.cotizaciones}
-                            📦 Ped: ${kpis.pedidos}
-                        `;
-                    } else {
-
-                        titulo = `
-                            ✔ Buen Trabajo
-                            📞 Seg: ${kpis.seguimientos}
-                            📄 Cot: ${kpis.cotizaciones}
-                            📦 Ped: ${kpis.pedidos}
-                        `;
-                    }
+                    /* let titulo = "";
+ 
+                     if (pendientes > 0) {
+ 
+                         titulo = `
+                             📌 ${pendientes} pendientes
+                             📞 Seg: ${kpis.seguimientos}
+                             📄 Cot: ${kpis.cotizaciones}
+                             📦 Ped: ${kpis.pedidos}
+                         `;
+                     } else {
+ 
+                         titulo = `
+                             ✔ Buen Trabajo
+                             📞 Seg: ${kpis.seguimientos}
+                             📄 Cot: ${kpis.cotizaciones}
+                             📦 Ped: ${kpis.pedidos}
+                         `;
+                     }*/
 
                     eventos.push({
                         title: titulo,
@@ -687,7 +687,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 // BUEN TRABAJO
                 // =================================
                 let mensajePendientes =
-                    `📌 Pend: ${kpis.pendientes}`;
+                    `📌 Pend: ${kpis.pendientes}<br>
+                     📞 Seg: ${kpis.seguimientos}<br>
+                     📄 Cot: ${kpis.cotizaciones}<br>
+                     📦 Ped: ${kpis.pedidos}`;
 
                 if (kpis.pendientes == 0) {
 
@@ -695,36 +698,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         "✔ Buen Trabajo";
                 }
 
-                // =================================
-                // KPI HEADER
-                // =================================
-                /* allDay.innerHTML = `
-                     <div style="
-                         display:flex;
-                         flex-direction:column;
-                         gap:4px;
-                         font-size:11px;
-                         font-weight:600;
-                         padding:4px;
-                         line-height:1.2;
-                     ">
-                         <div>
-                             ${mensajePendientes}
-                         </div>
- 
-                         <div>
-                             📞 Seg: ${kpis.seguimientos}
-                         </div>
- 
-                         <div>
-                             📄 Cot: ${kpis.cotizaciones}
-                         </div>
- 
-                         <div>
-                             📦 Ped: ${kpis.pedidos}
-                         </div>
-                     </div>
-                 `;*/
             },
 
             // =====================================
@@ -971,12 +944,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 // =========================================
                 // KPI REALES
                 // =========================================
-                kpi.innerHTML = `
+                /*kpi.innerHTML = `
 
                     <div>
                         ⏳ Pend: ${pendientes}
                     </div>
-                `;
+                `;*/
 
                 frame.appendChild(kpi);
             },
