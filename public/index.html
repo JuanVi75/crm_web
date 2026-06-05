@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>CRM WEB</title>
+
     <!-- FULLCALENDAR -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+
     <style>
         /* =========================================
             FUENTE
@@ -14,9 +19,11 @@
             font-family: "Aptos", Arial, sans-serif;
             box-sizing: border-box;
         }
+
         /* =========================================
             MODAL
         ========================================= */
+
         .modal-box {
             width: 95%;
             max-width: 650px;
@@ -25,21 +32,31 @@
             padding: 16px;
             overflow: hidden;
         }
+
         .modal-overlay {
+
             position: fixed;
+
             top: 0;
             left: 0;
+
             width: 100%;
             height: 100vh;
+
             background: rgba(0, 0, 0, 0.6);
+
             display: flex;
+
             justify-content: center;
             align-items: center;
+
             z-index: 99999;
         }
+
         /* =========================================
             TIPOGRAFIA GENERAL      
         ========================================= */
+
         .modal-box,
         .modal-box input,
         .modal-box select,
@@ -49,40 +66,50 @@
             font-family: Aptos, sans-serif;
             font-size: 12px;
         }
+
         /* =========================================
             HEADER
         ========================================= */
+
         .modal-header {
             margin-bottom: 12px;
         }
+
         .modal-title {
             color: white;
             font-size: 16px;
             font-weight: 600;
         }
+
         /* =========================================
-            BODY
-        ========================================= */
+BODY
+========================================= */
+
         .modal-body {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+
         /* =========================================
-            FORM GROUP
-        ========================================= */
+FORM GROUP
+========================================= */
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
+
         .form-group label {
             color: #cbd5e1;
             font-weight: 600;
         }
+
         /* =========================================
-            INPUTS
-        ========================================= */
+INPUTS
+========================================= */
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -95,31 +122,38 @@
             outline: none;
             box-sizing: border-box;
         }
+
         /* =========================================
-            TEXTAREA PEQUEÑO
-        ========================================= */
+TEXTAREA PEQUEÑO
+========================================= */
+
         .form-group textarea {
             resize: none;
             min-height: 55px;
             max-height: 55px;
         }
+
         /* =========================================
-            FILA 3 COLUMNAS
-        ========================================= */
+FILA 3 COLUMNAS
+========================================= */
+
         .form-row-3 {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
             gap: 10px;
         }
+
         /* =========================================
-            FOOTER
-        ========================================= */
+FOOTER
+========================================= */
+
         .modal-footer {
             display: flex;
             justify-content: space-between;
             gap: 8px;
             margin-top: 16px;
         }
+
         .modal-btn {
             border: none;
             border-radius: 10px;
@@ -127,18 +161,23 @@
             cursor: pointer;
             font-weight: 600;
         }
+
         .primary-btn {
             background: #2563eb;
             color: white;
         }
+
         .secondary-btn {
             background: #334155;
             color: white;
         }
+
         .danger-btn {
             background: #dc2626;
             color: white;
         }
+
+
         /* =========================================
             TAREAS
         ========================================= */
@@ -149,6 +188,7 @@
             overflow-y: auto;
             max-height: 100%;
         }
+
         .task-item {
             background: #1e293b;
             padding: 14px;
@@ -158,22 +198,26 @@
             transition: 0.2s;
             cursor: pointer;
         }
+
         .task-item.empty {
             background: transparent;
             border: 1px dashed #334155;
             text-align: center;
             color: #64748b;
         }
+
         .task-title {
             font-weight: 600;
             font-size: 14px;
             color: #e2e8f0;
         }
+
         .task-action {
             font-size: 12px;
             margin-top: 5px;
             color: #cbd5e1;
         }
+
         .task-footer {
             margin-top: 8px;
             display: flex;
@@ -183,19 +227,23 @@
             font-size: 11px;
             color: #94a3b8;
         }
+
         .task-asesor {
             color: #60a5fa;
             font-weight: 600;
             flex: 1;
         }
+
         .task-state {
             font-weight: 700;
             color: #60a5fa;
         }
+
         /* HOVER */
         .task-item:hover {
             background: #60a5fa;
         }
+
         .task-item:hover .task-title,
         .task-item:hover .task-action,
         .task-item:hover .task-footer,
@@ -203,110 +251,182 @@
         .task-item:hover .task-state {
             color: #0f172a;
         }
+
         /* =========================================
             BODY
         ========================================= */
         body {
+
             margin: 0;
+
             background: #0f172a;
+
             color: white;
+
             overflow: hidden;
+
             font-size: 14px;
         }
+
         /* =========================================
             MAIN
         ========================================= */
         .main-container {
+
             display: flex;
+
             width: 100%;
+
             height: 100vh;
         }
+
         /* =========================================
-            SIDEBAR
-        ========================================= */
+SIDEBAR
+========================================= */
         .sidebar {
+
             width: 240px;
+
             background: #111827;
+
             border-right: 1px solid #1e293b;
+
             padding: 20px;
+
             flex-shrink: 0;
         }
+
         /* LOGO */
         .logo {
+
             font-size: 22px;
+
             font-weight: 600;
+
             color: #60a5fa;
+
             margin-bottom: 40px;
         }
 
         /* MENU */
         .menu {
+
             display: flex;
+
             flex-direction: column;
+
             gap: 10px;
         }
+
         .menu-item {
+
             padding: 12px 14px;
+
             border-radius: 12px;
+
             cursor: pointer;
+
             transition: 0.2s;
+
             color: #cbd5e1;
+
             font-size: 14px;
         }
+
         .menu-item:hover {
+
             background: #1e293b;
+
             color: white;
         }
+
         .menu-item.active {
+
             background: #2563eb;
+
             color: white;
         }
+
         /* =========================================
-            CONTENT
-        ========================================= */
+CONTENT
+========================================= */
         .content {
+
             flex: 1;
+
             display: flex;
+
             flex-direction: column;
+
             padding: 20px;
+
             overflow: hidden;
+
             min-height: 0;
         }
+
         /* =========================================
-            TOPBAR
-        ========================================= */
+TOPBAR
+========================================= */
         .topbar {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             margin-bottom: 20px;
+
             flex-shrink: 0;
         }
+
         .page-title {
+
             font-size: 24px;
+
             font-weight: 600;
         }
+
         .user-panel {
+
             display: flex;
+
             align-items: center;
+
             gap: 15px;
         }
+
         .user-info {
+
             color: #94a3b8;
+
             font-size: 11px;
         }
+
         .logout-btn {
+
             background: #dc2626;
+
             border: none;
+
             color: white;
+
             padding: 8px 14px;
+
             border-radius: 10px;
+
             cursor: pointer;
+
             font-size: 12px;
+
             font-weight: 600;
+
             transition: 0.2s;
         }
+
         .logout-btn:hover {
+
             background: #b91c1c;
         }
 
@@ -314,77 +434,117 @@
             KPI
         ========================================= */
         .kpi-container {
+
             display: grid;
+
             grid-template-columns:
                 repeat(auto-fit, minmax(200px, 1fr));
+
             gap: 15px;
+
             margin-bottom: 20px;
+
             flex-shrink: 0;
         }
+
         .kpi-card {
+
             background: #111827;
+
             border: 1px solid #1e293b;
+
             border-radius: 18px;
+
             padding: 18px;
         }
+
         .kpi-card1 {
+
             background: #111827;
             border: 1px solid #1e293b;
             border-radius: 18px;
             padding: 30px;
         }
+
         .kpi-title {
             color: #94a3b8;
             font-size: 12px;
             margin-bottom: 10px;
         }
+
         .kpi-title1 {
             color: #94a3b8;
             font-size: 24px;
             margin-bottom: 10px;
         }
+
+
         .kpi-value {
             font-size: 14px;
             font-weight: 300;
         }
+
         .kpi-value1 {
             font-size: 20px;
             font-weight: 500;
         }
+
+
         /* =========================================
-            DASHBOARD BODY
-        ========================================= */
+DASHBOARD BODY
+========================================= */
         .dashboard-body {
+
             display: grid;
+
             grid-template-columns:
                 2fr 1fr;
+
             gap: 20px;
+
             flex: 1;
+
             min-height: 0;
+
             height: 100%;
         }
+
         /* =========================================
-            PANELS
-        ========================================= */
+PANELS
+========================================= */
         .panel {
+
             background: #111827;
+
             border: 1px solid #1e293b;
+
             border-radius: 20px;
+
             padding: 20px;
+
             overflow: hidden;
+
             display: flex;
+
             flex-direction: column;
+
             min-height: 0;
         }
+
         .panel-title {
+
             font-size: 16px;
+
             font-weight: 600;
+
             margin-bottom: 15px;
+
             flex-shrink: 0;
         }
+
         /* =========================================
-            TASKS
-        ========================================= */
+TASKS
+========================================= */
         .task-list {
 
             display: flex;
@@ -2546,7 +2706,8 @@ MODAL TAREAS NUEVO
 
                 const res = await fetch(API, {
                     headers: {
-                        "Authorization": "Bearer " + localStorage.getItem("token")
+                        "Authorization":
+                            "Bearer " + localStorage.getItem("token")
                     }
                 });
 
@@ -2559,7 +2720,8 @@ MODAL TAREAS NUEVO
                     document.getElementById("totalClientes");
 
                 if (totalClientesEl) {
-                    totalClientesEl.innerText = data.totalClientes || 0;
+                    totalClientesEl.innerText =
+                        data.totalClientes || 0;
                 }
 
                 // =========================================
@@ -2569,10 +2731,12 @@ MODAL TAREAS NUEVO
                     new Date().toISOString().split("T")[0];
 
                 const fechaBase =
-                    fechaSeleccionada || window.fechaActiva || hoy;
+                    fechaSeleccionada ||
+                    window.fechaActiva ||
+                    hoy;
 
                 // =========================================
-                // DATA CALENDARIO + BACKEND UNIFICADA
+                // FUENTE REAL DE DATOS (CALENDARIO + BACKEND)
                 // =========================================
                 const tareasCalendario =
                     Object.values(window.tareasCalendario || {})
@@ -2584,17 +2748,17 @@ MODAL TAREAS NUEVO
                 const mapa = new Map();
 
                 tareasBackend.forEach(t => {
-                    if (t?.id != null) mapa.set(t.id, t);
+                    if (t && t.id != null) mapa.set(t.id, t);
                 });
 
                 tareasCalendario.forEach(t => {
-                    if (t?.id != null) mapa.set(t.id, t);
+                    if (t && t.id != null) mapa.set(t.id, t);
                 });
 
                 const tareas = Array.from(mapa.values());
 
                 // =========================================
-                // 🔵 KPI SUPERIOR (HOY REAL - SOLO fecha CREACION)
+                // HOY REAL
                 // =========================================
                 const seguimientosHoyReal =
                     tareas.filter(t =>
@@ -2617,27 +2781,37 @@ MODAL TAREAS NUEVO
                     ).length;
 
                 // =========================================
-                // 🟡 KPI FECHA SELECCIONADA (CALENDARIO)
+                // FECHA SELECCIONADA
                 // =========================================
-                const tareasDia =
+                const seguimientosFecha =
                     tareas.filter(t =>
-                        t.fecha_proxima &&
-                        String(t.fecha_proxima).substring(0, 10) === fechaBase
-                    );
-
-                const seguimientosFecha = tareasDia.length;
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
                 const cotizacionesFecha =
-                    tareasDia.filter(t => t.tipo === "COTIZACION").length;
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
                 const pedidosFecha =
-                    tareasDia.filter(t => t.tipo === "PEDIDO").length;
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
                 const pendientesFecha =
-                    tareasDia.filter(t => t.estado === "ACTIVO").length;
+                    tareas.filter(t =>
+                        t.estado === "ACTIVO" &&
+                        t.fecha_proxima &&
+                        String(t.fecha_proxima).substring(0, 10) <= fechaBase
+                    ).length;
 
                 // =========================================
-                // RENDER KPI SUPERIOR
+                // RENDER HOY REAL
                 // =========================================
                 const set = (id, val) => {
                     const el = document.getElementById(id);
@@ -2649,7 +2823,7 @@ MODAL TAREAS NUEVO
                 set("pedidosHoyReal", pedidosHoyReal);
 
                 // =========================================
-                // RENDER KPI CALENDARIO
+                // RENDER FECHA SELECCIONADA
                 // =========================================
                 set("seguimientosHoy", seguimientosFecha);
                 set("cotizacionesHoy", cotizacionesFecha);
@@ -2657,13 +2831,14 @@ MODAL TAREAS NUEVO
                 set("seguimientosPendientes", pendientesFecha);
 
                 // =========================================
-                // KPI GLOBALES (BACKEND)
+                // KPI GLOBALES
                 // =========================================
                 const cotMes =
                     document.getElementById("cotizacionesMes");
 
                 if (cotMes) {
-                    cotMes.innerText = data.cotizacionesTotal || 0;
+                    cotMes.innerText =
+                        data.cotizacionesTotal || 0;
                 }
 
                 const valCotMes =
@@ -2678,7 +2853,8 @@ MODAL TAREAS NUEVO
                     document.getElementById("pedidosTotal");
 
                 if (pedTotal) {
-                    pedTotal.innerText = data.pedidosTotal || 0;
+                    pedTotal.innerText =
+                        data.pedidosTotal || 0;
                 }
 
                 const valPed =
