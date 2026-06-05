@@ -480,6 +480,26 @@ document.addEventListener("DOMContentLoaded", function () {
                         color = "#16a34a";
                     }
 
+                    /* let titulo = "";
+ 
+                     if (pendientes > 0) {
+ 
+                         titulo = `
+                             📌 ${pendientes} pendientes
+                             📞 Seg: ${kpis.seguimientos}
+                             📄 Cot: ${kpis.cotizaciones}
+                             📦 Ped: ${kpis.pedidos}
+                         `;
+                     } else {
+ 
+                         titulo = `
+                             ✔ Buen Trabajo
+                             📞 Seg: ${kpis.seguimientos}
+                             📄 Cot: ${kpis.cotizaciones}
+                             📦 Ped: ${kpis.pedidos}
+                         `;
+                     }*/
+
                     eventos.push({
                         title: titulo,
                         start: fecha,
@@ -911,17 +931,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (pendientes === 0) {
 
                     kpi.innerHTML = `
-                        <div>
-                            ✅ Buen trabajo
-                        </div>
-                    `;
+            <div>
+                ✅ Buen trabajo
+            </div>
+        `;
 
                     frame.appendChild(kpi);
 
                     return;
                 }
 
-
+               
                 frame.appendChild(kpi);
             },
 
