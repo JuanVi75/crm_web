@@ -482,22 +482,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     let titulo = "";
 
-                    if (total > 0) {
-                        titulo = `📌 ${total} pendientes`;
-                    } else if (kpis.seguimientos > 0) {
-                        titulo = `📞 Seg: ${kpis.seguimientos}`;
-                    } else if (kpis.cotizaciones > 0) {
-                        titulo = `📄 Cot: ${kpis.cotizaciones}`;
-                    } else if (kpis.pedidos > 0) {
-                        titulo = `📦 Ped: ${kpis.pedidos}`;
+                    if (pendientes > 0) {
+
+                        titulo = `
+                            📌 ${pendientes} pendientes
+                            📞 Seg: ${kpis.seguimientos}
+                            📄 Cot: ${kpis.cotizaciones}
+                            📦 Ped: ${kpis.pedidos}
+                        `;
                     } else {
-                        titulo = `✔ Buen Trabajo`;
+
+                        titulo = `
+                            ✔ Buen Trabajo
+                            📞 Seg: ${kpis.seguimientos}
+                            📄 Cot: ${kpis.cotizaciones}
+                            📦 Ped: ${kpis.pedidos}
+                        `;
                     }
 
                     eventos.push({
                         title: titulo,
                         start: fecha,
-                        allDay: true,
+                        allDay: false,
                         color: color
                     });
                 });
