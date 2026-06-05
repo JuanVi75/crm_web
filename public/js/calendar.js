@@ -480,17 +480,24 @@ document.addEventListener("DOMContentLoaded", function () {
                         color = "#16a34a";
                     }
 
+                    let titulo = "";
+
+                    if (total > 0) {
+                        titulo = `📌 ${total} pendientes`;
+                        titulo = `📞 Seg: ${kpis.seguimientos}`;
+                        titulo = `📄 Cot: ${kpis.cotizaciones}`;
+                        titulo = `📦 Ped: ${kpis.pedidos}`;
+                    } else {
+                        titulo = `✔ Buen Trabajo`;
+                        titulo = `📞 Seg: ${kpis.seguimientos}`;
+                        titulo = `📄 Cot: ${kpis.cotizaciones}`;
+                        titulo = `📦 Ped: ${kpis.pedidos}`;
+                    }
+
                     eventos.push({
-
-                        title:
-                            total > 0
-                                ? `📌 ${total} pendientes`
-                                : `✔ Buen Trabajo`,
-
+                        title: titulo,
                         start: fecha,
-
                         allDay: true,
-
                         color: color
                     });
                 });
@@ -685,33 +692,33 @@ document.addEventListener("DOMContentLoaded", function () {
                 // =================================
                 // KPI HEADER
                 // =================================
-                allDay.innerHTML = `
-                    <div style="
-                        display:flex;
-                        flex-direction:column;
-                        gap:4px;
-                        font-size:11px;
-                        font-weight:600;
-                        padding:4px;
-                        line-height:1.2;
-                    ">
-                        <div>
-                            ${mensajePendientes}
-                        </div>
-
-                        <div>
-                            📞 Seg: ${kpis.seguimientos}
-                        </div>
-
-                        <div>
-                            📄 Cot: ${kpis.cotizaciones}
-                        </div>
-
-                        <div>
-                            📦 Ped: ${kpis.pedidos}
-                        </div>
-                    </div>
-                `;
+                /* allDay.innerHTML = `
+                     <div style="
+                         display:flex;
+                         flex-direction:column;
+                         gap:4px;
+                         font-size:11px;
+                         font-weight:600;
+                         padding:4px;
+                         line-height:1.2;
+                     ">
+                         <div>
+                             ${mensajePendientes}
+                         </div>
+ 
+                         <div>
+                             📞 Seg: ${kpis.seguimientos}
+                         </div>
+ 
+                         <div>
+                             📄 Cot: ${kpis.cotizaciones}
+                         </div>
+ 
+                         <div>
+                             📦 Ped: ${kpis.pedidos}
+                         </div>
+                     </div>
+                 `;*/
             },
 
             // =====================================
