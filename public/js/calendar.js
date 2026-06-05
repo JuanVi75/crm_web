@@ -873,22 +873,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 // =========================================
                 // KPIS
                 // =========================================
-                const seguimientos =
-                    tareas.length;
 
                 const pendientes =
                     tareas.filter(
                         t => t.estado === "ACTIVO"
-                    ).length;
-
-                const cotizaciones =
-                    tareas.filter(
-                        t => t.tipo === "COTIZACION"
-                    ).length;
-
-                const pedidos =
-                    tareas.filter(
-                        t => t.tipo === "PEDIDO"
                     ).length;
 
                 // =========================================
@@ -972,23 +960,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 // =========================================
                 kpi.innerHTML = `
 
-        <div>
-            📞 Seg: ${seguimientos}
-        </div>
-
-        <div>
-            ⏳ Pend: ${pendientes}
-        </div>
-
-        <div>
-            📄 Cot: ${cotizaciones}
-        </div>
-
-        <div>
-            📦 Ped: ${pedidos}
-        </div>
-
-    `;
+                    <div>
+                        ⏳ Pend: ${pendientes}
+                    </div>
+                `;
 
                 frame.appendChild(kpi);
             },
