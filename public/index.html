@@ -982,17 +982,10 @@ HIDDEN
                     </div>
 
                     <div class="task-list">
-
-                        <!-- KPI VISUAL DIA -->
-                        <div id="calendarKpis"></div>
-
-                        <!-- LISTADO -->
                         <div class="task-list" id="taskList">
-
                             <div class="task-item empty">
                                 Cargando tareas...
                             </div>
-
                         </div>
 
                     </div>
@@ -1946,46 +1939,109 @@ MODAL TAREAS NUEVO
         // =========================================
         function renderTareasHoy(tareas) {
 
-            const container = document.getElementById("taskList");
-            if (!container) return;
+            const container =
+                document.getElementById("taskList");
 
             container.innerHTML = "";
 
+            // =====================================
+            // SIN TAREAS
+            // =====================================
             if (!tareas || tareas.length === 0) {
-                container.innerHTML = `<div class="task-item empty">Sin tareas</div>`;
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                No hay tareas pendientes
+            </div>
+        `;
+
                 return;
             }
 
-            const esAdmin = localStorage.getItem("rol") === "ADMIN";
+            // =====================================
+            // VALIDAR ROL
+            // =====================================
+            const esAdmin =
+                localStorage.getItem("rol") === "ADMIN";
 
-            tareas.sort((a, b) =>
-                new Date(a.fecha_proxima || 0) - new Date(b.fecha_proxima || 0)
-            );
+            // =====================================
+            // ORDENAR POR FECHA
+            // =====================================
+            tareas.sort((a, b) => {
 
+                const fechaA =
+                    new Date(a.fecha_proxima || 0);
+
+                const fechaB =
+                    new Date(b.fecha_proxima || 0);
+
+                return fechaA - fechaB;
+            });
+
+            // =====================================
+            // RENDER
+            // =====================================
             tareas.forEach((t, index) => {
 
-                const div = document.createElement("div");
+                const div =
+                    document.createElement("div");
+
                 div.className = "task-item";
 
+                // =================================
+                // ESTADOS VISUALES
+                // =================================
                 if (t.estado === "TERMINADO") {
-                    div.classList.add("task-finished");
+
+                    div.classList.add(
+                        "task-finished"
+                    );
                 }
 
+                // =================================
+                // FECHA VENCIDA
+                // =================================
+                if (t.fecha_proxima) {
+
+                    const hoy =
+                        new Date();
+
+                    hoy.setHours(0, 0, 0, 0);
+
+                    const fechaTask =
+                        new Date(t.fecha_proxima);
+
+                    fechaTask.setHours(0, 0, 0, 0);
+
+                    if (
+                        fechaTask < hoy &&
+                        t.estado !== "TERMINADO"
+                    ) {
+
+                        div.classList.add(
+                            "task-overdue"
+                        );
+                    }
+                }
+
+                // =================================
+                // CLICK ABRIR MODAL
+                // =================================
                 div.onclick = () => {
-                    window.tareaActualIndex = index;
+
+                    window.tareaActualIndex =
+                        index;
+
                     abrirTarea(t);
                 };
 
-                const hora = t.fecha
-                    ? new Date(t.fecha).toLocaleTimeString("es-CO", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    })
-                    : "";
-
+                // =================================
+                // HTML
+                // =================================
                 div.innerHTML = `
+
             <div class="task-title">
-                ${hora} - ${t.cliente || "Sin cliente"}
+                ${t.cliente || "Sin cliente"}
             </div>
 
             <div class="task-action">
@@ -1994,11 +2050,26 @@ MODAL TAREAS NUEVO
 
             <div class="task-footer">
 
-                ${esAdmin ? `<span>${t.asesor || ""}</span>` : `<span></span>`}
+                ${esAdmin
+                        ?
+                        `
+                    <span class="task-asesor">
+                        ${t.asesor || "Sin asesor"}
+                    </span>
+                    `
+                        :
+                        `
+                    <span></span>
+                    `
+                    }
 
-                <span>${formatearFecha(t.fecha_proxima)}</span>
+                <span>
+                    ${formatearFecha(t.fecha_proxima)}
+                </span>
 
-                <span>${t.estado || "ACTIVO"}</span>
+                <span class="task-state">
+                    ${t.estado || "ACTIVO"}
+                </span>
 
             </div>
         `;
@@ -2286,73 +2357,25 @@ MODAL TAREAS NUEVO
 
                             total: 0,
 
-                            pendientes: 0,
-
-                            seguimientos: 0,
-
-                            cotizaciones: 0,
-
-                            pedidos: 0,
-
                             tareas: []
                         };
                     }
 
                     // =====================================
-                    // GUARDAR TAREA
+                    // TOTAL SOLO ACTIVOS
+                    // =====================================
+                    if (t.estado === "ACTIVO") {
+
+                        window.tareasCalendario[fecha].total++;
+                    }
+
+                    // =====================================
+                    // GUARDAR TODAS LAS TAREAS
+                    // (ACTIVAS + FUTURAS + TERMINADAS)
                     // =====================================
                     window.tareasCalendario[fecha]
                         .tareas
                         .push(t);
-
-                    // =====================================
-                    // PENDIENTES SOLO ACTIVOS
-                    // =====================================
-                    if (t.estado === "ACTIVO") {
-
-                        window.tareasCalendario[fecha]
-                            .pendientes++;
-                    }
-
-                    // =====================================
-                    // KPI DIARIOS
-                    // =====================================
-                    const tipo =
-                        String(t.tipo || "")
-                            .toUpperCase();
-
-                    // =====================================
-                    // SEGUIMIENTOS
-                    // =====================================
-                    if (
-                        tipo === "LLAMADA" ||
-                        tipo === "WHATSAPP" ||
-                        tipo === "FACEBOOK" ||
-                        tipo === "VISITA" ||
-                        tipo === "EMAIL"
-                    ) {
-
-                        window.tareasCalendario[fecha]
-                            .seguimientos++;
-                    }
-
-                    // =====================================
-                    // COTIZACIONES
-                    // =====================================
-                    if (tipo === "COTIZACION") {
-
-                        window.tareasCalendario[fecha]
-                            .cotizaciones++;
-                    }
-
-                    // =====================================
-                    // PEDIDOS
-                    // =====================================
-                    if (tipo === "PEDIDO") {
-
-                        window.tareasCalendario[fecha]
-                            .pedidos++;
-                    }
                 });
 
                 // =========================================
@@ -2369,15 +2392,6 @@ MODAL TAREAS NUEVO
                 // CARGAR FECHA ACTIVA
                 // =========================================
                 cargarTareasPorFecha(fechaActiva);
-
-                // =========================================
-                // KPI SUPERIORES
-                // SIEMPRE HOY REAL
-                // =========================================
-                if (typeof cargarKPIsDashboard === "function") {
-
-                    cargarKPIsDashboard();
-                }
 
                 // =========================================
                 // REFRESH CALENDARIO
@@ -2407,75 +2421,210 @@ MODAL TAREAS NUEVO
 
         function cargarTareasPorFecha(fecha) {
 
-            if (!window.tareasCalendario) return;
+            // =========================================
+            // VALIDAR DATA
+            // =========================================
+            if (!window.tareasCalendario) {
 
+                renderTareasHoy([]);
+
+                return;
+            }
+
+            // =========================================
+            // FECHA GLOBAL
+            // =========================================
             window.fechaActiva = fecha;
 
-            const tareas = window.tareasCalendario?.[fecha]?.tareas || [];
+            // =========================================
+            // DATA FECHA
+            // =========================================
+            const dataFecha =
+                window.tareasCalendario[fecha];
 
+            // =========================================
+            // TAREAS DEL DIA
+            // =========================================
+            const tareas =
+                dataFecha?.tareas || [];
+
+            // =========================================
+            // RENDER
+            // =========================================
             renderTareasHoy(tareas);
 
-            cargarKPIsCalendarioDia(fecha);
-        }
+            // =========================================
+            // KPI: SEGUIMIENTOS HOY
+            // TODAS LAS TAREAS DEL DIA
+            // =========================================
+            const seguimientosHoyEl =
+                document.getElementById(
+                    "seguimientosHoy"
+                );
 
-        // =========================================
-        // CARGAR PENDIENTES MES
-        // =========================================
-        function cargarPendientesMes(fecha) {
+            if (seguimientosHoyEl) {
 
-            if (!window.tareasCalendario) {
-                return 0;
+                seguimientosHoyEl.innerText =
+                    tareas.length;
             }
 
-            const tareas =
-                window.tareasCalendario[fecha]?.tareas || [];
+            // =========================================
+            // KPI: PENDIENTES
+            // SOLO ACTIVOS
+            // =========================================
+            const pendientesEl =
+                document.getElementById(
+                    "seguimientosPendientes"
+                );
 
-            return tareas.filter(t =>
-                t.estado === "ACTIVO"
-            ).length;
-        }
+            if (pendientesEl) {
 
-        // =========================================
-        // VALIDAR SABADO
-        // =========================================
-        function esSabado(fecha) {
-
-            if (!fecha) return false;
-
-            const d = new Date(fecha);
-
-            return d.getDay() === 6;
-        }
-
-        // =========================================
-        // VALIDAR DOMINGO
-        // =========================================
-        function esDomingo(fecha) {
-
-            if (!fecha) return false;
-
-            const d = new Date(fecha);
-
-            return d.getDay() === 0;
-        }
-
-        // =========================================
-        // VALIDAR FESTIVO
-        // =========================================
-        function esFestivo(fecha) {
-
-            if (!window.festivosCalendario) {
-                return false;
+                pendientesEl.innerText =
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
+                    ).length;
             }
 
-            return window.festivosCalendario.some(f => {
+            // =========================================
+            // TODAS LAS TAREAS GLOBALES
+            // =========================================
+            const tareasGlobales =
+                Object.values(window.tareasCalendario)
+                    .flatMap(
+                        d => d.tareas || []
+                    );
 
-                const fechaFestivo =
-                    String(f.start || "")
-                        .substring(0, 10);
+            // =========================================
+            // COTIZACIONES
+            // =========================================
+            const cotizacionesHoyEl =
+                document.getElementById(
+                    "cotizacionesHoy"
+                );
 
-                return fechaFestivo === fecha;
-            });
+            if (cotizacionesHoyEl) {
+
+                cotizacionesHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
+                        t.tipo === "COTIZACION"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
+                    ).length;
+            }
+
+            // =========================================
+            // PEDIDOS
+            // =========================================
+            const pedidosHoyEl =
+                document.getElementById(
+                    "pedidosHoy"
+                );
+
+            if (pedidosHoyEl) {
+
+                pedidosHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
+                        t.tipo === "PEDIDO"
+
+                        &&
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
+                    ).length;
+            }
+
+            // =========================================
+            // VALOR COTIZACIONES
+            // =========================================
+            const valorCotizacionesHoyEl =
+                document.getElementById(
+                    "valorCotizacionesHoy"
+                );
+
+            if (valorCotizacionesHoyEl) {
+
+                const totalCotizaciones =
+                    tareasGlobales
+                        .filter(t =>
+
+                            t.tipo === "COTIZACION"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fecha
+
+                        )
+                        .reduce((acc, t) => {
+
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
+
+                        }, 0);
+
+                valorCotizacionesHoyEl.innerText =
+                    formatearCOP(
+                        totalCotizaciones
+                    );
+            }
+
+            // =========================================
+            // VALOR PEDIDOS
+            // =========================================
+            const valorPedidosHoyEl =
+                document.getElementById(
+                    "valorPedidosHoy"
+                );
+
+            if (valorPedidosHoyEl) {
+
+                const totalPedidos =
+                    tareasGlobales
+                        .filter(t =>
+
+                            t.tipo === "PEDIDO"
+
+                            &&
+
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
+
+                            === fecha
+
+                        )
+                        .reduce((acc, t) => {
+
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
+
+                        }, 0);
+
+                valorPedidosHoyEl.innerText =
+                    formatearCOP(
+                        totalPedidos
+                    );
+            }
         }
 
         // =========================================
@@ -2551,11 +2700,11 @@ MODAL TAREAS NUEVO
             return eventos;
         }
 
-        async function cargarKPIsDashboard() {
+        async function cargarKPIs(fechaSeleccionada = null) {
 
             try {
 
-                const res = await fetch("/api/dashboard", {
+                const res = await fetch(API, {
                     headers: {
                         "Authorization":
                             "Bearer " + localStorage.getItem("token")
@@ -2565,286 +2714,181 @@ MODAL TAREAS NUEVO
                 const data = await res.json();
 
                 // =========================================
-                // FECHA ACTUAL REAL
+                // CLIENTES
+                // =========================================
+                const totalClientesEl =
+                    document.getElementById("totalClientes");
+
+                if (totalClientesEl) {
+                    totalClientesEl.innerText =
+                        data.totalClientes || 0;
+                }
+
+                // =========================================
+                // FECHAS BASE
                 // =========================================
                 const hoy =
                     new Date().toISOString().split("T")[0];
 
-                // =========================================
-                // TODAS LAS TAREAS
-                // =========================================
-                const tareas =
-                    Array.isArray(data.tareas)
-                        ? data.tareas
-                        : [];
+                const fechaBase =
+                    fechaSeleccionada ||
+                    window.fechaActiva ||
+                    hoy;
 
                 // =========================================
-                // CLIENTES
+                // FUENTE REAL DE DATOS (CALENDARIO + BACKEND)
                 // =========================================
-                document.getElementById("totalClientes").innerText =
-                    data.totalClientes || 0;
+                const tareasCalendario =
+                    Object.values(window.tareasCalendario || {})
+                        .flatMap(d => d.tareas || []);
+
+                const tareasBackend =
+                    Array.isArray(data.tareas) ? data.tareas : [];
+
+                const mapa = new Map();
+
+                tareasBackend.forEach(t => {
+                    if (t && t.id != null) mapa.set(t.id, t);
+                });
+
+                tareasCalendario.forEach(t => {
+                    if (t && t.id != null) mapa.set(t.id, t);
+                });
+
+                const tareas = Array.from(mapa.values());
 
                 // =========================================
-                // SEGUIMIENTOS HOY
-                // FECHA = CUANDO SE HIZO
+                // HOY REAL
                 // =========================================
-                const seguimientosHoy =
+                const seguimientosHoyReal =
                     tareas.filter(t =>
                         t.fecha &&
                         String(t.fecha).substring(0, 10) === hoy
                     ).length;
 
-                document.getElementById("seguimientosHoy").innerText =
-                    seguimientosHoy;
-
-                // =========================================
-                // PENDIENTES HOY
-                // TODO LO ACTIVO HASTA HOY
-                // =========================================
-                const pendientesHoy =
-                    tareas.filter(t => {
-
-                        if (t.estado !== "ACTIVO") {
-                            return false;
-                        }
-
-                        if (!t.fecha_proxima) {
-                            return false;
-                        }
-
-                        return (
-                            String(t.fecha_proxima).substring(0, 10)
-                            <= hoy
-                        );
-
-                    }).length;
-
-                document.getElementById("seguimientosPendientes").innerText =
-                    pendientesHoy;
-
-                // =========================================
-                // COTIZACIONES HOY
-                // =========================================
-                const cotizacionesHoy =
+                const cotizacionesHoyReal =
                     tareas.filter(t =>
-
-                        t.tipo === "COTIZACION"
-
-                        &&
-
-                        t.fecha
-
-                        &&
-
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
                         String(t.fecha).substring(0, 10) === hoy
+                    ).length;
 
-                    );
-
-                document.getElementById("cotizacionesHoy").innerText =
-                    cotizacionesHoy.length;
-
-                // =========================================
-                // VALOR COTIZACIONES HOY
-                // =========================================
-                const valorCotizacionesHoy =
-                    cotizacionesHoy.reduce((acc, t) => {
-
-                        return acc +
-                            Number(t.valor || 0);
-
-                    }, 0);
-
-                document.getElementById("valorCotizacionesHoy").innerText =
-                    formatearCOP(valorCotizacionesHoy);
-
-                // =========================================
-                // PEDIDOS HOY
-                // =========================================
-                const pedidosHoy =
+                const pedidosHoyReal =
                     tareas.filter(t =>
-
-                        t.tipo === "PEDIDO"
-
-                        &&
-
-                        t.fecha
-
-                        &&
-
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
                         String(t.fecha).substring(0, 10) === hoy
-
-                    );
-
-                document.getElementById("pedidosHoy").innerText =
-                    pedidosHoy.length;
+                    ).length;
 
                 // =========================================
-                // VALOR PEDIDOS HOY
+                // FECHA SELECCIONADA
                 // =========================================
-                const valorPedidosHoy =
-                    pedidosHoy.reduce((acc, t) => {
+                const seguimientosFecha =
+                    tareas.filter(t =>
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
-                        return acc +
-                            Number(t.valor || 0);
+                const cotizacionesFecha =
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
-                    }, 0);
+                const pedidosFecha =
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
 
-                document.getElementById("valorPedidosHoy").innerText =
-                    formatearCOP(valorPedidosHoy);
+                const pendientesFecha =
+                    tareas.filter(t =>
+                        t.estado === "ACTIVO" &&
+                        t.fecha_proxima &&
+                        String(t.fecha_proxima).substring(0, 10) <= fechaBase
+                    ).length;
 
                 // =========================================
-                // TOTALES GENERALES
+                // RENDER HOY REAL
                 // =========================================
-                document.getElementById("cotizacionesMes").innerText =
-                    data.cotizacionesTotal || 0;
+                const set = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val;
+                };
 
-                document.getElementById("valorCotizacionesMes").innerText =
-                    formatearCOP(data.valorCotizaciones || 0);
+                set("seguimientosHoyReal", seguimientosHoyReal);
+                set("cotizacionesHoyReal", cotizacionesHoyReal);
+                set("pedidosHoyReal", pedidosHoyReal);
 
-                document.getElementById("pedidosTotal").innerText =
-                    data.pedidosTotal || 0;
+                // =========================================
+                // RENDER FECHA SELECCIONADA
+                // =========================================
+                set("seguimientosHoy", seguimientosFecha);
+                set("cotizacionesHoy", cotizacionesFecha);
+                set("pedidosHoy", pedidosFecha);
+                set("seguimientosPendientes", pendientesFecha);
 
-                document.getElementById("valorPedidos").innerText =
-                    formatearCOP(data.valorPedidos || 0);
+                // =========================================
+                // KPI GLOBALES
+                // =========================================
+                const cotMes =
+                    document.getElementById("cotizacionesMes");
+
+                if (cotMes) {
+                    cotMes.innerText =
+                        data.cotizacionesTotal || 0;
+                }
+
+                const valCotMes =
+                    document.getElementById("valorCotizacionesMes");
+
+                if (valCotMes) {
+                    valCotMes.innerText =
+                        formatearCOP(data.valorCotizaciones || 0);
+                }
+
+                const pedTotal =
+                    document.getElementById("pedidosTotal");
+
+                if (pedTotal) {
+                    pedTotal.innerText =
+                        data.pedidosTotal || 0;
+                }
+
+                const valPed =
+                    document.getElementById("valorPedidos");
+
+                if (valPed) {
+                    valPed.innerText =
+                        formatearCOP(data.valorPedidos || 0);
+                }
 
             } catch (err) {
 
                 console.error(err);
+
+                const setZero = (id, value = "0") => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = value;
+                };
+
+                setZero("totalClientes");
+                setZero("seguimientosHoyReal");
+                setZero("cotizacionesHoyReal");
+                setZero("pedidosHoyReal");
+
+                setZero("seguimientosHoy");
+                setZero("cotizacionesHoy");
+                setZero("pedidosHoy");
+                setZero("seguimientosPendientes");
+
+                setZero("cotizacionesMes", "0");
+                setZero("valorCotizacionesMes", "$0");
+                setZero("pedidosTotal", "0");
+                setZero("valorPedidos", "$0");
             }
-        }
-
-        function obtenerDataDia(fecha) {
-
-            const tareas =
-                window.tareasCalendario?.[fecha]?.tareas || [];
-
-            return {
-
-                fecha,
-
-                seguimientos:
-                    tareas.length,
-
-                pendientes:
-                    tareas.filter(t =>
-                        t.estado === "ACTIVO"
-                    ).length,
-
-                cotizaciones:
-                    tareas.filter(t =>
-                        t.tipo === "COTIZACION"
-                    ),
-
-                pedidos:
-                    tareas.filter(t =>
-                        t.tipo === "PEDIDO"
-                    ),
-
-                valorCotizaciones:
-                    tareas
-                        .filter(t =>
-                            t.tipo === "COTIZACION"
-                        )
-                        .reduce((acc, t) => {
-
-                            return acc +
-                                Number(t.valor || 0);
-
-                        }, 0),
-
-                valorPedidos:
-                    tareas
-                        .filter(t =>
-                            t.tipo === "PEDIDO"
-                        )
-                        .reduce((acc, t) => {
-
-                            return acc +
-                                Number(t.valor || 0);
-
-                        }, 0)
-            };
-        }
-
-        function cargarKPIsCalendarioDia(fecha) {
-
-            if (!window.tareasCalendario) return;
-
-            const tareas = window.tareasCalendario?.[fecha]?.tareas || [];
-
-            const fechaObj = new Date(fecha + "T00:00:00");
-            const diaSemana = fechaObj.getDay();
-
-            const esFestivo =
-                Array.isArray(window.festivosCalendario) &&
-                window.festivosCalendario.some(f =>
-                    String(f.start).substring(0, 10) === fecha
-                );
-
-            const kpiBox = document.getElementById("calendarKpiBox");
-            if (!kpiBox) return;
-
-            if (
-                !window.crmCalendar ||
-                window.crmCalendar.view.type !== "timeGridDay" ||
-                diaSemana === 0 ||
-                esFestivo
-            ) {
-                kpiBox.innerHTML = "";
-                return;
-            }
-
-            const seguimientos = tareas.length;
-            const cotizaciones = tareas.filter(t => t.tipo === "COTIZACION").length;
-            const pedidos = tareas.filter(t => t.tipo === "PEDIDO").length;
-            const pendientes = tareas.filter(t => t.estado === "ACTIVO").length;
-
-            // 🔥 CASO ESPECIAL: sábado sin actividad
-            if (
-                diaSemana === 6 &&
-                seguimientos === 0 &&
-                cotizaciones === 0 &&
-                pedidos === 0 &&
-                pendientes === 0
-            ) {
-                kpiBox.innerHTML = `
-            <div class="kpi-card" style="background:#1e3a8a;color:white;padding:20px;border-radius:12px;text-align:center;">
-                <div class="kpi-title">📋 PLANEACIÓN</div>
-                <div class="kpi-value">Día de planeación comercial</div>
-            </div>
-        `;
-                return;
-            }
-
-            // 🔥 SIEMPRE RENDER KPIs (sin bloquear nada)
-            kpiBox.innerHTML = `
-        ${pendientes === 0 ? `
-            <div class="kpi-card" style="background:#16a34a;color:white;padding:15px;border-radius:12px;">
-                <div class="kpi-title">✅ Sin pendientes</div>
-                <div class="kpi-value">Todo al día</div>
-            </div>
-        ` : `
-            <div class="kpi-card" style="background:#dc2626;color:white;padding:15px;border-radius:12px;">
-                <div class="kpi-title">Pendientes</div>
-                <div class="kpi-value">${pendientes}</div>
-            </div>
-        `}
-
-        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-            <div class="kpi-title">Seguimientos</div>
-            <div class="kpi-value">${seguimientos}</div>
-        </div>
-
-        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-            <div class="kpi-title">Cotizaciones</div>
-            <div class="kpi-value">${cotizaciones}</div>
-        </div>
-
-        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-            <div class="kpi-title">Pedidos</div>
-            <div class="kpi-value">${pedidos}</div>
-        </div>
-    `;
         }
 
         function formatearCOP(valor) {
