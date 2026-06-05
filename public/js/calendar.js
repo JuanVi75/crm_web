@@ -503,16 +503,18 @@ document.addEventListener("DOMContentLoaded", function () {
             // =====================================
             dateClick: function (info) {
 
-                const fecha = info.dateStr;
+                const fecha =
+                    info.dateStr;
 
-                window.fechaActiva = fecha;
+                // =====================================
+                // FECHA GLOBAL
+                // =====================================
+                window.fechaActiva =
+                    fecha;
 
-                if (typeof cargarTareasPorFecha === "function") {
-                    cargarTareasPorFecha(fecha);
-                }
-
-                calendar.gotoDate(fecha);
-
+                // =====================================
+                // CAMBIAR A VISTA DIA
+                // =====================================
                 if (
                     calendar.view.type !==
                     "timeGridDay"
@@ -522,6 +524,30 @@ document.addEventListener("DOMContentLoaded", function () {
                         "timeGridDay",
                         fecha
                     );
+
+                } else {
+
+                    calendar.gotoDate(fecha);
+                }
+
+                // =====================================
+                // RECARGAR TAREAS
+                // =====================================
+                if (
+                    typeof cargarTareasPorFecha === "function"
+                ) {
+
+                    cargarTareasPorFecha(fecha);
+                }
+
+                // =====================================
+                // RECARGAR KPI CALENDARIO
+                // =====================================
+                if (
+                    typeof cargarKPIsCalendarioDia === "function"
+                ) {
+
+                    cargarKPIsCalendarioDia(fecha);
                 }
             },
 
@@ -1008,11 +1034,25 @@ document.addEventListener("DOMContentLoaded", function () {
                         fechaActualVista;
 
                     // =================================
-                    // SOLO TAREAS
+                    // RECARGAR KPI + TAREAS
                     // =================================
-                    if (typeof cargarTareasPorFecha === "function") {
+                    if (
+                        typeof cargarTareasPorFecha === "function"
+                    ) {
 
                         cargarTareasPorFecha(
+                            fechaActualVista
+                        );
+                    }
+
+                    // =================================
+                    // RECARGAR KPI CALENDARIO DIA
+                    // =================================
+                    if (
+                        typeof cargarKPIsCalendarioDia === "function"
+                    ) {
+
+                        cargarKPIsCalendarioDia(
                             fechaActualVista
                         );
                     }
@@ -1031,26 +1071,48 @@ document.addEventListener("DOMContentLoaded", function () {
                                 const text =
                                     header.innerText.toLowerCase();
 
+                                // =========================
+                                // DOMINGO
+                                // =========================
                                 if (text.includes("dom")) {
 
-                                    header.style.background = "#7f1d1d";
-                                    header.style.color = "white";
+                                    header.style.background =
+                                        "#7f1d1d";
+
+                                    header.style.color =
+                                        "white";
                                 }
 
+                                // =========================
+                                // SABADO
+                                // =========================
                                 if (
                                     text.includes("sab")
+                                    ||
+                                    text.includes("sáb")
                                 ) {
 
-                                    header.style.background = "#1e3a8a";
-                                    header.style.color = "white";
+                                    header.style.background =
+                                        "#1e3a8a";
+
+                                    header.style.color =
+                                        "white";
                                 }
 
+                                // =========================
+                                // HOY
+                                // =========================
                                 if (
-                                    header.classList.contains("fc-day-today")
+                                    header.classList.contains(
+                                        "fc-day-today"
+                                    )
                                 ) {
 
-                                    header.style.background = "#facc15";
-                                    header.style.color = "#000";
+                                    header.style.background =
+                                        "#facc15";
+
+                                    header.style.color =
+                                        "#000";
                                 }
                             });
                     }
