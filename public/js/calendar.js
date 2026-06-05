@@ -503,7 +503,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     eventos.push({
                         title: titulo,
                         start: fecha,
-                        allDay: false,
+                        allDay: true,
                         color: color
                     });
                 });
