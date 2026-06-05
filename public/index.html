@@ -1946,228 +1946,46 @@ MODAL TAREAS NUEVO
         // =========================================
         function renderTareasHoy(tareas) {
 
-            const container =
-                document.getElementById("taskList");
-
+            const container = document.getElementById("taskList");
             if (!container) return;
 
             container.innerHTML = "";
 
-            // =====================================
-            // FECHA ACTIVA
-            // =====================================
-            const fechaActiva =
-                window.fechaActiva
-                ||
-                new Date()
-                    .toISOString()
-                    .split("T")[0];
-
-            const fechaObj =
-                new Date(fechaActiva + "T00:00:00");
-
-            const diaSemana =
-                fechaObj.getDay();
-
-            // =====================================
-            // FESTIVO
-            // =====================================
-            const esFestivoDia =
-                Array.isArray(window.festivosCalendario)
-                &&
-                window.festivosCalendario.some(f => {
-
-                    return (
-                        String(f.start).substring(0, 10)
-                        === fechaActiva
-                    );
-                });
-
-            // =====================================
-            // DOMINGO
-            // =====================================
-            if (diaSemana === 0) {
-
-                container.innerHTML = "";
-
-                return;
-            }
-
-            // =====================================
-            // FESTIVO
-            // =====================================
-            if (esFestivoDia) {
-
-                return;
-            }
-
-            // =====================================
-            // KPI REALES
-            // =====================================
-            const seguimientos =
-                tareas.length;
-
-            const pendientes =
-                tareas.filter(t =>
-                    t.estado === "ACTIVO"
-                ).length;
-
-            const cotizaciones =
-                tareas.filter(t =>
-                    t.tipo === "COTIZACION"
-                ).length;
-
-            const pedidos =
-                tareas.filter(t =>
-                    t.tipo === "PEDIDO"
-                ).length;
-
-            // =====================================
-            // SABADO
-            // =====================================
-            if (diaSemana === 6) {
-
-                if (
-                    seguimientos === 0
-                    &&
-                    cotizaciones === 0
-                    &&
-                    pedidos === 0
-                    &&
-                    pendientes === 0
-                ) {
-
-                    container.innerHTML = `
-                <div class="task-item empty">
-                    📋 PLANEACION
-                </div>
-            `;
-
-                    return;
-                }
-            }
-
-            // =====================================
-            // SIN TAREAS
-            // =====================================
             if (!tareas || tareas.length === 0) {
-
-                container.innerHTML = `
-            <div class="task-item empty">
-                Sin seguimientos registrados
-            </div>
-        `;
-
+                container.innerHTML = `<div class="task-item empty">Sin tareas</div>`;
                 return;
             }
 
-            // =====================================
-            // VALIDAR ROL
-            // =====================================
-            const esAdmin =
-                localStorage.getItem("rol") === "ADMIN";
+            const esAdmin = localStorage.getItem("rol") === "ADMIN";
 
-            // =====================================
-            // ORDENAR POR HORA
-            // =====================================
-            tareas.sort((a, b) => {
+            tareas.sort((a, b) =>
+                new Date(a.fecha_proxima || 0) - new Date(b.fecha_proxima || 0)
+            );
 
-                const fechaA =
-                    new Date(a.fecha || a.fecha_proxima || 0);
-
-                const fechaB =
-                    new Date(b.fecha || b.fecha_proxima || 0);
-
-                return fechaA - fechaB;
-            });
-
-            // =====================================
-            // RENDER TAREAS
-            // =====================================
             tareas.forEach((t, index) => {
 
-                const div =
-                    document.createElement("div");
+                const div = document.createElement("div");
+                div.className = "task-item";
 
-                div.className =
-                    "task-item";
-
-                // =================================
-                // TERMINADO
-                // =================================
                 if (t.estado === "TERMINADO") {
-
-                    div.classList.add(
-                        "task-finished"
-                    );
+                    div.classList.add("task-finished");
                 }
 
-                // =================================
-                // VENCIDO
-                // =================================
-                if (t.fecha_proxima) {
-
-                    const hoy =
-                        new Date();
-
-                    hoy.setHours(0, 0, 0, 0);
-
-                    const fechaTask =
-                        new Date(t.fecha_proxima);
-
-                    fechaTask.setHours(0, 0, 0, 0);
-
-                    if (
-                        fechaTask < hoy
-                        &&
-                        t.estado !== "TERMINADO"
-                    ) {
-
-                        div.classList.add(
-                            "task-overdue"
-                        );
-                    }
-                }
-
-                // =================================
-                // CLICK
-                // =================================
                 div.onclick = () => {
-
-                    window.tareaActualIndex =
-                        index;
-
+                    window.tareaActualIndex = index;
                     abrirTarea(t);
                 };
 
-                // =================================
-                // HORA
-                // =================================
-                let horaSeguimiento =
-                    "";
+                const hora = t.fecha
+                    ? new Date(t.fecha).toLocaleTimeString("es-CO", {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    })
+                    : "";
 
-                if (t.fecha) {
-
-                    horaSeguimiento =
-                        new Date(t.fecha)
-                            .toLocaleTimeString(
-                                "es-CO",
-                                {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                }
-                            );
-                }
-
-                // =================================
-                // HTML
-                // =================================
                 div.innerHTML = `
-
             <div class="task-title">
-                ${horaSeguimiento}
-                -
-                ${t.cliente || "Sin cliente"}
+                ${hora} - ${t.cliente || "Sin cliente"}
             </div>
 
             <div class="task-action">
@@ -2176,26 +1994,11 @@ MODAL TAREAS NUEVO
 
             <div class="task-footer">
 
-                ${esAdmin
-                        ?
-                        `
-                    <span class="task-asesor">
-                        ${t.asesor || "Sin asesor"}
-                    </span>
-                    `
-                        :
-                        `
-                    <span></span>
-                    `
-                    }
+                ${esAdmin ? `<span>${t.asesor || ""}</span>` : `<span></span>`}
 
-                <span>
-                    ${formatearFecha(t.fecha_proxima)}
-                </span>
+                <span>${formatearFecha(t.fecha_proxima)}</span>
 
-                <span class="task-state">
-                    ${t.estado || "ACTIVO"}
-                </span>
+                <span>${t.estado || "ACTIVO"}</span>
 
             </div>
         `;
@@ -2604,320 +2407,15 @@ MODAL TAREAS NUEVO
 
         function cargarTareasPorFecha(fecha) {
 
-            // =========================================
-            // VALIDAR DATA
-            // =========================================3
-            if (!window.tareasCalendario) {
+            if (!window.tareasCalendario) return;
 
-                renderTareasHoy([]);
-
-                return;
-            }
-
-            // =========================================
-            // FECHA GLOBAL ACTIVA
-            // =========================================
             window.fechaActiva = fecha;
 
-            // =========================================
-            // DATA FECHA
-            // =========================================
-            const dataFecha =
-                window.tareasCalendario[fecha];
+            const tareas = window.tareasCalendario?.[fecha]?.tareas || [];
 
-            // =========================================
-            // TAREAS DEL DIA
-            // =========================================
-            const tareas =
-                dataFecha?.tareas || [];
-
-            // =========================================
-            // RENDER TAREAS
-            // =========================================
             renderTareasHoy(tareas);
 
-            // =========================================
-            // FECHA OBJ
-            // =========================================
-            const fechaObj =
-                new Date(fecha + "T00:00:00");
-
-            const diaSemana =
-                fechaObj.getDay();
-
-            // =========================================
-            // FESTIVO
-            // =========================================
-            const esFestivo =
-                Array.isArray(window.festivosCalendario)
-                &&
-                window.festivosCalendario.some(f => {
-
-                    return (
-                        String(f.start).substring(0, 10)
-                        === fecha
-                    );
-                });
-
-            // =========================================
-            // CALCULAR KPI REALES
-            // =========================================
-            const seguimientos =
-                tareas.length;
-
-            const cotizaciones =
-                tareas.filter(t =>
-                    t.tipo === "COTIZACION"
-                ).length;
-
-            const pedidos =
-                tareas.filter(t =>
-                    t.tipo === "PEDIDO"
-                ).length;
-
-            const pendientes =
-                tareas.filter(t =>
-                    t.estado === "ACTIVO"
-                ).length;
-
-            // =========================================
-            // CONTENEDOR KPI
-            // =========================================
-            let kpiBox =
-                document.getElementById(
-                    "calendarKpiBox"
-                );
-
-            // =========================================
-            // CREAR SI NO EXISTE
-            // =========================================
-            if (!kpiBox) {
-
-                kpiBox =
-                    document.createElement("div");
-
-                kpiBox.id =
-                    "calendarKpiBox";
-
-                kpiBox.style.display =
-                    "grid";
-
-                kpiBox.style.gridTemplateColumns =
-                    "repeat(auto-fit,minmax(180px,1fr))";
-
-                kpiBox.style.gap =
-                    "12px";
-
-                kpiBox.style.marginBottom =
-                    "15px";
-
-                const taskList =
-                    document.getElementById("taskList");
-
-                if (
-                    taskList &&
-                    taskList.parentNode
-                ) {
-
-                    taskList.parentNode.insertBefore(
-                        kpiBox,
-                        taskList
-                    );
-                }
-            }
-
-            // =========================================
-            // SOLO VISUAL DIA
-            // =========================================
-            if (
-                !window.crmCalendar
-                ||
-                window.crmCalendar.view.type !== "timeGridDay"
-            ) {
-
-                kpiBox.innerHTML = "";
-
-                return;
-            }
-
-            // =========================================
-            // DOMINGOS
-            // =========================================
-            if (diaSemana === 0) {
-
-                kpiBox.innerHTML = "";
-
-                return;
-            }
-
-            // =========================================
-            // FESTIVOS
-            // =========================================
-            if (esFestivo) {
-
-                kpiBox.innerHTML = "";
-
-                return;
-            }
-
-            // =========================================
-            // SABADO SIN ACTIVIDAD
-            // =========================================
-            if (
-                diaSemana === 6
-                &&
-                seguimientos === 0
-                &&
-                cotizaciones === 0
-                &&
-                pedidos === 0
-                &&
-                pendientes === 0
-            ) {
-
-                kpiBox.innerHTML = `
-
-        <div class="kpi-card"
-             style="
-                background:#1e3a8a;
-                color:white;
-                padding:20px;
-                border-radius:12px;
-                text-align:center;
-             ">
-
-            <div class="kpi-title"
-                 style="
-                    font-size:18px;
-                    font-weight:700;
-                    margin-bottom:10px;
-                 ">
-                📋 PLANEACION
-            </div>
-
-            <div class="kpi-value"
-                 style="
-                    font-size:15px;
-                 ">
-                Día de planeación comercial
-            </div>
-
-        </div>
-        `;
-
-                return;
-            }
-
-            // =========================================
-            // KPI PENDIENTES / BUEN TRABAJO
-            // =========================================
-            let htmlPendientes = "";
-
-            if (pendientes <= 0) {
-
-                htmlPendientes = `
-
-        <div class="kpi-card"
-             style="
-                background:#16a34a;
-                color:white;
-                padding:15px;
-                border-radius:12px;
-             ">
-
-            <div class="kpi-title">
-                ✅ BUEN TRABAJO
-            </div>
-
-            <div class="kpi-value">
-                Sin pendientes
-            </div>
-
-        </div>
-        `;
-
-            } else {
-
-                htmlPendientes = `
-
-        <div class="kpi-card"
-             style="
-                background:#dc2626;
-                color:white;
-                padding:15px;
-                border-radius:12px;
-             ">
-
-            <div class="kpi-title">
-                Pendientes
-            </div>
-
-            <div class="kpi-value">
-                ${pendientes}
-            </div>
-
-        </div>
-        `;
-            }
-
-            // =========================================
-            // KPI VISUAL DIA
-            // =========================================
-            kpiBox.innerHTML = `
-
-    <div class="kpi-card"
-         style="
-            padding:15px;
-            border-radius:12px;
-            background:white;
-         ">
-
-        <div class="kpi-title">
-            Seguimientos
-        </div>
-
-        <div class="kpi-value">
-            ${seguimientos}
-        </div>
-
-    </div>
-
-    <div class="kpi-card"
-         style="
-            padding:15px;
-            border-radius:12px;
-            background:white;
-         ">
-
-        <div class="kpi-title">
-            Cotizaciones
-        </div>
-
-        <div class="kpi-value">
-            ${cotizaciones}
-        </div>
-
-    </div>
-
-    <div class="kpi-card"
-         style="
-            padding:15px;
-            border-radius:12px;
-            background:white;
-         ">
-
-        <div class="kpi-title">
-            Pedidos
-        </div>
-
-        <div class="kpi-value">
-            ${pedidos}
-        </div>
-
-    </div>
-
-    ${htmlPendientes}
-    `;
+            cargarKPIsCalendarioDia(fecha);
         }
 
         // =========================================
@@ -3270,119 +2768,87 @@ MODAL TAREAS NUEVO
 
         function cargarKPIsCalendarioDia(fecha) {
 
-            const data =
-                obtenerDataDia(fecha);
+            if (!window.tareasCalendario) return;
 
-            const container =
-                document.getElementById("taskList");
+            const tareas = window.tareasCalendario?.[fecha]?.tareas || [];
 
-            if (!container) return;
+            const fechaObj = new Date(fecha + "T00:00:00");
+            const diaSemana = fechaObj.getDay();
 
-            // =========================================
-            // SOLO VISUAL DIA
-            // =========================================
-            if (
-                !window.crmCalendar
-                ||
-                window.crmCalendar.view.type !== "timeGridDay"
-            ) {
-
-                return;
-            }
-
-            // =========================================
-            // DOMINGOS
-            // =========================================
-            if (esDomingo(fecha)) {
-
-                container.innerHTML = "";
-
-                return;
-            }
-
-            // =========================================
-            // FESTIVOS
-            // =========================================
-            if (esFestivo(fecha)) {
-
-                return;
-            }
-
-            // =========================================
-            // SABADO
-            // =========================================
-            if (esSabado(fecha)) {
-
-                // =====================================
-                // SIN ACTIVIDAD
-                // =====================================
-                if (
-
-                    data.seguimientos <= 0
-
-                    &&
-
-                    data.cotizaciones.length <= 0
-
-                    &&
-
-                    data.pedidos.length <= 0
-
-                    &&
-
-                    data.pendientes <= 0
-
-                ) {
-
-                    container.innerHTML = `
-
-            <div class="task-item empty">
-
-                <div class="task-title">
-                    📋 PLANEACION
-                </div>
-
-            </div>
-            `;
-
-                    return;
-                }
-
-                // =====================================
-                // CON ACTIVIDAD
-                // =====================================
-                renderTareasHoy(
-                    window.tareasCalendario?.[fecha]?.tareas || []
+            const esFestivo =
+                Array.isArray(window.festivosCalendario) &&
+                window.festivosCalendario.some(f =>
+                    String(f.start).substring(0, 10) === fecha
                 );
 
+            const kpiBox = document.getElementById("calendarKpiBox");
+            if (!kpiBox) return;
+
+            if (
+                !window.crmCalendar ||
+                window.crmCalendar.view.type !== "timeGridDay" ||
+                diaSemana === 0 ||
+                esFestivo
+            ) {
+                kpiBox.innerHTML = "";
                 return;
             }
 
-            // =========================================
-            // SIN PENDIENTES
-            // =========================================
-            if (data.pendientes <= 0) {
+            const seguimientos = tareas.length;
 
-                container.innerHTML = `
+            const cotizaciones = tareas.filter(t => t.tipo === "COTIZACION").length;
 
-        <div class="task-item empty">
+            const pedidos = tareas.filter(t => t.tipo === "PEDIDO").length;
 
-            <div class="task-title">
-                ✅ BUEN TRABAJO
+            const pendientes = tareas.filter(t => t.estado === "ACTIVO").length;
+
+            if (
+                diaSemana === 6 &&
+                seguimientos === 0 &&
+                cotizaciones === 0 &&
+                pedidos === 0 &&
+                pendientes === 0
+            ) {
+                kpiBox.innerHTML = `
+            <div class="kpi-card" style="background:#1e3a8a;color:white;padding:20px;border-radius:12px;text-align:center;">
+                <div class="kpi-title">📋 PLANEACION</div>
+                <div class="kpi-value">Día de planeación comercial</div>
             </div>
-
-        </div>
         `;
-
                 return;
             }
 
-            // =========================================
-            // RENDER TAREAS DEL DIA
-            // =========================================
-            renderTareasHoy(
-                window.tareasCalendario?.[fecha]?.tareas || []
-            );
+            const pendientesHTML =
+                pendientes <= 0
+                    ? `
+            <div class="kpi-card" style="background:#16a34a;color:white;padding:15px;border-radius:12px;">
+                <div class="kpi-title">✅ BUEN TRABAJO</div>
+                <div class="kpi-value">Sin pendientes</div>
+            </div>`
+                    : `
+            <div class="kpi-card" style="background:#dc2626;color:white;padding:15px;border-radius:12px;">
+                <div class="kpi-title">Pendientes</div>
+                <div class="kpi-value">${pendientes}</div>
+            </div>`;
+
+            kpiBox.innerHTML = `
+        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+            <div class="kpi-title">Seguimientos</div>
+            <div class="kpi-value">${seguimientos}</div>
+        </div>
+
+        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+            <div class="kpi-title">Cotizaciones</div>
+            <div class="kpi-value">${cotizaciones}</div>
+        </div>
+
+        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+            <div class="kpi-title">Pedidos</div>
+            <div class="kpi-value">${pedidos}</div>
+        </div>
+
+        ${pendientesHTML}
+    `;
         }
 
         function formatearCOP(valor) {
