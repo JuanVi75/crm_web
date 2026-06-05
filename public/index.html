@@ -2606,7 +2606,7 @@ MODAL TAREAS NUEVO
 
             // =========================================
             // VALIDAR DATA
-            // =========================================
+            // =========================================3
             if (!window.tareasCalendario) {
 
                 renderTareasHoy([]);
@@ -2691,40 +2691,40 @@ MODAL TAREAS NUEVO
             // =========================================
             // CREAR SI NO EXISTE
             // =========================================
-            if (!kpiBox) {
-
-                kpiBox =
-                    document.createElement("div");
-
-                kpiBox.id =
-                    "calendarKpiBox";
-
-                kpiBox.style.display =
-                    "grid";
-
-                kpiBox.style.gridTemplateColumns =
-                    "repeat(auto-fit,minmax(180px,1fr))";
-
-                kpiBox.style.gap =
-                    "12px";
-
-                kpiBox.style.marginBottom =
-                    "15px";
-
-                const taskList =
-                    document.getElementById("taskList");
-
-                if (
-                    taskList &&
-                    taskList.parentNode
-                ) {
-
-                    taskList.parentNode.insertBefore(
-                        kpiBox,
-                        taskList
-                    );
-                }
-            }
+            /*  if (!kpiBox) {
+  
+                  kpiBox =
+                      document.createElement("div");
+  
+                  kpiBox.id =
+                      "calendarKpiBox";
+  
+                  kpiBox.style.display =
+                      "grid";
+  
+                  kpiBox.style.gridTemplateColumns =
+                      "repeat(auto-fit,minmax(180px,1fr))";
+  
+                  kpiBox.style.gap =
+                      "12px";
+  
+                  kpiBox.style.marginBottom =
+                      "15px";
+  
+                  const taskList =
+                      document.getElementById("taskList");
+  
+                  if (
+                      taskList &&
+                      taskList.parentNode
+                  ) {
+  
+                      taskList.parentNode.insertBefore(
+                          kpiBox,
+                          taskList
+                      );
+                  }
+              }*/
 
             // =========================================
             // SOLO VISUAL DIA
