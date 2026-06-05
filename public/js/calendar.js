@@ -744,14 +744,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // =====================================
             dayCellDidMount: function (info) {
 
-                if (
-                    calendar.view.type !==
-                    "dayGridMonth"
-                ) {
-                    return;
-                }
-
-                const date = info.date;
+                // =========================================
+                // FECHA
+                // =========================================
+                const date =
+                    info.date;
 
                 const day =
                     date.getDay();
@@ -763,10 +760,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     date.toISOString()
                         .split("T")[0];
 
+                // =========================================
+                // FESTIVO
+                // =========================================
                 const isHoliday =
                     festivos.some(
                         f => f.start === dateStr
                     );
+
+                // =========================================
+                // COLORES BASE
+                // =========================================
 
                 // DOMINGO
                 if (day === 0) {
@@ -810,6 +814,157 @@ document.addEventListener("DOMContentLoaded", function () {
                     info.el.style.color =
                         "#000";
                 }
+
+                // =========================================
+                // SOLO MES
+                // =========================================
+                if (
+                    calendar.view.type !==
+                    "dayGridMonth"
+                ) {
+                    return;
+                }
+
+                // =========================================
+                // CONTENEDOR DIA
+                // =========================================
+                const frame =
+                    info.el.querySelector(
+                        ".fc-daygrid-day-frame"
+                    );
+
+                if (!frame) return;
+
+                // =========================================
+                // DATA DIA
+                // =========================================
+                const dataDia =
+                    window.tareasCalendario?.[dateStr];
+
+                const tareas =
+                    dataDia?.tareas || [];
+
+                // =========================================
+                // KPIS
+                // =========================================
+                const seguimientos =
+                    tareas.length;
+
+                const pendientes =
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
+                    ).length;
+
+                const cotizaciones =
+                    tareas.filter(
+                        t => t.tipo === "COTIZACION"
+                    ).length;
+
+                const pedidos =
+                    tareas.filter(
+                        t => t.tipo === "PEDIDO"
+                    ).length;
+
+                // =========================================
+                // CONTENEDOR KPI
+                // =========================================
+                const kpi =
+                    document.createElement("div");
+
+                kpi.className =
+                    "calendar-kpi-box";
+
+                kpi.style.fontSize =
+                    "11px";
+
+                kpi.style.marginTop =
+                    "4px";
+
+                kpi.style.padding =
+                    "4px";
+
+                kpi.style.borderRadius =
+                    "6px";
+
+                kpi.style.fontWeight =
+                    "600";
+
+                kpi.style.lineHeight =
+                    "1.4";
+
+                // =========================================
+                // DOMINGO
+                // =========================================
+                if (day === 0) {
+
+                    return;
+                }
+
+                // =========================================
+                // FESTIVO
+                // =========================================
+                if (isHoliday) {
+
+                    return;
+                }
+
+                // =========================================
+                // SABADO
+                // =========================================
+                if (day === 6) {
+
+                    kpi.innerHTML = `
+            <div>
+                📌 PLANEACION
+            </div>
+        `;
+
+                    frame.appendChild(kpi);
+
+                    return;
+                }
+
+                // =========================================
+                // BUEN TRABAJO
+                // SOLO SI PENDIENTES = 0
+                // =========================================
+                if (pendientes === 0) {
+
+                    kpi.innerHTML = `
+            <div>
+                ✅ Buen trabajo
+            </div>
+        `;
+
+                    frame.appendChild(kpi);
+
+                    return;
+                }
+
+                // =========================================
+                // KPI REALES
+                // =========================================
+                kpi.innerHTML = `
+
+        <div>
+            📞 Seg: ${seguimientos}
+        </div>
+
+        <div>
+            ⏳ Pend: ${pendientes}
+        </div>
+
+        <div>
+            📄 Cot: ${cotizaciones}
+        </div>
+
+        <div>
+            📦 Ped: ${pedidos}
+        </div>
+
+    `;
+
+                frame.appendChild(kpi);
             },
 
             // =====================================
