@@ -676,7 +676,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let mensajePendientes =
                     `📌 Pend: ${kpis.pendientes}`;
 
-                if (kpis.pendientes <= 0) {
+                if (kpis.pendientes == 0) {
 
                     mensajePendientes =
                         "✔ Buen Trabajo";
