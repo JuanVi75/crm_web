@@ -2002,7 +2002,7 @@ MODAL TAREAS NUEVO
             }
 
             // =====================================
-            // KPIs DEL DIA
+            // KPI REALES
             // =====================================
             const seguimientos =
                 tareas.length;
@@ -2027,15 +2027,14 @@ MODAL TAREAS NUEVO
             // =====================================
             if (diaSemana === 6) {
 
-                // =================================
-                // SIN ACTIVIDAD
-                // =================================
                 if (
                     seguimientos === 0
                     &&
                     cotizaciones === 0
                     &&
                     pedidos === 0
+                    &&
+                    pendientes === 0
                 ) {
 
                     container.innerHTML = `
@@ -2049,82 +2048,15 @@ MODAL TAREAS NUEVO
             }
 
             // =====================================
-            // KPI HEADER
-            // =====================================
-            const kpiBox =
-                document.createElement("div");
-
-            kpiBox.className =
-                "calendar-kpi-box";
-
-            // =====================================
-            // BUEN TRABAJO
-            // =====================================
-            if (pendientes <= 0) {
-
-                kpiBox.innerHTML = `
-
-            <div class="task-item">
-                <div class="task-title">
-                    📞 Seguimientos: ${seguimientos}
-                </div>
-            </div>
-
-            <div class="task-item">
-                <div class="task-title">
-                    📄 Cotizaciones: ${cotizaciones}
-                </div>
-            </div>
-
-            <div class="task-item">
-                <div class="task-title">
-                    📦 Pedidos: ${pedidos}
-                </div>
-            </div>
-
-            <div class="task-item">
-                <div class="task-title">
-                    ✅ BUEN TRABAJO
-                </div>
-            </div>
-        `;
-
-            } else {
-
-                kpiBox.innerHTML = `
-
-            <div class="task-item">
-                <div class="task-title">
-                    📞 Seguimientos: ${seguimientos}
-                </div>
-            </div>
-
-            <div class="task-item">
-                <div class="task-title">
-                    📄 Cotizaciones: ${cotizaciones}
-                </div>
-            </div>
-
-            <div class="task-item">
-                <div class="task-title">
-                    📦 Pedidos: ${pedidos}
-                </div>
-            </div>
-
-            <div class="task-item">
-                <div class="task-title">
-                    ⏳ Pendientes: ${pendientes}
-                </div>
-            </div>
-        `;
-            }
-
-            container.appendChild(kpiBox);
-
-            // =====================================
             // SIN TAREAS
             // =====================================
             if (!tareas || tareas.length === 0) {
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                Sin seguimientos registrados
+            </div>
+        `;
 
                 return;
             }
@@ -2136,7 +2068,7 @@ MODAL TAREAS NUEVO
                 localStorage.getItem("rol") === "ADMIN";
 
             // =====================================
-            // ORDENAR POR FECHA
+            // ORDENAR POR HORA
             // =====================================
             tareas.sort((a, b) => {
 
