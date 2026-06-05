@@ -484,14 +484,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (total > 0) {
                         titulo = `📌 ${total} pendientes`;
+                    } else if (kpis.seguimientos > 0) {
                         titulo = `📞 Seg: ${kpis.seguimientos}`;
+                    } else if (kpis.cotizaciones > 0) {
                         titulo = `📄 Cot: ${kpis.cotizaciones}`;
+                    } else if (kpis.pedidos > 0) {
                         titulo = `📦 Ped: ${kpis.pedidos}`;
                     } else {
                         titulo = `✔ Buen Trabajo`;
-                        titulo = `📞 Seg: ${kpis.seguimientos}`;
-                        titulo = `📄 Cot: ${kpis.cotizaciones}`;
-                        titulo = `📦 Ped: ${kpis.pedidos}`;
                     }
 
                     eventos.push({
