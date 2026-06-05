@@ -2795,13 +2795,11 @@ MODAL TAREAS NUEVO
             }
 
             const seguimientos = tareas.length;
-
             const cotizaciones = tareas.filter(t => t.tipo === "COTIZACION").length;
-
             const pedidos = tareas.filter(t => t.tipo === "PEDIDO").length;
-
             const pendientes = tareas.filter(t => t.estado === "ACTIVO").length;
 
+            // 🔥 CASO ESPECIAL: sábado sin actividad
             if (
                 diaSemana === 6 &&
                 seguimientos === 0 &&
@@ -2811,43 +2809,42 @@ MODAL TAREAS NUEVO
             ) {
                 kpiBox.innerHTML = `
             <div class="kpi-card" style="background:#1e3a8a;color:white;padding:20px;border-radius:12px;text-align:center;">
-                <div class="kpi-title">📋 PLANEACION</div>
+                <div class="kpi-title">📋 PLANEACIÓN</div>
                 <div class="kpi-value">Día de planeación comercial</div>
             </div>
         `;
                 return;
             }
 
-            const pendientesHTML =
-                pendientes == 0
-                    ? `
+            // 🔥 SIEMPRE RENDER KPIs (sin bloquear nada)
+            kpiBox.innerHTML = `
+        ${pendientes === 0 ? `
             <div class="kpi-card" style="background:#16a34a;color:white;padding:15px;border-radius:12px;">
-                <div class="kpi-title">✅ BUEN TRABAJO</div>
-                <div class="kpi-value">Sin pendientes</div>
-            </div>`
-                    : `
+                <div class="kpi-title">✅ Sin pendientes</div>
+                <div class="kpi-value">Todo al día</div>
+            </div>
+        ` : `
             <div class="kpi-card" style="background:#dc2626;color:white;padding:15px;border-radius:12px;">
                 <div class="kpi-title">Pendientes</div>
                 <div class="kpi-value">${pendientes}</div>
             </div>
-            
-            <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-                <div class="kpi-title">Seguimientos</div>
-                <div class="kpi-value">${seguimientos}</div>
-            </div>
+        `}
 
-            <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-                <div class="kpi-title">Cotizaciones</div>
-                <div class="kpi-value">${cotizaciones}</div>
-            </div>
+        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+            <div class="kpi-title">Seguimientos</div>
+            <div class="kpi-value">${seguimientos}</div>
+        </div>
 
-            <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-                <div class="kpi-title">Pedidos</div>
-                <div class="kpi-value">${pedidos}</div>
-            </div>
+        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+            <div class="kpi-title">Cotizaciones</div>
+            <div class="kpi-value">${cotizaciones}</div>
+        </div>
 
-            ${pendientesHTML}
-        `;
+        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+            <div class="kpi-title">Pedidos</div>
+            <div class="kpi-value">${pedidos}</div>
+        </div>
+    `;
         }
 
         function formatearCOP(valor) {
