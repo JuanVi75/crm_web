@@ -275,6 +275,86 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     // =========================================
+    // VALIDADORES
+    // =========================================
+    function esSabado(fecha) {
+
+        return new Date(fecha).getDay() === 6;
+    }
+
+    function esDomingo(fecha) {
+
+        return new Date(fecha).getDay() === 0;
+    }
+
+    function esFestivo(fecha) {
+
+        return festivos.some(
+            f => f.start === fecha
+        );
+    }
+
+    // =========================================
+    // KPIS CALENDARIO
+    // =========================================
+    function obtenerKPIsCalendario(fecha) {
+
+        const tareas =
+            Object.values(window.tareasCalendario || {})
+                .flatMap(d => d.tareas || []);
+
+        const seguimientos =
+            tareas.filter(t => {
+
+                return (
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === fecha
+                );
+
+            }).length;
+
+        const cotizaciones =
+            tareas.filter(t => {
+
+                return (
+                    t.tipo === "COTIZACION" &&
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === fecha
+                );
+
+            }).length;
+
+        const pedidos =
+            tareas.filter(t => {
+
+                return (
+                    t.tipo === "PEDIDO" &&
+                    t.fecha &&
+                    String(t.fecha).substring(0, 10) === fecha
+                );
+
+            }).length;
+
+        const pendientes =
+            tareas.filter(t => {
+
+                return (
+                    t.estado === "ACTIVO" &&
+                    t.fecha_proxima &&
+                    String(t.fecha_proxima).substring(0, 10) === fecha
+                );
+
+            }).length;
+
+        return {
+            seguimientos,
+            cotizaciones,
+            pedidos,
+            pendientes
+        };
+    }
+
+    // =========================================
     // CALENDAR
     // =========================================
     const calendar =
@@ -311,7 +391,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             nowIndicator: true,
 
-            allDayText: "KPI's:",
+            allDayText: "",
 
             // =====================================
             // EVENTS
@@ -350,7 +430,40 @@ document.addEventListener("DOMContentLoaded", function () {
                         Number(dataDia.total) || 0;
 
                     // =================================
-                    // MOSTRAR TODOS LOS DÍAS
+                    // DOMINGOS
+                    // =================================
+                    if (esDomingo(fecha)) {
+                        return;
+                    }
+
+                    // =================================
+                    // FESTIVOS
+                    // =================================
+                    if (esFestivo(fecha)) {
+                        return;
+                    }
+
+                    // =================================
+                    // SABADOS
+                    // =================================
+                    if (esSabado(fecha)) {
+
+                        eventos.push({
+
+                            title: "📘 Planeación",
+
+                            start: fecha,
+
+                            allDay: true,
+
+                            color: "#1e3a8a"
+                        });
+
+                        return;
+                    }
+
+                    // =================================
+                    // PENDIENTES
                     // =================================
                     let color = "#2563eb";
 
@@ -364,7 +477,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     } else if (total <= 0) {
 
-                        color = "#6b7280";
+                        color = "#16a34a";
                     }
 
                     eventos.push({
@@ -372,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         title:
                             total > 0
                                 ? `📌 ${total} pendientes`
-                                : `✔ Sin tareas`,
+                                : `✔ Buen Trabajo`,
 
                         start: fecha,
 
@@ -394,21 +507,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 window.fechaActiva = fecha;
 
-                const calendar =
-                    window.crmCalendar;
-
-                // =================================
-                // IR A FECHA
-                // =================================
-                if (calendar) {
-                    calendar.gotoDate(fecha);
-                }
-
-                // =================================
-                // SOLO TAREAS (NO KPIs AQUÍ)
-                // =================================
                 if (typeof cargarTareasPorFecha === "function") {
                     cargarTareasPorFecha(fecha);
+                }
+
+                calendar.gotoDate(fecha);
+
+                if (
+                    calendar.view.type !==
+                    "timeGridDay"
+                ) {
+
+                    calendar.changeView(
+                        "timeGridDay",
+                        fecha
+                    );
                 }
             },
 
@@ -431,9 +544,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                // =================================
-                // EVENTOS CRM
-                // =================================
                 info.el.style.border =
                     "none";
 
@@ -450,150 +560,132 @@ document.addEventListener("DOMContentLoaded", function () {
                     "6px";
 
                 // =================================
-                // KPI VISTA DIA
+                // SOLO VISTA DIA
                 // =================================
-                const calendar =
-                    window.crmCalendar;
-
                 if (
-                    !calendar ||
                     calendar.view.type !==
                     "timeGridDay"
                 ) {
                     return;
                 }
 
-                const fechaEvento =
-                    info.event.startStr
-                        .substring(0, 10);
-
-                const fechaActiva =
+                const fecha =
                     window.fechaActiva;
 
-                if (
-                    fechaEvento !==
-                    fechaActiva
-                ) {
+                // =================================
+                // DOMINGOS
+                // =================================
+                if (esDomingo(fecha)) {
+
+                    const allDay =
+                        document.querySelector(
+                            ".fc-timegrid-axis-cushion"
+                        );
+
+                    if (allDay) {
+                        allDay.innerHTML = "";
+                    }
+
                     return;
                 }
 
                 // =================================
-                // TAREAS FECHA
+                // FESTIVOS
                 // =================================
-                const tareas =
-                    Object.values(
-                        window.tareasCalendario || {}
-                    ).flatMap(
-                        d => d.tareas || []
-                    );
+                if (esFestivo(fecha)) {
+                    return;
+                }
 
-                // =================================
-                // SEGUIMIENTOS
-                // =================================
-                const seguimientos =
-                    tareas.filter(t => {
+                const kpis =
+                    obtenerKPIsCalendario(fecha);
 
-                        if (!t.fecha) {
-                            return false;
-                        }
-
-                        return (
-
-                            String(
-                                t.fecha
-                            ).substring(0, 10)
-
-                            === fechaActiva
-                        );
-
-                    }).length;
-
-                // =================================
-                // COTIZACIONES
-                // =================================
-                const cotizaciones =
-                    tareas.filter(t => {
-
-                        if (!t.fecha) {
-                            return false;
-                        }
-
-                        return (
-
-                            t.tipo ===
-                            "COTIZACION"
-
-                            &&
-
-                            String(
-                                t.fecha
-                            ).substring(0, 10)
-
-                            === fechaActiva
-                        );
-
-                    }).length;
-
-                // =================================
-                // PEDIDOS
-                // =================================
-                const pedidos =
-                    tareas.filter(t => {
-
-                        if (!t.fecha) {
-                            return false;
-                        }
-
-                        return (
-
-                            t.tipo ===
-                            "PEDIDO"
-
-                            &&
-
-                            String(
-                                t.fecha
-                            ).substring(0, 10)
-
-                            === fechaActiva
-                        );
-
-                    }).length;
-
-                // =================================
-                // KPI HEADER CALENDARIO
-                // =================================
                 const allDay =
                     document.querySelector(
                         ".fc-timegrid-axis-cushion"
                     );
 
-                if (allDay) {
+                if (!allDay) {
+                    return;
+                }
+
+                // =================================
+                // SABADOS
+                // =================================
+                if (esSabado(fecha)) {
 
                     allDay.innerHTML = `
-            <div style="
-                display:flex;
-                flex-direction:column;
-                gap:4px;
-                font-size:11px;
-                font-weight:600;
-                padding:4px;
-                line-height:1.2;
-            ">
-                <div>
-                    📞 Seg: ${seguimientos}
-                </div>
+                        <div style="
+                            display:flex;
+                            flex-direction:column;
+                            gap:4px;
+                            font-size:11px;
+                            font-weight:600;
+                            padding:4px;
+                            line-height:1.2;
+                        ">
+                            <div>
+                                📘 PLANEACION
+                            </div>
 
-                <div>
-                    📄 Cot: ${cotizaciones}
-                </div>
+                            <div>
+                                📞 Seg: ${kpis.seguimientos}
+                            </div>
 
-                <div>
-                    📦 Ped: ${pedidos}
-                </div>
-            </div>
-        `;
+                            <div>
+                                📄 Cot: ${kpis.cotizaciones}
+                            </div>
+
+                            <div>
+                                📦 Ped: ${kpis.pedidos}
+                            </div>
+                        </div>
+                    `;
+
+                    return;
                 }
+
+                // =================================
+                // BUEN TRABAJO
+                // =================================
+                let mensajePendientes =
+                    `📌 Pend: ${kpis.pendientes}`;
+
+                if (kpis.pendientes <= 0) {
+
+                    mensajePendientes =
+                        "✔ Buen Trabajo";
+                }
+
+                // =================================
+                // KPI HEADER
+                // =================================
+                allDay.innerHTML = `
+                    <div style="
+                        display:flex;
+                        flex-direction:column;
+                        gap:4px;
+                        font-size:11px;
+                        font-weight:600;
+                        padding:4px;
+                        line-height:1.2;
+                    ">
+                        <div>
+                            ${mensajePendientes}
+                        </div>
+
+                        <div>
+                            📞 Seg: ${kpis.seguimientos}
+                        </div>
+
+                        <div>
+                            📄 Cot: ${kpis.cotizaciones}
+                        </div>
+
+                        <div>
+                            📦 Ped: ${kpis.pedidos}
+                        </div>
+                    </div>
+                `;
             },
 
             // =====================================
@@ -750,27 +842,28 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
 
                     // =================================
-                    // FECHA ACTIVA (CORREGIDA)
+                    // FECHA ACTIVA
                     // =================================
                     const fechaActualVista =
                         calendar.getDate()
                             .toISOString()
                             .split("T")[0];
-                    window.fechaActiva = fechaActualVista;
+
+                    window.fechaActiva =
+                        fechaActualVista;
 
                     // =================================
-                    // KPIs (SIEMPRE SIN DEPENDER DE VISTA)
+                    // SOLO TAREAS
                     // =================================
-                    if (typeof cargarKPIs === "function") {
-                        cargarKPIs(fechaActualVista);
-                    }
-
                     if (typeof cargarTareasPorFecha === "function") {
-                        cargarTareasPorFecha(fechaActualVista);
+
+                        cargarTareasPorFecha(
+                            fechaActualVista
+                        );
                     }
 
                     // =================================
-                    // ESTILOS SOLO VISTA DÍA
+                    // ESTILOS VISTA DIA
                     // =================================
                     const esVistaDia =
                         calendar.view.type === "timeGridDay";
@@ -784,16 +877,23 @@ document.addEventListener("DOMContentLoaded", function () {
                                     header.innerText.toLowerCase();
 
                                 if (text.includes("dom")) {
+
                                     header.style.background = "#7f1d1d";
                                     header.style.color = "white";
                                 }
 
-                                if (text.includes("sab")) {
+                                if (
+                                    text.includes("sab")
+                                ) {
+
                                     header.style.background = "#1e3a8a";
                                     header.style.color = "white";
                                 }
 
-                                if (header.classList.contains("fc-day-today")) {
+                                if (
+                                    header.classList.contains("fc-day-today")
+                                ) {
+
                                     header.style.background = "#facc15";
                                     header.style.color = "#000";
                                 }
@@ -826,17 +926,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================
     // CAMBIO DE VISTA
     // =========================================
-    calendar.changeView("timeGridDay");
+    calendar.changeView(
+        "timeGridDay"
+    );
 
     // =========================================
-    // SOLO CARGA DE TAREAS (NO KPIs)
+    // SOLO TAREAS
     // =========================================
     if (typeof cargarTareasPorFecha === "function") {
+
         cargarTareasPorFecha(hoy);
     }
-
-    // ❌ ELIMINADO:
-    // cargarKPIs(hoy);
 
     // =========================================
     // RESIZE
