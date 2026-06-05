@@ -303,48 +303,35 @@ document.addEventListener("DOMContentLoaded", function () {
             Object.values(window.tareasCalendario || {})
                 .flatMap(d => d.tareas || []);
 
+        const filtradasPorFecha = (campoFecha) =>
+            tareas.filter(t =>
+                t[campoFecha] &&
+                String(t[campoFecha]).substring(0, 10) === fecha
+            );
+
         const seguimientos =
-            tareas.filter(t => {
-
-                return (
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === fecha
-                );
-
-            }).length;
+            filtradasPorFecha("fecha").length;
 
         const cotizaciones =
-            tareas.filter(t => {
-
-                return (
-                    t.tipo === "COTIZACION" &&
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === fecha
-                );
-
-            }).length;
+            tareas.filter(t =>
+                t.tipo === "COTIZACION" &&
+                t.fecha &&
+                String(t.fecha).substring(0, 10) === fecha
+            ).length;
 
         const pedidos =
-            tareas.filter(t => {
-
-                return (
-                    t.tipo === "PEDIDO" &&
-                    t.fecha &&
-                    String(t.fecha).substring(0, 10) === fecha
-                );
-
-            }).length;
+            tareas.filter(t =>
+                t.tipo === "PEDIDO" &&
+                t.fecha &&
+                String(t.fecha).substring(0, 10) === fecha
+            ).length;
 
         const pendientes =
-            tareas.filter(t => {
-
-                return (
-                    t.estado === "ACTIVO" &&
-                    t.fecha_proxima &&
-                    String(t.fecha_proxima).substring(0, 10) === fecha
-                );
-
-            }).length;
+            tareas.filter(t =>
+                t.estado === "ACTIVO" &&
+                t.fecha_proxima &&
+                String(t.fecha_proxima).substring(0, 10) === fecha
+            ).length;
 
         return {
             seguimientos,
@@ -352,6 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
             pedidos,
             pendientes
         };
+
     }
 
     // =========================================
