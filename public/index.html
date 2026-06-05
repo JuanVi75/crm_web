@@ -2819,7 +2819,7 @@ MODAL TAREAS NUEVO
             }
 
             const pendientesHTML =
-                pendientes <= 0
+                pendientes == 0
                     ? `
             <div class="kpi-card" style="background:#16a34a;color:white;padding:15px;border-radius:12px;">
                 <div class="kpi-title">✅ BUEN TRABAJO</div>
@@ -2829,26 +2829,25 @@ MODAL TAREAS NUEVO
             <div class="kpi-card" style="background:#dc2626;color:white;padding:15px;border-radius:12px;">
                 <div class="kpi-title">Pendientes</div>
                 <div class="kpi-value">${pendientes}</div>
-            </div>`;
+            </div>
+            
+            <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+                <div class="kpi-title">Seguimientos</div>
+                <div class="kpi-value">${seguimientos}</div>
+            </div>
 
-            kpiBox.innerHTML = `
-        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-            <div class="kpi-title">Seguimientos</div>
-            <div class="kpi-value">${seguimientos}</div>
-        </div>
+            <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+                <div class="kpi-title">Cotizaciones</div>
+                <div class="kpi-value">${cotizaciones}</div>
+            </div>
 
-        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-            <div class="kpi-title">Cotizaciones</div>
-            <div class="kpi-value">${cotizaciones}</div>
-        </div>
+            <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
+                <div class="kpi-title">Pedidos</div>
+                <div class="kpi-value">${pedidos}</div>
+            </div>
 
-        <div class="kpi-card" style="padding:15px;border-radius:12px;background:white;">
-            <div class="kpi-title">Pedidos</div>
-            <div class="kpi-value">${pedidos}</div>
-        </div>
-
-        ${pendientesHTML}
-    `;
+            ${pendientesHTML}
+        `;
         }
 
         function formatearCOP(valor) {
