@@ -3,45 +3,284 @@
 
 <head>
 
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>
-        CRM Dashboard
-    </title>
+    <title>CRM WEB</title>
 
     <!-- FULLCALENDAR -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
-
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
 
     <style>
         /* =========================================
-        RESET
+            FUENTE
         ========================================= */
         * {
-            margin: 0;
-            padding: 0;
+            font-family: "Aptos", Arial, sans-serif;
             box-sizing: border-box;
         }
 
         /* =========================================
-        BODY
+            MODAL
         ========================================= */
-        body {
 
-            font-family: Arial, Helvetica, sans-serif;
 
+        .kpi-dia-container {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .modal-box {
+            width: 95%;
+            max-width: 650px;
             background: #0f172a;
-
-            color: #f1f5f9;
-
+            border-radius: 14px;
+            padding: 16px;
             overflow: hidden;
         }
 
+        .modal-overlay {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100vh;
+
+            background: rgba(0, 0, 0, 0.6);
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            z-index: 99999;
+        }
+
         /* =========================================
-        MAIN
+            TIPOGRAFIA GENERAL      
+        ========================================= */
+
+        .modal-box,
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea,
+        .modal-box button,
+        .modal-box label {
+            font-family: Aptos, sans-serif;
+            font-size: 12px;
+        }
+
+        /* =========================================
+            HEADER
+        ========================================= */
+
+        .modal-header {
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* =========================================
+BODY
+========================================= */
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* =========================================
+FORM GROUP
+========================================= */
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* =========================================
+INPUTS
+========================================= */
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        /* =========================================
+TEXTAREA PEQUEÑO
+========================================= */
+
+        .form-group textarea {
+            resize: none;
+            min-height: 55px;
+            max-height: 55px;
+        }
+
+        /* =========================================
+FILA 3 COLUMNAS
+========================================= */
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* =========================================
+FOOTER
+========================================= */
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .primary-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary-btn {
+            background: #334155;
+            color: white;
+        }
+
+        .danger-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+
+        /* =========================================
+            TAREAS
+        ========================================= */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .task-item {
+            background: #1e293b;
+            padding: 14px;
+            border-radius: 12px;
+            color: #cbd5e1;
+            font-size: 13px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .task-item.empty {
+            background: transparent;
+            border: 1px dashed #334155;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .task-action {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #cbd5e1;
+        }
+
+        .task-footer {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .task-asesor {
+            color: #60a5fa;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .task-state {
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        /* HOVER */
+        .task-item:hover {
+            background: #60a5fa;
+        }
+
+        .task-item:hover .task-title,
+        .task-item:hover .task-action,
+        .task-item:hover .task-footer,
+        .task-item:hover .task-asesor,
+        .task-item:hover .task-state {
+            color: #0f172a;
+        }
+
+        /* =========================================
+            BODY
+        ========================================= */
+        body {
+
+            margin: 0;
+
+            background: #0f172a;
+
+            color: white;
+
+            overflow: hidden;
+
+            font-size: 14px;
+        }
+
+        /* =========================================
+            MAIN
         ========================================= */
         .main-container {
 
@@ -53,34 +292,34 @@
         }
 
         /* =========================================
-        SIDEBAR
-        ========================================= */
+SIDEBAR
+========================================= */
         .sidebar {
 
-            width: 260px;
+            width: 240px;
 
             background: #111827;
 
             border-right: 1px solid #1e293b;
 
-            display: flex;
-
-            flex-direction: column;
-
             padding: 20px;
+
+            flex-shrink: 0;
         }
 
+        /* LOGO */
         .logo {
 
-            font-size: 24px;
+            font-size: 22px;
 
-            font-weight: bold;
-
-            margin-bottom: 30px;
+            font-weight: 600;
 
             color: #60a5fa;
+
+            margin-bottom: 40px;
         }
 
+        /* MENU */
         .menu {
 
             display: flex;
@@ -92,17 +331,17 @@
 
         .menu-item {
 
-            padding: 14px;
+            padding: 12px 14px;
 
-            border-radius: 10px;
+            border-radius: 12px;
 
             cursor: pointer;
 
-            transition: .2s;
-
-            font-size: 14px;
+            transition: 0.2s;
 
             color: #cbd5e1;
+
+            font-size: 14px;
         }
 
         .menu-item:hover {
@@ -120,8 +359,8 @@
         }
 
         /* =========================================
-        CONTENT
-        ========================================= */
+CONTENT
+========================================= */
         .content {
 
             flex: 1;
@@ -130,178 +369,193 @@
 
             flex-direction: column;
 
+            padding: 20px;
+
             overflow: hidden;
+
+            min-height: 0;
         }
 
         /* =========================================
-        TOPBAR
-        ========================================= */
+TOPBAR
+========================================= */
         .topbar {
-
-            height: 80px;
-
-            background: #111827;
-
-            border-bottom: 1px solid #1e293b;
 
             display: flex;
 
-            align-items: center;
-
             justify-content: space-between;
 
-            padding: 0 20px;
+            align-items: center;
+
+            margin-bottom: 20px;
+
+            flex-shrink: 0;
         }
 
         .page-title {
 
             font-size: 24px;
 
-            font-weight: bold;
+            font-weight: 600;
+        }
+
+        .user-panel {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
         }
 
         .user-info {
 
             color: #94a3b8;
 
+            font-size: 11px;
+        }
+
+        .logout-btn {
+
+            background: #dc2626;
+
+            border: none;
+
+            color: white;
+
+            padding: 8px 14px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
             font-size: 12px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+
+            background: #b91c1c;
         }
 
         /* =========================================
-        KPI SUPERIOR
+            KPI
         ========================================= */
         .kpi-container {
 
             display: grid;
 
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns:
+                repeat(auto-fit, minmax(200px, 1fr));
 
-            gap: 20px;
+            gap: 15px;
 
-            padding: 20px;
+            margin-bottom: 20px;
+
+            flex-shrink: 0;
         }
 
         .kpi-card {
 
             background: #111827;
 
-            border-radius: 14px;
-
-            padding: 20px;
-
             border: 1px solid #1e293b;
+
+            border-radius: 18px;
+
+            padding: 18px;
+        }
+
+        .kpi-card1 {
+
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 30px;
         }
 
         .kpi-title {
-
-            font-size: 13px;
-
             color: #94a3b8;
-
+            font-size: 12px;
             margin-bottom: 10px;
         }
 
-        .kpi-value {
-
+        .kpi-title1 {
+            color: #94a3b8;
             font-size: 24px;
-
-            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        /* =========================================
-        BODY DASHBOARD
-        ========================================= */
-        .dashboard-body {
 
-            flex: 1;
+        .kpi-value {
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .kpi-value1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+
+        /* =========================================
+DASHBOARD BODY
+========================================= */
+        .dashboard-body {
 
             display: grid;
 
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns:
+                2fr 1fr;
 
             gap: 20px;
 
-            padding: 0 20px 20px 20px;
+            flex: 1;
 
-            overflow: hidden;
+            min-height: 0;
+
+            height: 100%;
         }
 
         /* =========================================
-        PANEL
-        ========================================= */
+PANELS
+========================================= */
         .panel {
 
             background: #111827;
 
-            border-radius: 14px;
-
             border: 1px solid #1e293b;
+
+            border-radius: 20px;
 
             padding: 20px;
 
-            overflow: auto;
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-height: 0;
         }
 
         .panel-title {
 
-            font-size: 18px;
+            font-size: 16px;
 
-            font-weight: bold;
+            font-weight: 600;
 
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+
+            flex-shrink: 0;
         }
 
         /* =========================================
-        RIGHT PANEL
-        ========================================= */
-        .right-panel {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 20px;
-
-            overflow: auto;
-        }
-
-        /* =========================================
-        KPI DIA
-        ========================================= */
-        .calendar-kpis {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 12px;
-        }
-
-        .calendar-kpi-item {
-
-            background: #1e293b;
-
-            border-radius: 10px;
-
-            padding: 14px;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            font-size: 13px;
-        }
-
-        .calendar-kpi-item strong {
-
-            color: #60a5fa;
-        }
-
-        /* =========================================
-        TASK
-        ========================================= */
+TASKS
+========================================= */
         .task-list {
 
             display: flex;
@@ -317,149 +571,304 @@
 
             padding: 14px;
 
-            border-radius: 10px;
+            border-radius: 12px;
 
-            cursor: pointer;
+            color: #cbd5e1;
 
-            transition: .2s;
-        }
-
-        .task-item:hover {
-
-            background: #334155;
-        }
-
-        .task-hour {
-
-            font-size: 11px;
-
-            color: #94a3b8;
-
-            margin-bottom: 6px;
-        }
-
-        .task-client {
-
-            font-size: 14px;
-
-            font-weight: 600;
-        }
-
-        .task-action {
-
-            font-size: 12px;
-
-            color: #60a5fa;
-
-            margin-top: 6px;
+            font-size: 13px;
         }
 
         /* =========================================
-        ACTIVITY
-        ========================================= */
-        .activity-list {
+CALENDAR
+========================================= */
+        #calendar {
 
-            display: flex;
+            width: 100%;
 
-            flex-direction: column;
+            max-width: 100%;
 
-            gap: 12px;
+            flex: 1;
+
+            min-height: 0;
+
+            overflow: hidden;
         }
 
-        .activity-item {
-
-            background: #1e293b;
-
-            border-left: 4px solid #2563eb;
-
-            border-radius: 10px;
-
-            padding: 14px;
-
-            cursor: pointer;
-        }
-
-        .activity-hour {
-
-            font-size: 11px;
-
-            color: #94a3b8;
-
-            margin-bottom: 6px;
-        }
-
-        .activity-text {
+        /* =========================================
+FULLCALENDAR
+========================================= */
+        .fc {
 
             font-size: 13px;
 
-            line-height: 1.4;
+            height: 100%;
+        }
+
+        .fc .fc-toolbar {
+
+            margin-bottom: 10px !important;
+        }
+
+        .fc .fc-toolbar-title {
+
+            font-size: 18px;
+        }
+
+        .fc .fc-button {
+
+            background: #2563eb !important;
+
+            border: none !important;
+
+            font-size: 12px !important;
+        }
+
+        .fc .fc-button:hover {
+
+            background: #1d4ed8 !important;
+        }
+
+        .fc-theme-standard td,
+        .fc-theme-standard th {
+
+            border: 1px solid #1e293b;
+        }
+
+        .fc-theme-standard .fc-scrollgrid {
+
+            border: 1px solid #1e293b;
+        }
+
+        .fc-col-header-cell {
+
+            background: white !important;
+
+            color: #111827 !important;
+
+            font-size: 12px;
+        }
+
+        .fc-daygrid-day-number {
+
+            color: white;
+
+            font-size: 12px;
+
+            padding: 6px;
+        }
+
+        .fc-event {
+
+            border: none;
+
+            font-size: 11px;
+
+            padding: 2px 4px;
+        }
+
+        .fc-timegrid-slot-label {
+
+            color: #cbd5e1;
+        }
+
+        .fc-scroller {
+
+            overflow-y: auto !important;
+
+            overflow-x: hidden !important;
         }
 
         /* =========================================
-        MODAL
-        ========================================= */
-        .modal {
+LOGIN OVERLAY
+========================================= */
+        .login-overlay {
 
             position: fixed;
 
-            inset: 0;
+            top: 0;
+            left: 0;
 
-            background: rgba(0, 0, 0, .6);
+            width: 100%;
+            height: 100vh;
 
-            display: none;
+            display: flex;
 
             justify-content: center;
-
             align-items: center;
+
+            background: rgba(15, 23, 42, 0.75);
+
+            backdrop-filter: blur(8px);
 
             z-index: 9999;
         }
 
-        .modal-content {
+        /* =========================================
+LOGIN BOX
+========================================= */
+        .box {
 
-            width: 500px;
+            width: 400px;
 
             background: #111827;
 
-            border-radius: 14px;
+            border: 1px solid #334155;
 
-            padding: 20px;
+            border-radius: 22px;
+
+            padding: 35px;
+
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
         }
 
-        .modal-title {
+        .login-title {
 
-            font-size: 20px;
+            font-size: 28px;
 
-            margin-bottom: 20px;
+            font-weight: 600;
+
+            color: #60a5fa;
+
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+
+            color: #94a3b8;
+
+            margin-bottom: 25px;
+
+            font-size: 13px;
         }
 
         /* =========================================
-        RESPONSIVE
-        ========================================= */
-        @media(max-width:1200px) {
+FORM
+========================================= */
+        .login-form {
 
-            .dashboard-body {
+            display: flex;
 
-                grid-template-columns: 1fr;
-            }
-
-            .kpi-container {
-
-                grid-template-columns: repeat(2, 1fr);
-            }
+            flex-direction: column;
         }
 
-        @media(max-width:768px) {
+        .login-form input,
+        .login-form select {
 
-            .sidebar {
+            width: 100%;
 
-                width: 80px;
-            }
+            padding: 13px;
 
-            .kpi-container {
+            margin-bottom: 14px;
 
-                grid-template-columns: 1fr;
-            }
+            border: none;
+
+            border-radius: 12px;
+
+            background: #1e293b;
+
+            color: white;
+
+            outline: none;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+PASSWORD
+========================================= */
+        .password-wrapper {
+
+            position: relative;
+        }
+
+        .password-wrapper input {
+
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+
+            position: absolute;
+
+            right: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            cursor: pointer;
+
+            color: #838286;
+        }
+
+        /* =========================================
+BUTTONS
+========================================= */
+        .login-btn {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            margin-top: 10px;
+
+            transition: 0.2s;
+
+            font-size: 13px;
+        }
+
+        .primary-btn {
+
+            background: #2563eb;
+
+            color: white;
+        }
+
+        .primary-btn:hover {
+
+            background: #1d4ed8;
+        }
+
+        .secondary-btn {
+
+            background: #475569;
+
+            color: white;
+        }
+
+        .secondary-btn:hover {
+
+            background: #334155;
+        }
+
+        /* =========================================
+LINKS
+========================================= */
+        .login-link {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #60a5fa;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+        /* =========================================
+HIDDEN
+========================================= */
+        .hidden {
+            display: none;
         }
     </style>
 
@@ -467,276 +876,633 @@
 
 <body>
 
+    <!-- DASHBOARD -->
     <div class="main-container">
 
-        <!-- =====================================
-        SIDEBAR
-        ====================================== -->
-        <aside class="sidebar">
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
 
-            <div class="logo">
-                CRM
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                🏠 INICIO
             </div>
-
-            <div class="menu">
-
-                <div class="menu-item active">
-                    Dashboard
-                </div>
-
-                <div class="menu-item">
-                    Clientes
-                </div>
-
-                <div class="menu-item">
-                    Seguimientos
-                </div>
-
-                <div class="menu-item">
-                    Cotizaciones
-                </div>
-
-                <div class="menu-item">
-                    Pedidos
-                </div>
-
+            <div class="menu-item" onclick="window.location.href='clientes.html'">
+                👥 CLIENTES
             </div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">
+                📅 SEGUIMIENTOS
+            </div>
+            <div class="menu-item" onclick="window.location.href='llamadas.html'">
+                📞 LLAMADAS
+            </div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">
+                📄 COTIZACIONES
+            </div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">
+                📦 PEDIDOS
+            </div>
+        </div>
 
-        </aside>
+        <!-- CONTENT -->
+        <main class="content">
 
-        <!-- =====================================
-        CONTENT
-        ====================================== -->
-        <section class="content">
-
-            <!-- =================================
-            TOPBAR
-            ================================== -->
-            <div class="topbar">
+            <!-- TOPBAR -->
+            <header class="topbar">
 
                 <div class="page-title">
-                    Dashboard Comercial
+                    Dashboard CRM
                 </div>
 
-                <div class="user-info">
-                    Bienvenido
-                </div>
+                <div class="user-panel">
 
-            </div>
-
-            <!-- =================================
-            KPIs SUPERIORES
-            ================================== -->
-            <div class="kpi-container">
-
-                <div class="kpi-card">
-
-                    <div class="kpi-title">
-                        Seguimientos
+                    <div class="user-info" id="userInfo">
+                        No autenticado
                     </div>
 
-                    <div class="kpi-value" id="kpiSeguimientos">
-                        0
-                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        Cerrar Sesión
+                    </button>
 
                 </div>
 
-                <div class="kpi-card">
+            </header>
 
-                    <div class="kpi-title">
-                        Cotizaciones
-                    </div>
+            <!-- KPI -->
+            <section class="kpi-container">
 
-                    <div class="kpi-value" id="kpiCotizaciones">
-                        0
-                    </div>
+                <div class="kpi-card1">
+                    <div class="kpi-title1">Total Clientes</div>
+                    <div class="kpi-value1" id="totalClientes">0</div>
 
                 </div>
 
                 <div class="kpi-card">
+                    <div class="kpi-title">Seguimientos Hoy</div>
+                    <div class="kpi-value" id="seguimientosHoy">0</div>
+                    <div class="kpi-title">Seguimientos Pendientes</div>
+                    <div class="kpi-value" id="seguimientosPendientes">0</div>
+                </div>
 
-                    <div class="kpi-title">
-                        Valor Cotizaciones
-                    </div>
 
-                    <div class="kpi-value" id="kpiValorCotizaciones">
-                        $0
-                    </div>
-
+                <div class="kpi-card">
+                    <div class="kpi-title">Cotizaciones Hoy</div>
+                    <div class="kpi-value" id="cotizacionesHoy">0</div>
+                    <div class="kpi-title">Cotizaciones Totales</div>
+                    <div class="kpi-value" id="cotizacionesMes">0</div>
                 </div>
 
                 <div class="kpi-card">
-
-                    <div class="kpi-title">
-                        Pedidos
-                    </div>
-
-                    <div class="kpi-value" id="kpiPedidos">
-                        0
-                    </div>
-
+                    <div class="kpi-title">Valor Cotizaciones Hoy</div>
+                    <div class="kpi-value" id="valorCotizacionesHoy">$0</div>
+                    <div class="kpi-title">Valor Cotizaciones Totales</div>
+                    <div class="kpi-value" id="valorCotizacionesMes">$0</div>
                 </div>
 
                 <div class="kpi-card">
-
-                    <div class="kpi-title">
-                        Valor Pedidos
-                    </div>
-
-                    <div class="kpi-value" id="kpiValorPedidos">
-                        $0
-                    </div>
-
+                    <div class="kpi-title">Pedidos Hoy</div>
+                    <div class="kpi-value" id="pedidosHoy">0</div>
+                    <div class="kpi-title">Pedidos Totales</div>
+                    <div class="kpi-value" id="pedidosTotal">0</div>
                 </div>
 
                 <div class="kpi-card">
-
-                    <div class="kpi-title">
-                        Pendientes
-                    </div>
-
-                    <div class="kpi-value" id="kpiPendientes">
-                        0
-                    </div>
-
+                    <div class="kpi-title">Valor Pedidos Hoy</div>
+                    <div class="kpi-value" id="valorPedidosHoy">$0</div>
+                    <div class="kpi-title">Valor Pedidos Totales</div>
+                    <div class="kpi-value" id="valorPedidos">$0</div>
                 </div>
 
-            </div>
+            </section>
 
-            <!-- =================================
-            BODY
-            ================================== -->
+            <!-- BODY -->
             <section class="dashboard-body">
 
-                <!-- =============================
-                CALENDARIO
-                ============================== -->
                 <div class="panel">
 
                     <div class="panel-title">
-                        Calendario Operativo
+                        Agenda Comercial
                     </div>
 
                     <div id="calendar"></div>
 
                 </div>
 
-                <!-- =============================
-                RIGHT PANEL
-                ============================== -->
-                <div class="right-panel">
+                <div class="panel">
 
-                    <!-- =========================
-                    KPI DIA
-                    ========================== -->
-                    <div class="panel">
+                    <div class="panel-title">
+                        Tareas Pendientes
+                    </div>
 
-                        <div class="panel-title">
-                            KPIs del Día
-                        </div>
-
-                        <div class="calendar-kpis">
-
-                            <div class="calendar-kpi-item">
-
-                                <span>
-                                    📌 Pendientes
-                                </span>
-
-                                <strong id="pendientesDia">
-                                    0
-                                </strong>
-
+                    <div class="task-list">
+                        <div class="task-list" id="taskList">
+                            <div class="task-item empty">
+                                Cargando tareas...
                             </div>
-
-                            <div class="calendar-kpi-item">
-
-                                <span>
-                                    📞 Seguimientos
-                                </span>
-
-                                <strong id="seguimientosDia">
-                                    0
-                                </strong>
-
-                            </div>
-
-                            <div class="calendar-kpi-item">
-
-                                <span>
-                                    📄 Cotizaciones
-                                </span>
-
-                                <strong id="cotizacionesDia">
-                                    0
-                                </strong>
-
-                            </div>
-
-                            <div class="calendar-kpi-item">
-
-                                <span>
-                                    📦 Pedidos
-                                </span>
-
-                                <strong id="pedidosDia">
-                                    0
-                                </strong>
-
-                            </div>
-
                         </div>
 
                     </div>
 
-                    <!-- =========================
-                    AGENDA
-                    ========================== -->
-                    <div class="panel">
+            </section>
 
-                        <div class="panel-title">
-                            Agenda del Día
-                        </div>
+        </main>
 
-                        <div class="task-list" id="agendaDia">
-                        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="login-overlay" id="loginOverlay">
+
+        <!-- LOGIN -->
+        <div class="box" id="loginBox">
+
+            <div class="login-title">
+                CRM WEB
+            </div>
+
+            <div class="login-subtitle">
+                Iniciar sesión
+            </div>
+
+            <div class="login-form">
+
+                <input type="text" id="loginUser" placeholder="Usuario" autocomplete="off">
+
+                <div class="password-wrapper">
+
+                    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="off">
+
+                    <span class="password-toggle" onclick="togglePass('loginPass', this)">
+                        👁
+                    </span>
+
+                </div>
+
+                <button class="login-btn primary-btn" onclick="login()">
+                    Ingresar
+                </button>
+
+                <button class="login-btn secondary-btn" onclick="guest()">
+                    Entrar como invitado
+                </button>
+
+                <div class="login-link" onclick="showRegister()">
+                    Registrarse
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- REGISTER -->
+        <div class="box hidden" id="registerBox">
+
+            <div class="login-title">
+                CRM WEB
+            </div>
+
+            <div class="login-subtitle">
+                Crear cuenta
+            </div>
+
+            <div class="login-form">
+
+                <input type="text" id="r_user" placeholder="Usuario">
+                <input type="text" id="r_name" placeholder="Nombre">
+                <input type="email" id="r_email" placeholder="Email">
+
+                <div class="password-wrapper">
+
+                    <input type="password" id="r_pass" placeholder="Contraseña">
+
+                    <span class="password-toggle" onclick="togglePass('r_pass', this)">
+                        👁
+                    </span>
+
+                </div>
+
+                <select id="r_rol">
+
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="ASESOR">ASESOR</option>
+                    <option value="SUPERVISOR">SUPERVISOR</option>
+
+                </select>
+
+                <button class="login-btn primary-btn" onclick="register()">
+                    Crear Cuenta
+                </button>
+
+                <div class="login-link" onclick="showLogin()">
+                    Volver al Login
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FULLCALENDAR -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <!-- CALENDAR -->
+    <script src="js/calendar.js"></script>
+
+    <script>
+
+        function clearLogin() {
+
+            loginUser.value = "";
+            loginPass.value = "";
+        }
+
+        function clearRegister() {
+
+            r_user.value = "";
+            r_name.value = "";
+            r_email.value = "";
+            r_pass.value = "";
+            r_rol.value = "ADMIN";
+        }
+
+        function showLogin() {
+
+            clearRegister();
+
+            registerBox.classList.add("hidden");
+
+            loginBox.classList.remove("hidden");
+        }
+
+        function showRegister() {
+
+            clearLogin();
+
+            loginBox.classList.add("hidden");
+
+            registerBox.classList.remove("hidden");
+        }
+
+        function togglePass(id, icon) {
+
+            const input =
+                document.getElementById(id);
+
+            if (input.type === "password") {
+
+                input.type = "text";
+
+                icon.textContent = "🙈";
+
+            } else {
+
+                input.type = "password";
+
+                icon.textContent = "👁";
+            }
+        }
+
+        function login() {
+            localStorage.setItem("auth", "true");
+            fetch("/api/auth/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    usuario: loginUser.value,
+
+                    password: loginPass.value
+                })
+            })
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    if (data.success) {
+
+                        localStorage.setItem("auth", "true");
+
+                        localStorage.setItem("token", data.token);
+                        localStorage.setItem("auth", "true");
+                        localStorage.setItem("user", data.user.nombre);
+                        localStorage.setItem("rol", data.user.rol);
+
+
+                        localStorage.setItem(
+                            "user",
+                            data.user.nombre
+                        );
+
+                        document.getElementById("userInfo").innerHTML =
+                            `
+                    Bienvenido<br>
+                    ${localStorage.getItem("user")}<br>
+                    ${localStorage.getItem("rol")}
+                `;
+
+
+                        //  userInfo.innerText =
+                        //"Bienvenido " + data.user.nombre + " | " + data.user.rol;
+
+                        loginOverlay.classList.add("hidden");
+
+                        clearLogin();
+
+                    } else {
+
+                        alert("Credenciales incorrectas");
+
+                        clearLogin();
+                    }
+                })
+
+                .catch(() => {
+
+                    alert("Error de servidor");
+
+                    clearLogin();
+                });
+        }
+
+        function register() {
+
+            fetch("/api/auth/register", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    usuario: r_user.value,
+
+                    nombre: r_name.value,
+
+                    email: r_email.value,
+
+                    password: r_pass.value,
+
+                    rol: r_rol.value
+                })
+            })
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    alert(data.message);
+
+                    clearRegister();
+
+                    showLogin();
+                })
+
+                .catch(() => {
+
+                    alert("Error en registro");
+                });
+        }
+
+        function guest() {
+
+            fetch("/api/auth/guest")
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    localStorage.setItem("auth", "true");
+                    alert(data.message);
+
+                    userInfo.innerText =
+                        "Modo Invitado";
+
+                    loginOverlay.classList.add("hidden");
+
+                    clearLogin();
+                });
+        }
+
+        function logout() {
+
+            userInfo.innerText =
+                "No autenticado";
+
+            loginOverlay.classList.remove("hidden");
+
+            showLogin();
+
+            clearLogin();
+
+            clearRegister();
+        }
+
+        window.addEventListener("DOMContentLoaded", function () {
+
+            clearLogin();
+            clearRegister();
+
+            const loginOverlay = document.getElementById("loginOverlay");
+            const userInfo = document.getElementById("userInfo");
+
+            // =========================================
+            // SESIÓN ACTIVA
+            // =========================================
+            if (localStorage.getItem("auth") === "true") {
+
+                if (loginOverlay) {
+                    loginOverlay.classList.add("hidden");
+                }
+
+                if (userInfo) {
+                    userInfo.innerHTML = `
+                Bienvenido<br>
+                ${localStorage.getItem("user") || ""}<br>
+                ${localStorage.getItem("rol") || ""}
+            `;
+                }
+
+                // =========================================
+                // CARGA INICIAL DEL DASHBOARD
+                // =========================================
+                if (typeof cargarKPIs === "function") {
+                    cargarKPIs();
+                }
+
+                if (typeof cargarTareasHoy === "function") {
+                    cargarTareasHoy();
+                }
+
+            } else {
+
+                if (loginOverlay) {
+                    loginOverlay.classList.remove("hidden");
+                }
+
+                if (userInfo) {
+                    userInfo.innerText = "No autenticado";
+                }
+            }
+        });
+
+    </script>
+
+    <!-- =========================================
+MODAL TAREAS NUEVO
+========================================= -->
+    <div class="modal-overlay hidden" id="modalTarea">
+
+        <div class="modal-box">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+
+                <div class="modal-title" id="modalCliente">
+                    CLIENTE
+                </div>
+
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <!-- CONTACTO -->
+                <div class="form-group">
+
+                    <label>CONTACTO</label>
+
+                    <select id="contactoSelect">
+                        <option value="">Cargando contactos...</option>
+                    </select>
+
+                </div>
+
+                <!-- TELEFONO -->
+                <div class="form-group">
+
+                    <label>TEL CONTACTO</label>
+
+                    <input type="text" id="modalTelefono" readonly>
+
+                </div>
+
+                <!-- FECHA + TIPO + ESTADO -->
+                <div class="form-row-3">
+
+                    <!-- FECHA -->
+                    <div class="form-group">
+
+                        <label>PROXIMA FECHA</label>
+
+                        <input type="date" id="m_fecha_proxima">
 
                     </div>
 
-                    <!-- =========================
-                    ACTIVIDAD
-                    ========================== -->
-                    <div class="panel">
+                    <!-- TIPO -->
+                    <div class="form-group small-field">
 
-                        <div class="panel-title">
-                            Actividad Diaria
-                        </div>
+                        <label>TIPO</label>
 
-                        <div class="activity-list" id="actividadDia">
-                        </div>
+                        <select id="m_tipo">
+
+                            <option value="LLAMADA" selected>
+                                LLAMADA
+                            </option>
+
+                            <option value="WHATSAPP">
+                                WHATSAPP
+                            </option>
+
+                            <option value="FACEBOOK">
+                                FACEBOOK
+                            </option>
+
+                            <option value="VISITA">
+                                VISITA
+                            </option>
+
+                            <option value="EMAIL">
+                                EMAIL
+                            </option>
+
+                            <option value="COTIZACION">
+                                COTIZACION
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ESTADO -->
+                    <div class="form-group small-field">
+
+                        <label>ESTADO</label>
+
+                        <select id="m_estado">
+
+                            <option value="ACTIVO" selected>
+                                ACTIVO
+                            </option>
+
+                            <option value="STAND BY">
+                                STAND BY
+                            </option>
+
+                            <option value="TERMINADO">
+                                TERMINADO
+                            </option>
+
+                        </select>
 
                     </div>
 
                 </div>
 
-            </section>
+                <!-- NOTA -->
+                <div class="form-group">
 
-        </section>
+                    <label>NOTA</label>
 
-    </div>
+                    <textarea id="m_nota" rows="2" placeholder=""></textarea>
 
-    <!-- =====================================
-    MODAL
-    ====================================== -->
-    <div class="modal" id="taskModal">
+                </div>
 
-        <div class="modal-content">
+                <!-- PROXIMA ACCION -->
+                <div class="form-group">
 
-            <div class="modal-title" id="modalTitle">
-                Tarea
+                    <label>PROXIMA ACCION</label>
+
+                    <input type="text" id="m_proxima_accion" value="">
+
+                </div>
+
             </div>
 
-            <div id="modalBody"></div>
+            <!-- FOOTER -->
+            <div class="modal-footer">
+
+                <button class="modal-btn secondary-btn" onclick="tareaAnterior()">
+                    < </button>
+
+                        <button class="modal-btn primary-btn" onclick="guardarTarea()">
+                            GUARDAR
+                        </button>
+
+                        <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">
+                            >
+                        </button>
+
+                        <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
+                            CERRAR
+                        </button>
+
+            </div>
 
         </div>
 
@@ -744,347 +1510,1498 @@
 
     <script>
 
-        // =====================================
-        // MOCK DATA
-        // =====================================
-        window.tareasCalendario = {
+        // =========================================
+        // VARIABLES GLOBALES
+        // =========================================
+        window.tareasHoy = [];
+        window.tareaActual = null;
+        window.tareaActualIndex = 0;
 
-            "2026-06-06": {
+        const API = "/api/dashboard";
 
-                tareas: [
+        let tareaActualIndex = null;
+        let tareasHoyGlobal = [];
 
-                    {
-                        cliente: "Colegio San José",
-                        tipo: "SEGUIMIENTO",
-                        estado: "ACTIVO",
-                        fecha: "2026-06-06",
-                        fecha_proxima: "2026-06-06",
-                        hora: "08:00",
-                        valor: 0,
-                        proxima_accion: "Llamar rector"
-                    },
 
-                    {
-                        cliente: "Universidad Central",
-                        tipo: "COTIZACION",
-                        estado: "ACTIVO",
-                        fecha: "2026-06-06",
-                        fecha_proxima: "2026-06-06",
-                        hora: "10:00",
-                        valor: 18000000,
-                        proxima_accion: "Enviar propuesta"
-                    },
+        // =========================================
+        // ABRIR TAREA
+        // =========================================
+        async function abrirTarea(tarea) {
 
-                    {
-                        cliente: "Conjunto Altos",
-                        tipo: "PEDIDO",
-                        estado: "ACTIVO",
-                        fecha: "2026-06-06",
-                        fecha_proxima: "2026-06-06",
-                        hora: "14:00",
-                        valor: 52000000,
-                        proxima_accion: "Confirmar instalación"
-                    }
+            try {
 
-                ]
-            }
-        };
+                // =========================================
+                // VALIDAR
+                // =========================================
+                if (!tarea) {
 
-        // =====================================
-        // MODAL
-        // =====================================
-        function abrirTarea(t) {
+                    console.error("Tarea inválida");
 
-            document.getElementById(
-                "taskModal"
-            ).style.display = "flex";
+                    return;
+                }
 
-            document.getElementById(
-                "modalTitle"
-            ).innerText =
-                t.cliente;
+                // =========================================
+                // RESET GUARDADO
+                // =========================================
+                window.seguimientoGuardado = false;
 
-            document.getElementById(
-                "modalBody"
-            ).innerHTML = `
+                // =========================================
+                // GUARDAR ACTUAL
+                // =========================================
+                window.tareaActual = tarea;
 
-                <p>
-                    Tipo:
-                    <strong>${t.tipo}</strong>
-                </p>
+                // =========================================
+                // INDEX
+                // =========================================
+                window.tareaActualIndex =
+                    window.tareasHoy.findIndex(
+                        t => t.id === tarea.id
+                    );
 
-                <br>
+                // =========================================
+                // MODAL
+                // =========================================
+                document
+                    .getElementById("modalTarea")
+                    .classList
+                    .remove("hidden");
 
-                <p>
-                    Acción:
-                    <strong>${t.proxima_accion}</strong>
-                </p>
+                // =========================================
+                // CLIENTE
+                // =========================================
+                document.getElementById("modalCliente").innerText =
+                    tarea.cliente || "SIN CLIENTE";
 
-                <br>
+                // =========================================
+                // LIMPIAR CAMPOS
+                // =========================================
+                document.getElementById("m_nota").value = "";
 
-                <p>
-                    Valor:
-                    <strong>
-                        $${Number(t.valor || 0).toLocaleString()}
-                    </strong>
-                </p>
+                document.getElementById("m_proxima_accion").value = "";
 
-            `;
-        }
+                document.getElementById("m_fecha_proxima").value = "";
 
-        // =====================================
-        // CLOSE MODAL
-        // =====================================
-        document.getElementById(
-            "taskModal"
-        ).addEventListener(
-            "click",
-            function (e) {
+                document.getElementById("m_tipo").value =
+                    "LLAMADA";
 
+                document.getElementById("m_estado").value =
+                    "ACTIVO";
+
+                // =========================================
+                // ELEMENTOS
+                // =========================================
+                const select =
+                    document.getElementById("contactoSelect");
+
+                const inputTelefono =
+                    document.getElementById("modalTelefono");
+
+                // =========================================
+                // RESET UI
+                // =========================================
+                select.innerHTML = "";
+
+                inputTelefono.value = "";
+
+                // =========================================
+                // OPTION DEFAULT
+                // =========================================
+                const optDefault =
+                    document.createElement("option");
+
+                optDefault.value = "";
+
+                optDefault.textContent =
+                    "SELECCIONE CONTACTO";
+
+                select.appendChild(optDefault);
+
+                // =========================================
+                // CONSULTAR CONTACTOS
+                // =========================================
+                const res = await fetch(
+                    `/api/clientes/${tarea.cliente_id}/contactos`
+                );
+
+                const contactos = await res.json();
+
+                // =========================================
+                // CONTACTO PRINCIPAL CLIENTE
+                // =========================================
                 if (
-                    e.target.id === "taskModal"
+                    tarea.contacto ||
+                    tarea.tel_contacto
                 ) {
 
-                    this.style.display = "none";
+                    const optPrincipal =
+                        document.createElement("option");
+
+                    optPrincipal.value =
+                        JSON.stringify({
+
+                            nombre:
+                                tarea.contacto || "",
+
+                            telefono:
+                                tarea.tel_contacto || ""
+                        });
+
+                    optPrincipal.textContent =
+                        `${tarea.contacto || ""} - ${tarea.tel_contacto || ""}`;
+
+                    select.appendChild(optPrincipal);
+                }
+
+                // =========================================
+                // CONTACTOS ADICIONALES
+                // =========================================
+                if (Array.isArray(contactos)) {
+
+                    contactos.forEach(c => {
+
+                        // =========================================
+                        // EVITAR DUPLICADOS
+                        // =========================================
+                        if (
+
+                            c.nombre === tarea.contacto &&
+                            c.telefono === tarea.tel_contacto
+
+                        ) {
+
+                            return;
+                        }
+
+                        const opt =
+                            document.createElement("option");
+
+                        opt.value =
+                            JSON.stringify({
+
+                                nombre:
+                                    c.nombre || "",
+
+                                telefono:
+                                    c.telefono || ""
+                            });
+
+                        opt.textContent =
+                            `${c.nombre || ""} - ${c.telefono || ""}`;
+
+                        select.appendChild(opt);
+                    });
+                }
+
+                // =========================================
+                // SIEMPRE VACIO
+                // =========================================
+                select.selectedIndex = 0;
+
+                inputTelefono.value = "";
+
+                // =========================================
+                // CAMBIO CONTACTO
+                // =========================================
+                select.onchange = function () {
+
+                    if (!select.value) {
+
+                        inputTelefono.value = "";
+
+                        return;
+                    }
+
+                    const contacto =
+                        JSON.parse(select.value);
+
+                    inputTelefono.value =
+                        contacto.telefono || "";
+                };
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert("Error cargando tarea");
+            }
+        }
+
+        async function guardarTarea() {
+
+            try {
+
+                // =========================================
+                // ESTADO GUARDADO
+                // =========================================
+                window.seguimientoGuardado = true;
+
+                // =========================================
+                // VALIDAR TAREA ACTUAL
+                // =========================================
+                if (!window.tareaActual) {
+
+                    alert("No hay tarea seleccionada");
+                    return;
+                }
+
+                // =========================================
+                // ESTADO
+                // =========================================
+                const estado =
+                    document.getElementById("m_estado").value;
+
+                // =========================================
+                // FECHA PROXIMA
+                // =========================================
+                const fechaInput =
+                    document.getElementById("m_fecha_proxima").value;
+
+                // =========================================
+                // CONTACTO SELECCIONADO
+                // =========================================
+                const contactoSelect =
+                    document.getElementById("contactoSelect");
+
+                let contactoFinal = "";
+                let telFinal = "";
+
+                // =========================================
+                // CONTACTO
+                // =========================================
+                if (
+                    contactoSelect &&
+                    contactoSelect.value &&
+                    contactoSelect.value !== "UNICO"
+                ) {
+
+                    const contacto =
+                        JSON.parse(contactoSelect.value);
+
+                    contactoFinal =
+                        contacto.nombre || "";
+
+                    telFinal =
+                        contacto.telefono || "";
+
+                } else {
+
+                    contactoFinal =
+                        window.tareaActual.contacto || "";
+
+                    telFinal =
+                        window.tareaActual.tel_contacto || "";
+                }
+
+                // =========================================
+                // TERMINAR TAREA ACTUAL
+                // =========================================
+                const cerrarActual =
+                    await fetch(
+                        `/api/seguimientos/${window.tareaActual.id}`,
+                        {
+
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization":
+                                    "Bearer " + localStorage.getItem("token")
+                            },
+
+                            body: JSON.stringify({
+                                estado: "TERMINADO"
+                            })
+                        }
+                    );
+
+                const cerrarData =
+                    await cerrarActual.json();
+
+                if (!cerrarData.success) {
+
+                    alert("No se pudo cerrar la tarea actual");
+                    return;
+                }
+
+                // =========================================
+                // BODY NUEVO SEGUIMIENTO
+                // =========================================
+                const body = {
+
+                    cliente_id:
+                        window.tareaActual.cliente_id,
+
+                    cliente:
+                        window.tareaActual.cliente,
+
+                    contacto:
+                        contactoFinal,
+
+                    tel_contacto:
+                        telFinal,
+
+                    tipo:
+                        document.getElementById("m_tipo").value,
+
+                    nota:
+                        document.getElementById("m_nota").value,
+
+                    proxima_accion:
+                        document.getElementById("m_proxima_accion").value,
+
+                    fecha_proxima:
+                        fechaInput || null,
+
+                    fecha:
+                        new Date().toISOString(),
+
+                    asesor:
+                        localStorage.getItem("user"),
+
+                    estado:
+                        estado
+                };
+
+                // =========================================
+                // CREAR NUEVO SEGUIMIENTO
+                // =========================================
+                const res =
+                    await fetch("/api/seguimientos", {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization":
+                                "Bearer " + localStorage.getItem("token")
+                        },
+
+                        body: JSON.stringify(body)
+                    });
+
+                const data =
+                    await res.json();
+
+                if (!data.success) {
+
+                    alert("Error guardando seguimiento");
+                    return;
+                }
+
+                // =========================================
+                // CERRAR VENCIDOS
+                // =========================================
+                await fetch(
+                    "/api/seguimientos/cerrar-vencidos",
+                    {
+
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization":
+                                "Bearer " + localStorage.getItem("token")
+                        }
+                    }
+                );
+
+                // =========================================
+                // RECARGAR LISTA
+                // =========================================
+                await cargarTareasHoy();
+
+                // =========================================
+                // MENSAJE
+                // =========================================
+                alert("Seguimiento guardado");
+
+                // =========================================
+                // SI NO HAY MAS TAREAS
+                // =========================================
+                if (
+                    window.tareaActualIndex >=
+                    window.tareasHoy.length
+                ) {
+
+                    cerrarModalTarea();
+
+                    return;
+                }
+
+                // =========================================
+                // SIGUIENTE TAREA
+                // =========================================
+                abrirTarea(
+                    window.tareasHoy[
+                    window.tareaActualIndex
+                    ]
+                );
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert("Error servidor");
+            }
+        }
+
+        // =========================================
+        // RENDER TAREAS
+        // =========================================
+        function renderTareasHoy(tareas) {
+
+            const container =
+                document.getElementById("taskList");
+
+            container.innerHTML = "";
+
+            // =====================================
+            // SIN TAREAS
+            // =====================================
+            if (!tareas || tareas.length === 0) {
+
+                container.innerHTML = `
+            <div class="task-item empty">
+                No hay tareas pendientes
+            </div>
+        `;
+
+                return;
+            }
+
+            // =====================================
+            // VALIDAR ROL
+            // =====================================
+            const esAdmin =
+                localStorage.getItem("rol") === "ADMIN";
+
+            // =====================================
+            // ORDENAR POR FECHA
+            // =====================================
+            tareas.sort((a, b) => {
+
+                const fechaA =
+                    new Date(a.fecha_proxima || 0);
+
+                const fechaB =
+                    new Date(b.fecha_proxima || 0);
+
+                return fechaA - fechaB;
+            });
+
+            // =====================================
+            // RENDER
+            // =====================================
+            tareas.forEach((t, index) => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "task-item";
+
+                // =================================
+                // ESTADOS VISUALES
+                // =================================
+                if (t.estado === "TERMINADO") {
+
+                    div.classList.add(
+                        "task-finished"
+                    );
+                }
+
+                // =================================
+                // FECHA VENCIDA
+                // =================================
+                if (t.fecha_proxima) {
+
+                    const hoy =
+                        new Date();
+
+                    hoy.setHours(0, 0, 0, 0);
+
+                    const fechaTask =
+                        new Date(t.fecha_proxima);
+
+                    fechaTask.setHours(0, 0, 0, 0);
+
+                    if (
+                        fechaTask < hoy &&
+                        t.estado !== "TERMINADO"
+                    ) {
+
+                        div.classList.add(
+                            "task-overdue"
+                        );
+                    }
+                }
+
+                // =================================
+                // CLICK ABRIR MODAL
+                // =================================
+                div.onclick = () => {
+
+                    window.tareaActualIndex =
+                        index;
+
+                    abrirTarea(t);
+                };
+
+                // =================================
+                // HTML
+                // =================================
+                div.innerHTML = `
+
+            <div class="task-title">
+                ${t.cliente || "Sin cliente"}
+            </div>
+
+            <div class="task-action">
+                ${t.proxima_accion || "SEGUIMIENTO"}
+            </div>
+
+            <div class="task-footer">
+
+                ${esAdmin
+                        ?
+                        `
+                    <span class="task-asesor">
+                        ${t.asesor || "Sin asesor"}
+                    </span>
+                    `
+                        :
+                        `
+                    <span></span>
+                    `
+                    }
+
+                <span>
+                    ${formatearFecha(t.fecha_proxima)}
+                </span>
+
+                <span class="task-state">
+                    ${t.estado || "ACTIVO"}
+                </span>
+
+            </div>
+        `;
+
+                container.appendChild(div);
+            });
+        }
+
+        function cerrarModalTarea() {
+
+            const modal =
+                document.getElementById("modalTarea");
+
+            // =========================================
+            // VALIDAR DATOS
+            // =========================================
+            if (modalTieneDatos()) {
+
+                const confirmar = confirm(
+                    "Hay información sin guardar. ¿Desea cerrar el modal?"
+                );
+
+                if (!confirmar) {
+                    return;
                 }
             }
-        );
 
-        // =====================================
-        // KPI DIA
-        // =====================================
-        function cargarKPIsDia(fecha) {
+            // =========================================
+            // OCULTAR MODAL
+            // =========================================
+            modal.classList.add("hidden");
 
+            // =========================================
+            // LIMPIAR CAMPOS
+            // =========================================
+            document.getElementById("modalCliente").innerText = "";
+
+            document.getElementById("contactoSelect").innerHTML =
+                `<option value="">Seleccione contacto</option>`;
+
+            document.getElementById("modalTelefono").value = "";
+
+            document.getElementById("m_fecha_proxima").value = "";
+
+            document.getElementById("m_tipo").value = "LLAMADA";
+
+            document.getElementById("m_estado").value = "ACTIVO";
+
+            document.getElementById("m_nota").value = "";
+
+            document.getElementById("m_proxima_accion").value = "";
+
+            // =========================================
+            // RESET VARIABLES
+            // =========================================
+            window.tareaActual = null;
+        }
+
+        // =========================================
+        // VALIDAR SI HAY DATOS
+        // =========================================
+        function modalTieneDatos() {
+
+            const nota =
+                document.getElementById("m_nota").value.trim();
+
+            const accion =
+                document.getElementById("m_proxima_accion").value.trim();
+
+            const fecha =
+                document.getElementById("m_fecha_proxima").value.trim();
+
+            const tipo =
+                document.getElementById("m_tipo").value;
+
+            const estado =
+                document.getElementById("m_estado").value;
+
+            // =========================================
+            // VALIDAR CAMPOS ESCRITOS
+            // =========================================
+            return (
+                nota !== "" ||
+                accion !== "" ||
+                fecha !== "" ||
+                tipo !== "LLAMADA" ||
+                estado !== "ACTIVO"
+            );
+        }
+
+        // =========================================
+        // ANTERIOR
+        // =========================================
+        function tareaAnterior() {
+
+            // =========================================
+            // VALIDAR PRIMER REGISTRO
+            // =========================================
+            if (window.tareaActualIndex <= 0) {
+
+                return;
+            }
+
+            // =========================================
+            // VALIDAR DATOS SIN GUARDAR
+            // =========================================
+            if (modalTieneDatos()) {
+
+                const confirmar = confirm(
+                    "Hay información sin guardar. ¿Desea continuar?"
+                );
+
+                if (!confirmar) {
+                    return;
+                }
+            }
+
+            // =========================================
+            // ANTERIOR
+            // =========================================
+            window.tareaActualIndex--;
+
+            abrirTarea(
+                window.tareasHoy[
+                window.tareaActualIndex
+                ]
+            );
+        }
+
+        // =========================================
+        // SIGUIENTE
+        // =========================================
+        function tareaSiguiente() {
+
+            // =========================================
+            // VALIDAR LISTA
+            // =========================================
+            if (
+                !window.tareasHoy ||
+                window.tareasHoy.length === 0
+            ) {
+
+                alert("No hay tareas");
+
+                return;
+            }
+
+            // =========================================
+            // VALIDAR SI YA NO HAY MÁS
+            // =========================================
+            if (
+                window.tareaActualIndex >=
+                window.tareasHoy.length - 1
+            ) {
+
+                alert("No hay más tareas");
+
+                return;
+            }
+
+            // =========================================
+            // VALIDAR GUARDADO
+            // =========================================
+            if (!window.seguimientoGuardado) {
+
+                // =========================================
+                // VALIDAR DATOS SIN GUARDAR
+                // =========================================
+                if (modalTieneDatos()) {
+
+                    const confirmar = confirm(
+                        "Hay información sin guardar. ¿Desea continuar?"
+                    );
+
+                    if (!confirmar) {
+
+                        return;
+                    }
+                }
+            }
+
+            // =========================================
+            // RESET ESTADO GUARDADO
+            // =========================================
+            window.seguimientoGuardado = false;
+
+            // =========================================
+            // SIGUIENTE INDEX
+            // =========================================
+            window.tareaActualIndex++;
+
+            // =========================================
+            // VALIDAR EXISTENCIA
+            // =========================================
+            const siguienteTarea =
+                window.tareasHoy[
+                window.tareaActualIndex
+                ];
+
+            if (!siguienteTarea) {
+
+                alert("No hay más tareas");
+
+                return;
+            }
+
+            // =========================================
+            // ABRIR
+            // =========================================
+            abrirTarea(siguienteTarea);
+        }
+
+        // =========================================
+        // CERRAR CON ESC
+        // =========================================
+        document.addEventListener("keydown", function (e) {
+
+            if (e.key === "Escape") {
+
+                const modal =
+                    document.getElementById("modalTarea");
+
+                if (!modal.classList.contains("hidden")) {
+
+                    cerrarModalTarea();
+                }
+            }
+        });
+
+        async function cargarTareasHoy() {
+
+            try {
+
+                const res = await fetch("/api/seguimientos/tareas-hoy", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                const data = await res.json();
+
+                const container =
+                    document.getElementById("taskList");
+
+                if (!data.success) {
+
+                    if (container) {
+
+                        container.innerHTML = `
+                    <div class="task-item empty">
+                        Error cargando tareas
+                    </div>
+                `;
+                    }
+
+                    return;
+                }
+
+                // =========================================
+                // GUARDAR TAREAS GLOBALES
+                // =========================================
+                window.tareasHoy =
+                    Array.isArray(data.data)
+                        ? data.data
+                        : [];
+
+                // =========================================
+                // RECONSTRUIR MAPA CALENDARIO
+                // =========================================
+                window.tareasCalendario = {};
+
+                window.tareasHoy.forEach(t => {
+
+                    if (!t.fecha_proxima) return;
+
+                    const fecha =
+                        String(t.fecha_proxima)
+                            .substring(0, 10);
+
+                    if (!window.tareasCalendario[fecha]) {
+
+                        window.tareasCalendario[fecha] = {
+
+                            total: 0,
+
+                            tareas: []
+                        };
+                    }
+
+                    // =====================================
+                    // TOTAL SOLO ACTIVOS
+                    // =====================================
+                    if (t.estado === "ACTIVO") {
+
+                        window.tareasCalendario[fecha].total++;
+                    }
+
+                    // =====================================
+                    // GUARDAR TODAS LAS TAREAS
+                    // (ACTIVAS + FUTURAS + TERMINADAS)
+                    // =====================================
+                    window.tareasCalendario[fecha]
+                        .tareas
+                        .push(t);
+                });
+
+                // =========================================
+                // FECHA ACTIVA
+                // =========================================
+                const fechaActiva =
+                    window.fechaActiva
+                    ||
+                    new Date()
+                        .toISOString()
+                        .split("T")[0];
+
+                // =========================================
+                // CARGAR FECHA ACTIVA
+                // =========================================
+                cargarTareasPorFecha(fechaActiva);
+
+                // =========================================
+                // REFRESH CALENDARIO
+                // =========================================
+                if (window.crmCalendar) {
+
+                    window.crmCalendar.refetchEvents();
+                }
+
+            } catch (err) {
+
+                console.error(err);
+
+                const container =
+                    document.getElementById("taskList");
+
+                if (container) {
+
+                    container.innerHTML = `
+                <div class="task-item empty">
+                    Error cargando tareas
+                </div>
+            `;
+                }
+            }
+        }
+
+        function cargarTareasPorFecha(fecha) {
+
+            // =========================================
+            // VALIDAR DATA
+            // =========================================
+            if (!window.tareasCalendario) {
+
+                renderTareasHoy([]);
+
+                return;
+            }
+
+            // =========================================
+            // FECHA GLOBAL
+            // =========================================
+            window.fechaActiva = fecha;
+
+            // =========================================
+            // DATA FECHA
+            // =========================================
+            const dataFecha =
+                window.tareasCalendario[fecha];
+
+            // =========================================
+            // TAREAS DEL DIA
+            // =========================================
             const tareas =
-                Object.values(
-                    window.tareasCalendario || {}
-                )
+                dataFecha?.tareas || [];
+
+            // =========================================
+            // RENDER
+            // =========================================
+            renderTareasHoy(tareas);
+
+            // =========================================
+            // KPI: SEGUIMIENTOS HOY
+            // TODAS LAS TAREAS DEL DIA
+            // =========================================
+            const seguimientosHoyEl =
+                document.getElementById(
+                    "seguimientosHoy"
+                );
+
+            if (seguimientosHoyEl) {
+
+                seguimientosHoyEl.innerText =
+                    tareas.length;
+            }
+
+            // =========================================
+            // KPI: PENDIENTES
+            // SOLO ACTIVOS
+            // =========================================
+            const pendientesEl =
+                document.getElementById(
+                    "seguimientosPendientes"
+                );
+
+            if (pendientesEl) {
+
+                pendientesEl.innerText =
+                    tareas.filter(
+                        t => t.estado === "ACTIVO"
+                    ).length;
+            }
+
+            // =========================================
+            // TODAS LAS TAREAS GLOBALES
+            // =========================================
+            const tareasGlobales =
+                Object.values(window.tareasCalendario)
                     .flatMap(
                         d => d.tareas || []
                     );
 
-            const seguimientos =
-                tareas.filter(
-                    t =>
-                        t.fecha === fecha
+            // =========================================
+            // COTIZACIONES
+            // =========================================
+            const cotizacionesHoyEl =
+                document.getElementById(
+                    "cotizacionesHoy"
                 );
 
-            const cotizaciones =
-                tareas.filter(
-                    t =>
+            if (cotizacionesHoyEl) {
+
+                cotizacionesHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
                         t.tipo === "COTIZACION"
+
                         &&
-                        t.fecha === fecha
+
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
+
+                        === fecha
+
+                    ).length;
+            }
+
+            // =========================================
+            // PEDIDOS
+            // =========================================
+            const pedidosHoyEl =
+                document.getElementById(
+                    "pedidosHoy"
                 );
 
-            const pedidos =
-                tareas.filter(
-                    t =>
+            if (pedidosHoyEl) {
+
+                pedidosHoyEl.innerText =
+                    tareasGlobales.filter(t =>
+
                         t.tipo === "PEDIDO"
+
                         &&
-                        t.fecha === fecha
-                );
 
-            const pendientes =
-                tareas.filter(
-                    t =>
-                        t.estado === "ACTIVO"
-                        &&
-                        t.fecha_proxima === fecha
-                );
+                        String(
+                            t.fecha_proxima
+                        ).substring(0, 10)
 
-            document.getElementById(
-                "pendientesDia"
-            ).innerText =
-                pendientes.length;
+                        === fecha
 
-            document.getElementById(
-                "seguimientosDia"
-            ).innerText =
-                seguimientos.length;
+                    ).length;
+            }
 
-            document.getElementById(
-                "cotizacionesDia"
-            ).innerText =
-                cotizaciones.length;
-
-            document.getElementById(
-                "pedidosDia"
-            ).innerText =
-                pedidos.length;
-
-            // =================================
-            // AGENDA
-            // =================================
-            const agenda =
+            // =========================================
+            // VALOR COTIZACIONES
+            // =========================================
+            const valorCotizacionesHoyEl =
                 document.getElementById(
-                    "agendaDia"
+                    "valorCotizacionesHoy"
                 );
 
-            agenda.innerHTML = "";
+            if (valorCotizacionesHoyEl) {
 
-            pendientes.forEach(t => {
+                const totalCotizaciones =
+                    tareasGlobales
+                        .filter(t =>
 
-                const div =
-                    document.createElement("div");
+                            t.tipo === "COTIZACION"
 
-                div.className =
-                    "task-item";
+                            &&
 
-                div.onclick = () => {
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
 
-                    abrirTarea(t);
-                };
+                            === fecha
 
-                div.innerHTML = `
+                        )
+                        .reduce((acc, t) => {
 
-                    <div class="task-hour">
-                        ${t.hora}
-                    </div>
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
 
-                    <div class="task-client">
-                        ${t.cliente}
-                    </div>
+                        }, 0);
 
-                    <div class="task-action">
-                        ${t.proxima_accion}
-                    </div>
+                valorCotizacionesHoyEl.innerText =
+                    formatearCOP(
+                        totalCotizaciones
+                    );
+            }
 
-                `;
-
-                agenda.appendChild(div);
-
-            });
-
-            // =================================
-            // ACTIVIDAD
-            // =================================
-            const actividad =
+            // =========================================
+            // VALOR PEDIDOS
+            // =========================================
+            const valorPedidosHoyEl =
                 document.getElementById(
-                    "actividadDia"
+                    "valorPedidosHoy"
                 );
 
-            actividad.innerHTML = "";
+            if (valorPedidosHoyEl) {
 
-            seguimientos.forEach(t => {
+                const totalPedidos =
+                    tareasGlobales
+                        .filter(t =>
 
-                const div =
-                    document.createElement("div");
+                            t.tipo === "PEDIDO"
 
-                div.className =
-                    "activity-item";
+                            &&
 
-                div.onclick = () => {
+                            String(
+                                t.fecha_proxima
+                            ).substring(0, 10)
 
-                    abrirTarea(t);
-                };
+                            === fecha
 
-                div.innerHTML = `
+                        )
+                        .reduce((acc, t) => {
 
-                    <div class="activity-hour">
-                        ${t.hora}
-                    </div>
+                            return acc +
+                                Number(
+                                    t.valor || 0
+                                );
 
-                    <div class="activity-text">
+                        }, 0);
 
-                        ${t.tipo}
-
-                        realizado para
-
-                        <strong>
-                            ${t.cliente}
-                        </strong>
-
-                    </div>
-
-                `;
-
-                actividad.appendChild(div);
-
-            });
-
+                valorPedidosHoyEl.innerText =
+                    formatearCOP(
+                        totalPedidos
+                    );
+            }
         }
 
-        // =====================================
-        // CALENDAR
-        // =====================================
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
+        // =========================================
+        // EVENTOS CALENDARIO
+        // =========================================
+        function eventosCalendario() {
 
-                const calendarEl =
-                    document.getElementById(
-                        "calendar"
-                    );
+            const eventos = [];
 
-                const calendar =
-                    new FullCalendar.Calendar(
-                        calendarEl,
-                        {
-
-                            locale: "es",
-
-                            initialView:
-                                "timeGridDay",
-
-                            height: "100%",
-
-                            headerToolbar: {
-
-                                left:
-                                    "prev,next today",
-
-                                center:
-                                    "title",
-
-                                right:
-                                    "dayGridMonth,timeGridDay"
-                            },
-
-                            buttonText: {
-
-                                today: "Hoy",
-
-                                month: "Mes",
-
-                                day: "Día"
-                            },
-
-                            events: [
-
-                                {
-                                    title:
-                                        "📌 3 pendientes",
-
-                                    start:
-                                        "2026-06-06",
-
-                                    allDay: true,
-
-                                    color:
-                                        "#2563eb"
-                                }
-
-                            ],
-
-                            dateClick:
-                                function (info) {
-
-                                    cargarKPIsDia(
-                                        info.dateStr
-                                    );
-                                }
-                        }
-                    );
-
-                calendar.render();
-
-                cargarKPIsDia(
-                    "2026-06-06"
-                );
-
+            // =====================================
+            // FESTIVOS
+            // =====================================
+            if (window.festivosCalendario) {
+                eventos.push(...window.festivosCalendario);
             }
-        );
+
+            // =====================================
+            // VALIDAR CALENDARIO DATA
+            // =====================================
+            if (!window.tareasCalendario) {
+                return eventos;
+            }
+
+            // =====================================
+            // AGRUPAR POR FECHA
+            // =====================================
+            const agrupados = {};
+
+            Object.values(window.tareasCalendario).forEach(dia => {
+
+                const tareas = dia.tareas || [];
+
+                tareas.forEach(t => {
+
+                    if (!t.fecha_proxima) return;
+
+                    if (t.estado === "TERMINADO") return;
+
+                    const fecha = String(t.fecha_proxima).substring(0, 10);
+
+                    if (!agrupados[fecha]) {
+                        agrupados[fecha] = {
+                            pendientes: 0,
+                            tareas: []
+                        };
+                    }
+
+                    agrupados[fecha].pendientes++;
+                    agrupados[fecha].tareas.push(t);
+                });
+            });
+
+            // =====================================
+            // CREAR EVENTOS FULLCALENDAR
+            // =====================================
+            Object.keys(agrupados).forEach(fecha => {
+
+                const item = agrupados[fecha];
+
+                eventos.push({
+                    title: `📞 ${item.pendientes} pendientes`,
+                    start: fecha,
+                    allDay: true,
+                    color: "#dc2626",
+                    extendedProps: {
+                        fecha: fecha,
+                        pendientes: item.pendientes,
+                        tareas: item.tareas
+                    }
+                });
+            });
+
+            return eventos;
+        }
+
+        async function cargarKPIs(fechaSeleccionada = null) {
+
+            try {
+
+                const res = await fetch(API, {
+                    headers: {
+                        "Authorization":
+                            "Bearer " + localStorage.getItem("token")
+                    }
+                });
+
+                const data = await res.json();
+
+                // =========================================
+                // CLIENTES
+                // =========================================
+                const totalClientesEl =
+                    document.getElementById("totalClientes");
+
+                if (totalClientesEl) {
+                    totalClientesEl.innerText =
+                        data.totalClientes || 0;
+                }
+
+                // =========================================
+                // FECHAS BASE
+                // =========================================
+                const hoy =
+                    new Date().toISOString().split("T")[0];
+
+                const fechaBase =
+                    fechaSeleccionada ||
+                    window.fechaActiva ||
+                    hoy;
+
+                // =========================================
+                // FUENTE REAL DE DATOS (CALENDARIO + BACKEND)
+                // =========================================
+                const tareasCalendario =
+                    Object.values(window.tareasCalendario || {})
+                        .flatMap(d => d.tareas || []);
+
+                const tareasBackend =
+                    Array.isArray(data.tareas) ? data.tareas : [];
+
+                const mapa = new Map();
+
+                tareasBackend.forEach(t => {
+                    if (t && t.id != null) mapa.set(t.id, t);
+                });
+
+                tareasCalendario.forEach(t => {
+                    if (t && t.id != null) mapa.set(t.id, t);
+                });
+
+                const tareas = Array.from(mapa.values());
+
+                // =========================================
+                // HOY REAL
+                // =========================================
+                const seguimientosHoyReal =
+                    tareas.filter(t =>
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
+
+                const cotizacionesHoyReal =
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
+
+                const pedidosHoyReal =
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === hoy
+                    ).length;
+
+                // =========================================
+                // FECHA SELECCIONADA
+                // =========================================
+                const seguimientosFecha =
+                    tareas.filter(t =>
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
+
+                const cotizacionesFecha =
+                    tareas.filter(t =>
+                        t.tipo === "COTIZACION" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
+
+                const pedidosFecha =
+                    tareas.filter(t =>
+                        t.tipo === "PEDIDO" &&
+                        t.fecha &&
+                        String(t.fecha).substring(0, 10) === fechaBase
+                    ).length;
+
+                const pendientesFecha =
+                    tareas.filter(t =>
+                        t.estado === "ACTIVO" &&
+                        t.fecha_proxima &&
+                        String(t.fecha_proxima).substring(0, 10) <= fechaBase
+                    ).length;
+
+                // =========================================
+                // RENDER HOY REAL
+                // =========================================
+                const set = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val;
+                };
+
+                set("seguimientosHoyReal", seguimientosHoyReal);
+                set("cotizacionesHoyReal", cotizacionesHoyReal);
+                set("pedidosHoyReal", pedidosHoyReal);
+
+                // =========================================
+                // RENDER FECHA SELECCIONADA
+                // =========================================
+                set("seguimientosHoy", seguimientosFecha);
+                set("cotizacionesHoy", cotizacionesFecha);
+                set("pedidosHoy", pedidosFecha);
+                set("seguimientosPendientes", pendientesFecha);
+
+                // =========================================
+                // KPI GLOBALES
+                // =========================================
+                const cotMes =
+                    document.getElementById("cotizacionesMes");
+
+                if (cotMes) {
+                    cotMes.innerText =
+                        data.cotizacionesTotal || 0;
+                }
+
+                const valCotMes =
+                    document.getElementById("valorCotizacionesMes");
+
+                if (valCotMes) {
+                    valCotMes.innerText =
+                        formatearCOP(data.valorCotizaciones || 0);
+                }
+
+                const pedTotal =
+                    document.getElementById("pedidosTotal");
+
+                if (pedTotal) {
+                    pedTotal.innerText =
+                        data.pedidosTotal || 0;
+                }
+
+                const valPed =
+                    document.getElementById("valorPedidos");
+
+                if (valPed) {
+                    valPed.innerText =
+                        formatearCOP(data.valorPedidos || 0);
+                }
+
+            } catch (err) {
+
+                console.error(err);
+
+                const setZero = (id, value = "0") => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = value;
+                };
+
+                setZero("totalClientes");
+                setZero("seguimientosHoyReal");
+                setZero("cotizacionesHoyReal");
+                setZero("pedidosHoyReal");
+
+                setZero("seguimientosHoy");
+                setZero("cotizacionesHoy");
+                setZero("pedidosHoy");
+                setZero("seguimientosPendientes");
+
+                setZero("cotizacionesMes", "0");
+                setZero("valorCotizacionesMes", "$0");
+                setZero("pedidosTotal", "0");
+                setZero("valorPedidos", "$0");
+            }
+        }
+
+        function formatearCOP(valor) {
+
+            return new Intl.NumberFormat(
+                "es-CO",
+                {
+                    style: "currency",
+                    currency: "COP",
+                    maximumFractionDigits: 0
+                }
+            ).format(valor || 0);
+        }
+
+        function formatearFecha(fecha) {
+
+            if (!fecha) return "";
+
+            const f = String(fecha).substring(0, 10);
+
+            const partes = f.split("-");
+
+            if (partes.length !== 3) return f;
+
+            return `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
+
+        const updateSeguimiento = (req, res) => {
+
+            const { id } = req.params;
+
+            const data = req.body;
+
+            const sql = `
+        UPDATE seguimientos
+        SET
+            fecha = ?,
+            tipo = ?,
+            nota = ?,
+            proxima_accion = ?,
+            fecha_proxima = ?,
+            estado = ?
+        WHERE id = ?
+    `;
+
+            db.query(
+                sql,
+                [
+                    data.fecha,
+                    data.tipo,
+                    data.nota,
+                    data.proxima_accion,
+                    data.fecha_proxima || null,
+                    data.estado || "ACTIVO",
+                    id
+                ],
+                (err) => {
+
+                    if (err) {
+
+                        console.error(err);
+
+                        return res.status(500).json({
+                            success: false,
+                            message: "Error actualizando"
+                        });
+                    }
+
+                    return res.json({
+                        success: true,
+                        message: "Seguimiento actualizado"
+                    });
+                }
+            );
+        };
+
+        const cerrarAnteriores = (req, res) => {
+
+            const { cliente_id } = req.params;
+
+            const sql = `
+        UPDATE seguimientos
+        SET estado = 'TERMINADO'
+        WHERE cliente_id = ?
+        AND estado != 'TERMINADO'
+    `;
+
+            db.query(sql, [cliente_id], (err) => {
+
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error cerrando anteriores"
+                    });
+                }
+
+                return res.json({
+                    success: true,
+                    message: "Anteriores cerrados"
+                });
+            });
+        };
 
     </script>
 
