@@ -1,117 +1,118 @@
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
 
-    ```
     <meta charset="UTF-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Dashboard CRM</title>
+    <title>
+        CRM Dashboard
+    </title>
 
     <!-- FULLCALENDAR -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
 
-    <!-- ICONOS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
     <style>
+        /* =========================================
+        RESET
+        ========================================= */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* =========================================
+        BODY
+        ========================================= */
         body {
 
             font-family: Arial, Helvetica, sans-serif;
 
-            background: #f3f4f6;
+            background: #0f172a;
+
+            color: #f1f5f9;
 
             overflow: hidden;
         }
 
         /* =========================================
-       LAYOUT
-    ========================================= */
-
-        .app {
+        MAIN
+        ========================================= */
+        .main-container {
 
             display: flex;
 
-            width: 100vw;
+            width: 100%;
 
             height: 100vh;
         }
 
         /* =========================================
-       SIDEBAR
-    ========================================= */
-
+        SIDEBAR
+        ========================================= */
         .sidebar {
 
             width: 260px;
 
             background: #111827;
 
-            color: white;
+            border-right: 1px solid #1e293b;
 
             display: flex;
 
             flex-direction: column;
 
-            padding: 20px 0;
+            padding: 20px;
         }
 
-        .sidebar-logo {
+        .logo {
 
-            font-size: 22px;
+            font-size: 24px;
 
             font-weight: bold;
 
-            padding: 0 25px 25px;
+            margin-bottom: 30px;
 
-            border-bottom: 1px solid #1f2937;
+            color: #60a5fa;
         }
 
-        .sidebar-menu {
-
-            padding: 20px 0;
+        .menu {
 
             display: flex;
 
             flex-direction: column;
 
-            gap: 5px;
+            gap: 10px;
         }
 
-        .sidebar-menu a {
+        .menu-item {
 
-            text-decoration: none;
+            padding: 14px;
 
-            color: #d1d5db;
+            border-radius: 10px;
 
-            padding: 14px 25px;
+            cursor: pointer;
 
             transition: .2s;
 
-            display: flex;
+            font-size: 14px;
 
-            align-items: center;
-
-            gap: 12px;
+            color: #cbd5e1;
         }
 
-        .sidebar-menu a:hover {
+        .menu-item:hover {
 
-            background: #1f2937;
+            background: #1e293b;
 
             color: white;
         }
 
-        .sidebar-menu .active {
+        .menu-item.active {
 
             background: #2563eb;
 
@@ -119,10 +120,9 @@
         }
 
         /* =========================================
-       MAIN
-    ========================================= */
-
-        .main {
+        CONTENT
+        ========================================= */
+        .content {
 
             flex: 1;
 
@@ -134,16 +134,15 @@
         }
 
         /* =========================================
-       TOPBAR
-    ========================================= */
-
+        TOPBAR
+        ========================================= */
         .topbar {
 
-            height: 70px;
+            height: 80px;
 
-            background: white;
+            background: #111827;
 
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #1e293b;
 
             display: flex;
 
@@ -151,166 +150,111 @@
 
             justify-content: space-between;
 
-            padding: 0 25px;
+            padding: 0 20px;
         }
 
-        .topbar-title {
+        .page-title {
 
             font-size: 24px;
 
             font-weight: bold;
-
-            color: #111827;
         }
 
-        .topbar-right {
+        .user-info {
 
-            display: flex;
+            color: #94a3b8;
 
-            align-items: center;
-
-            gap: 15px;
-        }
-
-        .btn-primary {
-
-            background: #2563eb;
-
-            border: none;
-
-            color: white;
-
-            padding: 10px 18px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-weight: 600;
+            font-size: 12px;
         }
 
         /* =========================================
-       CONTENT
-    ========================================= */
-
-        .content {
-
-            flex: 1;
-
-            overflow: auto;
-
-            padding: 20px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 20px;
-        }
-
-        /* =========================================
-       KPIs GLOBALES
-    ========================================= */
-
-        .kpis-globales {
+        KPI SUPERIOR
+        ========================================= */
+        .kpi-container {
 
             display: grid;
 
             grid-template-columns: repeat(6, 1fr);
 
-            gap: 15px;
+            gap: 20px;
+
+            padding: 20px;
         }
 
         .kpi-card {
 
-            background: white;
+            background: #111827;
 
             border-radius: 14px;
 
-            padding: 18px;
+            padding: 20px;
 
-            box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 10px;
+            border: 1px solid #1e293b;
         }
 
         .kpi-title {
 
             font-size: 13px;
 
-            color: #6b7280;
+            color: #94a3b8;
 
-            font-weight: 600;
+            margin-bottom: 10px;
         }
 
         .kpi-value {
 
-            font-size: 28px;
+            font-size: 24px;
 
             font-weight: bold;
-
-            color: #111827;
-        }
-
-        .kpi-extra {
-
-            font-size: 13px;
-
-            color: #2563eb;
-
-            font-weight: 600;
         }
 
         /* =========================================
-       GRID CENTRAL
-    ========================================= */
-
-        .dashboard-grid {
+        BODY DASHBOARD
+        ========================================= */
+        .dashboard-body {
 
             flex: 1;
 
             display: grid;
 
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 2fr 1fr;
 
             gap: 20px;
 
-            min-height: 0;
+            padding: 0 20px 20px 20px;
+
+            overflow: hidden;
         }
 
         /* =========================================
-       CALENDARIO
-    ========================================= */
+        PANEL
+        ========================================= */
+        .panel {
 
-        .calendar-card {
-
-            background: white;
+            background: #111827;
 
             border-radius: 14px;
 
-            padding: 15px;
+            border: 1px solid #1e293b;
 
-            overflow: hidden;
+            padding: 20px;
 
-            display: flex;
-
-            flex-direction: column;
+            overflow: auto;
         }
 
-        #calendar {
+        .panel-title {
 
-            flex: 1;
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
         }
 
         /* =========================================
-       PANEL DIA
-    ========================================= */
-
-        .panel-dia {
+        RIGHT PANEL
+        ========================================= */
+        .right-panel {
 
             display: flex;
 
@@ -321,42 +265,25 @@
             overflow: auto;
         }
 
-        .panel-card {
-
-            background: white;
-
-            border-radius: 14px;
-
-            padding: 18px;
-
-            box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
-        }
-
-        .panel-title {
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            margin-bottom: 15px;
-
-            color: #111827;
-        }
-
         /* =========================================
-       KPI DIA
-    ========================================= */
-
-        .kpi-dia {
+        KPI DIA
+        ========================================= */
+        .calendar-kpis {
 
             display: flex;
 
             flex-direction: column;
 
-            gap: 10px;
+            gap: 12px;
         }
 
-        .kpi-dia-item {
+        .calendar-kpi-item {
+
+            background: #1e293b;
+
+            border-radius: 10px;
+
+            padding: 14px;
 
             display: flex;
 
@@ -364,441 +291,428 @@
 
             align-items: center;
 
-            background: #f9fafb;
+            font-size: 13px;
+        }
 
-            padding: 12px;
+        .calendar-kpi-item strong {
 
-            border-radius: 10px;
-
-            font-size: 14px;
-
-            font-weight: 600;
+            color: #60a5fa;
         }
 
         /* =========================================
-       TAREAS
-    ========================================= */
+        TASK
+        ========================================= */
+        .task-list {
 
-        .tarea-item {
+            display: flex;
 
-            border-left: 4px solid #2563eb;
+            flex-direction: column;
 
-            background: #f9fafb;
+            gap: 12px;
+        }
 
-            padding: 12px;
+        .task-item {
+
+            background: #1e293b;
+
+            padding: 14px;
 
             border-radius: 10px;
-
-            margin-bottom: 10px;
 
             cursor: pointer;
 
             transition: .2s;
         }
 
-        .tarea-item:hover {
+        .task-item:hover {
 
-            background: #eef2ff;
+            background: #334155;
         }
 
-        .tarea-hora {
+        .task-hour {
+
+            font-size: 11px;
+
+            color: #94a3b8;
+
+            margin-bottom: 6px;
+        }
+
+        .task-client {
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .task-action {
 
             font-size: 12px;
 
-            color: #6b7280;
+            color: #60a5fa;
 
-            margin-bottom: 5px;
-        }
-
-        .tarea-cliente {
-
-            font-weight: bold;
-
-            color: #111827;
-        }
-
-        .tarea-tipo {
-
-            font-size: 13px;
-
-            margin-top: 5px;
-
-            color: #2563eb;
+            margin-top: 6px;
         }
 
         /* =========================================
-       ACTIVIDAD
-    ========================================= */
-
-        .actividad-item {
+        ACTIVITY
+        ========================================= */
+        .activity-list {
 
             display: flex;
 
-            gap: 10px;
+            flex-direction: column;
 
-            padding: 12px 0;
-
-            border-bottom: 1px solid #f3f4f6;
+            gap: 12px;
         }
 
-        .actividad-hora {
+        .activity-item {
 
-            width: 70px;
+            background: #1e293b;
 
-            font-size: 12px;
+            border-left: 4px solid #2563eb;
 
-            color: #6b7280;
+            border-radius: 10px;
+
+            padding: 14px;
+
+            cursor: pointer;
         }
 
-        .actividad-texto {
+        .activity-hour {
 
-            flex: 1;
+            font-size: 11px;
 
-            font-size: 14px;
+            color: #94a3b8;
+
+            margin-bottom: 6px;
+        }
+
+        .activity-text {
+
+            font-size: 13px;
+
+            line-height: 1.4;
         }
 
         /* =========================================
-       MODAL
-    ========================================= */
-
+        MODAL
+        ========================================= */
         .modal {
 
             position: fixed;
 
             inset: 0;
 
-            background: rgba(0, 0, 0, .5);
+            background: rgba(0, 0, 0, .6);
 
             display: none;
 
-            align-items: center;
-
             justify-content: center;
 
-            z-index: 999;
+            align-items: center;
+
+            z-index: 9999;
         }
 
         .modal-content {
 
-            width: 600px;
+            width: 500px;
 
-            background: white;
+            background: #111827;
 
-            border-radius: 16px;
+            border-radius: 14px;
 
-            padding: 25px;
-        }
-
-        .modal-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 20px;
+            padding: 20px;
         }
 
         .modal-title {
 
-            font-size: 22px;
+            font-size: 20px;
 
-            font-weight: bold;
+            margin-bottom: 20px;
         }
 
-        .close-modal {
+        /* =========================================
+        RESPONSIVE
+        ========================================= */
+        @media(max-width:1200px) {
 
-            cursor: pointer;
+            .dashboard-body {
 
-            font-size: 20px;
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-container {
+
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+
+                width: 80px;
+            }
+
+            .kpi-container {
+
+                grid-template-columns: 1fr;
+            }
         }
     </style>
-    ```
 
 </head>
 
 <body>
 
-    ```
-    <div class="app">
+    <div class="main-container">
 
-        <!-- SIDEBAR -->
+        <!-- =====================================
+        SIDEBAR
+        ====================================== -->
         <aside class="sidebar">
 
-            <div class="sidebar-logo">
-                CRM OPERATIVO
+            <div class="logo">
+                CRM
             </div>
 
-            <nav class="sidebar-menu">
+            <div class="menu">
 
-                <a class="active" href="#">
-                    <i class="fa-solid fa-chart-line"></i>
+                <div class="menu-item active">
                     Dashboard
-                </a>
+                </div>
 
-                <a href="#">
-                    <i class="fa-solid fa-calendar"></i>
-                    Calendario
-                </a>
-
-                <a href="#">
-                    <i class="fa-solid fa-users"></i>
+                <div class="menu-item">
                     Clientes
-                </a>
+                </div>
 
-                <a href="#">
-                    <i class="fa-solid fa-file-signature"></i>
+                <div class="menu-item">
+                    Seguimientos
+                </div>
+
+                <div class="menu-item">
                     Cotizaciones
-                </a>
+                </div>
 
-                <a href="#">
-                    <i class="fa-solid fa-box"></i>
+                <div class="menu-item">
                     Pedidos
-                </a>
+                </div>
 
-            </nav>
+            </div>
 
         </aside>
 
-        <!-- MAIN -->
-        <main class="main">
+        <!-- =====================================
+        CONTENT
+        ====================================== -->
+        <section class="content">
 
-            <!-- TOPBAR -->
-            <header class="topbar">
+            <!-- =================================
+            TOPBAR
+            ================================== -->
+            <div class="topbar">
 
-                <div class="topbar-title">
-                    Dashboard Operativo
+                <div class="page-title">
+                    Dashboard Comercial
                 </div>
 
-                <div class="topbar-right">
-
-                    <button class="btn-primary">
-                        Nueva Tarea
-                    </button>
-
+                <div class="user-info">
+                    Bienvenido
                 </div>
 
-            </header>
+            </div>
 
-            <!-- CONTENT -->
-            <section class="content">
+            <!-- =================================
+            KPIs SUPERIORES
+            ================================== -->
+            <div class="kpi-container">
 
-                <!-- KPI GLOBALES -->
-                <div class="kpis-globales">
+                <div class="kpi-card">
 
-                    <div class="kpi-card">
-
-                        <div class="kpi-title">
-                            Seguimientos Totales
-                        </div>
-
-                        <div class="kpi-value">
-                            148
-                        </div>
-
+                    <div class="kpi-title">
+                        Seguimientos
                     </div>
 
-                    <div class="kpi-card">
-
-                        <div class="kpi-title">
-                            Cotizaciones
-                        </div>
-
-                        <div class="kpi-value">
-                            26
-                        </div>
-
-                        <div class="kpi-extra">
-                            $128.500.000
-                        </div>
-
-                    </div>
-
-                    <div class="kpi-card">
-
-                        <div class="kpi-title">
-                            Pedidos
-                        </div>
-
-                        <div class="kpi-value">
-                            11
-                        </div>
-
-                        <div class="kpi-extra">
-                            $74.800.000
-                        </div>
-
-                    </div>
-
-                    <div class="kpi-card">
-
-                        <div class="kpi-title">
-                            Pendientes
-                        </div>
-
-                        <div class="kpi-value">
-                            34
-                        </div>
-
-                    </div>
-
-                    <div class="kpi-card">
-
-                        <div class="kpi-title">
-                            Conversión
-                        </div>
-
-                        <div class="kpi-value">
-                            42%
-                        </div>
-
-                    </div>
-
-                    <div class="kpi-card">
-
-                        <div class="kpi-title">
-                            Actividad Mensual
-                        </div>
-
-                        <div class="kpi-value">
-                            326
-                        </div>
-
+                    <div class="kpi-value" id="kpiSeguimientos">
+                        0
                     </div>
 
                 </div>
 
-                <!-- GRID -->
-                <div class="dashboard-grid">
+                <div class="kpi-card">
 
-                    <!-- CALENDARIO -->
-                    <div class="calendar-card">
+                    <div class="kpi-title">
+                        Cotizaciones
+                    </div>
 
-                        <div id="calendar"></div>
+                    <div class="kpi-value" id="kpiCotizaciones">
+                        0
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title">
+                        Valor Cotizaciones
+                    </div>
+
+                    <div class="kpi-value" id="kpiValorCotizaciones">
+                        $0
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title">
+                        Pedidos
+                    </div>
+
+                    <div class="kpi-value" id="kpiPedidos">
+                        0
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title">
+                        Valor Pedidos
+                    </div>
+
+                    <div class="kpi-value" id="kpiValorPedidos">
+                        $0
+                    </div>
+
+                </div>
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title">
+                        Pendientes
+                    </div>
+
+                    <div class="kpi-value" id="kpiPendientes">
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =================================
+            BODY
+            ================================== -->
+            <section class="dashboard-body">
+
+                <!-- =============================
+                CALENDARIO
+                ============================== -->
+                <div class="panel">
+
+                    <div class="panel-title">
+                        Calendario Operativo
+                    </div>
+
+                    <div id="calendar"></div>
+
+                </div>
+
+                <!-- =============================
+                RIGHT PANEL
+                ============================== -->
+                <div class="right-panel">
+
+                    <!-- =========================
+                    KPI DIA
+                    ========================== -->
+                    <div class="panel">
+
+                        <div class="panel-title">
+                            KPIs del Día
+                        </div>
+
+                        <div class="calendar-kpis">
+
+                            <div class="calendar-kpi-item">
+
+                                <span>
+                                    📌 Pendientes
+                                </span>
+
+                                <strong id="pendientesDia">
+                                    0
+                                </strong>
+
+                            </div>
+
+                            <div class="calendar-kpi-item">
+
+                                <span>
+                                    📞 Seguimientos
+                                </span>
+
+                                <strong id="seguimientosDia">
+                                    0
+                                </strong>
+
+                            </div>
+
+                            <div class="calendar-kpi-item">
+
+                                <span>
+                                    📄 Cotizaciones
+                                </span>
+
+                                <strong id="cotizacionesDia">
+                                    0
+                                </strong>
+
+                            </div>
+
+                            <div class="calendar-kpi-item">
+
+                                <span>
+                                    📦 Pedidos
+                                </span>
+
+                                <strong id="pedidosDia">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
-                    <!-- PANEL DIA -->
-                    <div class="panel-dia">
+                    <!-- =========================
+                    AGENDA
+                    ========================== -->
+                    <div class="panel">
 
-                        <!-- KPI DIA -->
-                        <div class="panel-card">
-
-                            <div class="panel-title">
-                                KPIs del Día
-                            </div>
-
-                            <div class="kpi-dia">
-
-                                <div class="kpi-dia-item">
-                                    <span>📌 Pendientes</span>
-                                    <span>8</span>
-                                </div>
-
-                                <div class="kpi-dia-item">
-                                    <span>📞 Seguimientos</span>
-                                    <span>23</span>
-                                </div>
-
-                                <div class="kpi-dia-item">
-                                    <span>📄 Cotizaciones</span>
-                                    <span>$18.000.000</span>
-                                </div>
-
-                                <div class="kpi-dia-item">
-                                    <span>📦 Pedidos</span>
-                                    <span>$12.500.000</span>
-                                </div>
-
-                            </div>
-
+                        <div class="panel-title">
+                            Agenda del Día
                         </div>
 
-                        <!-- TAREAS -->
-                        <div class="panel-card">
-
-                            <div class="panel-title">
-                                Agenda del Día
-                            </div>
-
-                            <div class="tarea-item" onclick="abrirModal()">
-
-                                <div class="tarea-hora">
-                                    08:00 AM
-                                </div>
-
-                                <div class="tarea-cliente">
-                                    Colegio San Pablo
-                                </div>
-
-                                <div class="tarea-tipo">
-                                    Seguimiento Comercial
-                                </div>
-
-                            </div>
-
-                            <div class="tarea-item" onclick="abrirModal()">
-
-                                <div class="tarea-hora">
-                                    09:30 AM
-                                </div>
-
-                                <div class="tarea-cliente">
-                                    Universidad Nacional
-                                </div>
-
-                                <div class="tarea-tipo">
-                                    Cotización
-                                </div>
-
-                            </div>
-
+                        <div class="task-list" id="agendaDia">
                         </div>
 
-                        <!-- ACTIVIDAD -->
-                        <div class="panel-card">
+                    </div>
 
-                            <div class="panel-title">
-                                Actividad Diaria
-                            </div>
+                    <!-- =========================
+                    ACTIVIDAD
+                    ========================== -->
+                    <div class="panel">
 
-                            <div class="actividad-item">
+                        <div class="panel-title">
+                            Actividad Diaria
+                        </div>
 
-                                <div class="actividad-hora">
-                                    09:00
-                                </div>
-
-                                <div class="actividad-texto">
-                                    Seguimiento realizado a Cliente X
-                                </div>
-
-                            </div>
-
-                            <div class="actividad-item">
-
-                                <div class="actividad-hora">
-                                    11:40
-                                </div>
-
-                                <div class="actividad-texto">
-                                    Cotización enviada por $14.500.000
-                                </div>
-
-                            </div>
-
-                            <div class="actividad-item">
-
-                                <div class="actividad-hora">
-                                    14:10
-                                </div>
-
-                                <div class="actividad-texto">
-                                    Pedido aprobado
-                                </div>
-
-                            </div>
-
+                        <div class="activity-list" id="actividadDia">
                         </div>
 
                     </div>
@@ -807,93 +721,293 @@
 
             </section>
 
-        </main>
+        </section>
 
     </div>
 
-    <!-- MODAL -->
-    <div class="modal" id="modalTarea">
+    <!-- =====================================
+    MODAL
+    ====================================== -->
+    <div class="modal" id="taskModal">
 
         <div class="modal-content">
 
-            <div class="modal-header">
-
-                <div class="modal-title">
-                    Detalle Tarea
-                </div>
-
-                <div class="close-modal" onclick="cerrarModal()">
-                    ✖
-                </div>
-
+            <div class="modal-title" id="modalTitle">
+                Tarea
             </div>
 
-            <p>
-                Cliente:
-                <strong>Colegio San Pablo</strong>
-            </p>
-
-            <br>
-
-            <p>
-                Tipo:
-                <strong>Seguimiento</strong>
-            </p>
-
-            <br>
-
-            <p>
-                Estado:
-                <strong>ACTIVO</strong>
-            </p>
-
-            <br>
-
-            <p>
-                Observaciones:
-            </p>
-
-            <br>
-
-            <textarea style="
-                width:100%;
-                height:120px;
-                border:1px solid #d1d5db;
-                border-radius:10px;
-                padding:10px;
-            "></textarea>
+            <div id="modalBody"></div>
 
         </div>
 
     </div>
 
-    <!-- FULLCALENDAR -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-
     <script>
 
-        // =========================================
+        // =====================================
+        // MOCK DATA
+        // =====================================
+        window.tareasCalendario = {
+
+            "2026-06-06": {
+
+                tareas: [
+
+                    {
+                        cliente: "Colegio San José",
+                        tipo: "SEGUIMIENTO",
+                        estado: "ACTIVO",
+                        fecha: "2026-06-06",
+                        fecha_proxima: "2026-06-06",
+                        hora: "08:00",
+                        valor: 0,
+                        proxima_accion: "Llamar rector"
+                    },
+
+                    {
+                        cliente: "Universidad Central",
+                        tipo: "COTIZACION",
+                        estado: "ACTIVO",
+                        fecha: "2026-06-06",
+                        fecha_proxima: "2026-06-06",
+                        hora: "10:00",
+                        valor: 18000000,
+                        proxima_accion: "Enviar propuesta"
+                    },
+
+                    {
+                        cliente: "Conjunto Altos",
+                        tipo: "PEDIDO",
+                        estado: "ACTIVO",
+                        fecha: "2026-06-06",
+                        fecha_proxima: "2026-06-06",
+                        hora: "14:00",
+                        valor: 52000000,
+                        proxima_accion: "Confirmar instalación"
+                    }
+
+                ]
+            }
+        };
+
+        // =====================================
         // MODAL
-        // =========================================
-
-        function abrirModal() {
+        // =====================================
+        function abrirTarea(t) {
 
             document.getElementById(
-                "modalTarea"
+                "taskModal"
             ).style.display = "flex";
-        }
-
-        function cerrarModal() {
 
             document.getElementById(
-                "modalTarea"
-            ).style.display = "none";
+                "modalTitle"
+            ).innerText =
+                t.cliente;
+
+            document.getElementById(
+                "modalBody"
+            ).innerHTML = `
+
+                <p>
+                    Tipo:
+                    <strong>${t.tipo}</strong>
+                </p>
+
+                <br>
+
+                <p>
+                    Acción:
+                    <strong>${t.proxima_accion}</strong>
+                </p>
+
+                <br>
+
+                <p>
+                    Valor:
+                    <strong>
+                        $${Number(t.valor || 0).toLocaleString()}
+                    </strong>
+                </p>
+
+            `;
         }
 
-        // =========================================
-        // CALENDARIO
-        // =========================================
+        // =====================================
+        // CLOSE MODAL
+        // =====================================
+        document.getElementById(
+            "taskModal"
+        ).addEventListener(
+            "click",
+            function (e) {
 
+                if (
+                    e.target.id === "taskModal"
+                ) {
+
+                    this.style.display = "none";
+                }
+            }
+        );
+
+        // =====================================
+        // KPI DIA
+        // =====================================
+        function cargarKPIsDia(fecha) {
+
+            const tareas =
+                Object.values(
+                    window.tareasCalendario || {}
+                )
+                    .flatMap(
+                        d => d.tareas || []
+                    );
+
+            const seguimientos =
+                tareas.filter(
+                    t =>
+                        t.fecha === fecha
+                );
+
+            const cotizaciones =
+                tareas.filter(
+                    t =>
+                        t.tipo === "COTIZACION"
+                        &&
+                        t.fecha === fecha
+                );
+
+            const pedidos =
+                tareas.filter(
+                    t =>
+                        t.tipo === "PEDIDO"
+                        &&
+                        t.fecha === fecha
+                );
+
+            const pendientes =
+                tareas.filter(
+                    t =>
+                        t.estado === "ACTIVO"
+                        &&
+                        t.fecha_proxima === fecha
+                );
+
+            document.getElementById(
+                "pendientesDia"
+            ).innerText =
+                pendientes.length;
+
+            document.getElementById(
+                "seguimientosDia"
+            ).innerText =
+                seguimientos.length;
+
+            document.getElementById(
+                "cotizacionesDia"
+            ).innerText =
+                cotizaciones.length;
+
+            document.getElementById(
+                "pedidosDia"
+            ).innerText =
+                pedidos.length;
+
+            // =================================
+            // AGENDA
+            // =================================
+            const agenda =
+                document.getElementById(
+                    "agendaDia"
+                );
+
+            agenda.innerHTML = "";
+
+            pendientes.forEach(t => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "task-item";
+
+                div.onclick = () => {
+
+                    abrirTarea(t);
+                };
+
+                div.innerHTML = `
+
+                    <div class="task-hour">
+                        ${t.hora}
+                    </div>
+
+                    <div class="task-client">
+                        ${t.cliente}
+                    </div>
+
+                    <div class="task-action">
+                        ${t.proxima_accion}
+                    </div>
+
+                `;
+
+                agenda.appendChild(div);
+
+            });
+
+            // =================================
+            // ACTIVIDAD
+            // =================================
+            const actividad =
+                document.getElementById(
+                    "actividadDia"
+                );
+
+            actividad.innerHTML = "";
+
+            seguimientos.forEach(t => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "activity-item";
+
+                div.onclick = () => {
+
+                    abrirTarea(t);
+                };
+
+                div.innerHTML = `
+
+                    <div class="activity-hour">
+                        ${t.hora}
+                    </div>
+
+                    <div class="activity-text">
+
+                        ${t.tipo}
+
+                        realizado para
+
+                        <strong>
+                            ${t.cliente}
+                        </strong>
+
+                    </div>
+
+                `;
+
+                actividad.appendChild(div);
+
+            });
+
+        }
+
+        // =====================================
+        // CALENDAR
+        // =====================================
         document.addEventListener(
             "DOMContentLoaded",
             function () {
@@ -911,7 +1025,7 @@
                             locale: "es",
 
                             initialView:
-                                "dayGridMonth",
+                                "timeGridDay",
 
                             height: "100%",
 
@@ -927,39 +1041,28 @@
                                     "dayGridMonth,timeGridDay"
                             },
 
+                            buttonText: {
+
+                                today: "Hoy",
+
+                                month: "Mes",
+
+                                day: "Día"
+                            },
+
                             events: [
 
                                 {
                                     title:
-                                        "📌 5 pendientes",
+                                        "📌 3 pendientes",
 
                                     start:
                                         "2026-06-06",
 
+                                    allDay: true,
+
                                     color:
                                         "#2563eb"
-                                },
-
-                                {
-                                    title:
-                                        "📘 Planeación",
-
-                                    start:
-                                        "2026-06-07",
-
-                                    color:
-                                        "#1e3a8a"
-                                },
-
-                                {
-                                    title:
-                                        "Festivo",
-
-                                    start:
-                                        "2026-06-20",
-
-                                    color:
-                                        "#b91c1c"
                                 }
 
                             ],
@@ -967,27 +1070,23 @@
                             dateClick:
                                 function (info) {
 
-                                    console.log(
-                                        "Fecha:",
+                                    cargarKPIsDia(
                                         info.dateStr
                                     );
-                                },
-
-                            eventClick:
-                                function (info) {
-
-                                    abrirModal();
                                 }
-
                         }
                     );
 
                 calendar.render();
 
-            });
+                cargarKPIsDia(
+                    "2026-06-06"
+                );
+
+            }
+        );
 
     </script>
-    ```
 
 </body>
 
