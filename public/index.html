@@ -1519,6 +1519,9 @@ HIDDEN
 
     </div>
 
+    <!-- =========================================
+MODAL WHATSAPP
+========================================= -->
     <div id="modalWhatsapp" style="
     display:none;
     position:fixed;
@@ -1531,6 +1534,7 @@ HIDDEN
 
         <div style="
         width:600px;
+        max-width:95%;
         background:#111827;
         border:1px solid #334155;
         border-radius:14px;
@@ -1544,16 +1548,29 @@ HIDDEN
                 WhatsApp
             </h2>
 
-            <textarea id="whatsappMensaje" style="
-                width:100%;
-                height:220px;
-                background:#1e293b;
-                color:white;
-                border:1px solid #334155;
-                border-radius:8px;
-                padding:10px;
-                resize:vertical;
-            "></textarea>
+            <div class="form-group">
+
+                <label>INDICATIVO PAÍS (OPCIONAL)</label>
+
+                <input type="text" id="whatsappIndicativo" placeholder="Ej: 57, 1, 52, 34">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>TELÉFONO</label>
+
+                <input type="text" id="whatsappTelefono" readonly>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>MENSAJE</label>
+
+                <textarea id="whatsappMensaje" rows="8" style="width:100%;"></textarea>
+
+            </div>
 
             <div style="
             display:flex;
@@ -1562,12 +1579,12 @@ HIDDEN
             margin-top:15px;
         ">
 
-                <button class="btn btn-green" onclick="enviarWhatsapp()">
-                    ENVIAR A WHATSAPP
+                <button class="btn btn-gray" onclick="cerrarModalWhatsapp()">
+                    CANCELAR
                 </button>
 
-                <button class="btn btn-gray" onclick="cerrarModalWhatsapp()">
-                    CERRAR
+                <button class="btn btn-green" onclick="enviarWhatsapp()">
+                    ENVIAR
                 </button>
 
             </div>
@@ -3092,14 +3109,51 @@ HIDDEN
 
             window.telefonoWhatsapp = telefono;
 
-            const textarea =
-                document.getElementById("whatsappMensaje");
+            document.getElementById("whatsappTelefono").value =
+                telefono;
 
-            textarea.value =
-                `Buen día ${nombre},\n\n`;
+            document.getElementById("whatsappIndicativo").value =
+                "";
+
+            document.getElementById("whatsappMensaje").value =
+                `Hola ${nombre}:\n\n`;
 
             document.getElementById("modalWhatsapp")
                 .style.display = "flex";
+        }
+
+        function enviarWhatsapp() {
+
+            const mensaje =
+                document.getElementById("whatsappMensaje").value;
+
+            let telefono =
+                document.getElementById("whatsappTelefono").value || "";
+
+            const indicativo =
+                document.getElementById("whatsappIndicativo")
+                    .value
+                    .replace(/\D/g, "");
+
+            telefono = telefono.replace(/\D/g, "");
+
+            if (!telefono) {
+
+                alert("No hay teléfono disponible");
+                return;
+            }
+
+            const numeroFinal =
+                indicativo
+                    ? indicativo + telefono
+                    : telefono;
+
+            window.open(
+                `https://wa.me/${numeroFinal}?text=${encodeURIComponent(mensaje)}`,
+                "_blank"
+            );
+
+            cerrarModalWhatsapp();
         }
 
         function cerrarModalWhatsapp() {
@@ -3108,27 +3162,6 @@ HIDDEN
                 .style.display = "none";
         }
 
-        function enviarWhatsapp() {
-
-            const mensaje =
-                document.getElementById("whatsappMensaje").value;
-
-            const telefono =
-                window.telefonoWhatsapp || "";
-
-            if (!telefono) {
-
-                alert("No hay teléfono disponible");
-                return;
-            }
-
-            window.open(
-                `https://wa.me/57${telefono}?text=${encodeURIComponent(mensaje)}`,
-                "_blank"
-            );
-
-            cerrarModalWhatsapp();
-        }
 
     </script>
 
