@@ -3155,6 +3155,9 @@ Quedo atento a sus comentarios.`;
                 indicativo
                     ? indicativo + telefono
                     : telefono;
+            
+            document.getElementById("m_nota").value =
+                "SE LE ESCRIBE AL CLIENTE MENSAJE DE PRESENCIA DE NUESTRA MARCA, A LA ESPERA DE RESPUESTA POR PARTE DEL CLIENTE";
 
             window.open(
                 `https://wa.me/${numeroFinal}?text=${encodeURIComponent(mensaje)}`,
