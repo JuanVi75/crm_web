@@ -1353,116 +1353,166 @@ HIDDEN
 
     </script>
 
-    <!-- CONTACTO -->
-    <div class="form-group">
+    <!-- =========================================
+        MODAL TAREAS
+    ========================================= -->
+    <div class="modal-overlay hidden" id="modalTarea">
 
-        <label>CONTACTO</label>
+        <div class="modal-box">
 
-        <select id="contactoSelect">
-            <option value="">Cargando contactos...</option>
-        </select>
+            <!-- HEADER -->
+            <div class="modal-header">
 
-    </div>
+                <div class="modal-title" id="modalCliente">
+                    CLIENTE
+                </div>
 
-    <!-- TELEFONO + WHATSAPP -->
-    <div class="form-row-3">
+            </div>
 
-        <div class="form-group">
+            <!-- BODY -->
+            <div class="modal-body">
 
-            <label>TEL CONTACTO</label>
+                <!-- CONTACTO -->
+                <div class="form-group">
 
-            <input type="text" id="modalTelefono" readonly>
+                    <label>CONTACTO</label>
 
-        </div>
+                    <select id="contactoSelect">
+                        <option value="">Cargando contactos...</option>
+                    </select>
 
-        <div class="form-group">
+                </div>
 
-            <label>WHATSAPP</label>
+                <!-- TELEFONO -->
+                <div class="form-group">
 
-            <button type="button" onclick="abrirWhatsappContacto()" style="
-                height:38px;
-                border:none;
-                border-radius:8px;
-                background:#25D366;
-                color:white;
-                cursor:pointer;
-                font-size:20px;
-                font-weight:bold;
-            ">
-                🟢
-            </button>
+                    <label>TEL CONTACTO</label>
 
-        </div>
+                    <input type="text" id="modalTelefono" readonly>
 
-    </div>
+                </div>
 
-    <!-- FECHA + TIPO + ESTADO -->
-    <div class="form-row-3">
+                <div class="form-group">
 
-        <!-- FECHA -->
-        <div class="form-group">
+                    <label>WHATSAPP</label>
 
-            <label>PROXIMA FECHA</label>
+                    <button type="button" id="btnWhatsapp" onclick="abrirWhatsappContacto()">
+                        🟢
+                    </button>
 
-            <input type="date" id="m_fecha_proxima">
+                </div>
 
-        </div>
+                <!-- FECHA + TIPO + ESTADO -->
+                <div class="form-row-3">
 
-        <!-- TIPO -->
-        <div class="form-group small-field">
+                    <!-- FECHA -->
+                    <div class="form-group">
 
-            <label>TIPO</label>
+                        <label>PROXIMA FECHA</label>
 
-            <select id="m_tipo">
+                        <input type="date" id="m_fecha_proxima">
 
-                <option value="LLAMADA" selected>
-                    LLAMADA
-                </option>
+                    </div>
 
-                <option value="WHATSAPP">
-                    WHATSAPP
-                </option>
+                    <!-- TIPO -->
+                    <div class="form-group small-field">
 
-                <option value="FACEBOOK">
-                    FACEBOOK
-                </option>
+                        <label>TIPO</label>
 
-                <option value="VISITA">
-                    VISITA
-                </option>
+                        <select id="m_tipo">
 
-                <option value="EMAIL">
-                    EMAIL
-                </option>
+                            <option value="LLAMADA" selected>
+                                LLAMADA
+                            </option>
 
-                <option value="COTIZACION">
-                    COTIZACION
-                </option>
+                            <option value="WHATSAPP">
+                                WHATSAPP
+                            </option>
 
-            </select>
+                            <option value="FACEBOOK">
+                                FACEBOOK
+                            </option>
 
-        </div>
+                            <option value="VISITA">
+                                VISITA
+                            </option>
 
-        <!-- ESTADO -->
-        <div class="form-group small-field">
+                            <option value="EMAIL">
+                                EMAIL
+                            </option>
 
-            <label>ESTADO</label>
+                            <option value="COTIZACION">
+                                COTIZACION
+                            </option>
 
-            <select id="m_estado">
+                        </select>
 
-                <option value="ACTIVO" selected>
-                    ACTIVO
-                </option>
+                    </div>
 
-                <option value="STAND BY">
-                    STAND BY
-                </option>
+                    <!-- ESTADO -->
+                    <div class="form-group small-field">
 
-                <option value="TERMINADO">
-                    TERMINADO
-                </option>
+                        <label>ESTADO</label>
 
-            </select>
+                        <select id="m_estado">
+
+                            <option value="ACTIVO" selected>
+                                ACTIVO
+                            </option>
+
+                            <option value="STAND BY">
+                                STAND BY
+                            </option>
+
+                            <option value="TERMINADO">
+                                TERMINADO
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- NOTA -->
+                <div class="form-group">
+
+                    <label>NOTA</label>
+
+                    <textarea id="m_nota" rows="2" placeholder=""></textarea>
+
+                </div>
+
+                <!-- PROXIMA ACCION -->
+                <div class="form-group">
+
+                    <label>PROXIMA ACCION</label>
+
+                    <input type="text" id="m_proxima_accion" value="">
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+
+                <button class="modal-btn secondary-btn" onclick="tareaAnterior()">
+                    < </button>
+
+                        <button class="modal-btn primary-btn" onclick="guardarTarea()">
+                            GUARDAR
+                        </button>
+
+                        <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">
+                            >
+                        </button>
+
+                        <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
+                            CERRAR
+                        </button>
+
+            </div>
 
         </div>
 
