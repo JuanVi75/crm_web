@@ -1384,21 +1384,22 @@ HIDDEN
                 </div>
 
                 <!-- TELEFONO -->
-                <div class="form-group">
+                <div style="display:flex;gap:8px;align-items:end;">
 
-                    <label>TEL CONTACTO</label>
+                    <div style="flex:1;">
 
-                    <input type="text" id="modalTelefono" readonly>
+                        <label>TEL CONTACTO</label>
 
-                </div>
+                        <input type="text" id="modalTelefono" readonly>
 
-                <div class="form-group">
+                    </div>
 
-                    <label>WHATSAPP</label>
-
-                    <button type="button" id="btnWhatsapp" onclick="abrirWhatsappContacto()">
-                        🟢
-                    </button>
+                    <img src="img/whatsapp.png" onclick="abrirWhatsappContacto()" style="
+                        width:38px;
+                        height:38px;
+                        cursor:pointer;
+                        margin-bottom:2px;
+                    ">
 
                 </div>
 
