@@ -1519,6 +1519,63 @@ HIDDEN
 
     </div>
 
+    <div id="modalWhatsapp" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:999999;
+    align-items:center;
+    justify-content:center;
+">
+
+        <div style="
+        width:600px;
+        background:#111827;
+        border:1px solid #334155;
+        border-radius:14px;
+        padding:20px;
+    ">
+
+            <h2 style="
+            margin-top:0;
+            color:#25D366;
+        ">
+                WhatsApp
+            </h2>
+
+            <textarea id="whatsappMensaje" style="
+                width:100%;
+                height:220px;
+                background:#1e293b;
+                color:white;
+                border:1px solid #334155;
+                border-radius:8px;
+                padding:10px;
+                resize:vertical;
+            "></textarea>
+
+            <div style="
+            display:flex;
+            gap:10px;
+            justify-content:flex-end;
+            margin-top:15px;
+        ">
+
+                <button class="btn btn-green" onclick="enviarWhatsapp()">
+                    ENVIAR A WHATSAPP
+                </button>
+
+                <button class="btn btn-gray" onclick="cerrarModalWhatsapp()">
+                    CERRAR
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <script>
 
         // =========================================
@@ -3020,7 +3077,7 @@ HIDDEN
                 document.getElementById("contactoSelect");
 
             const nombre =
-                select.options[select.selectedIndex]?.text || "";
+                select.options[select.selectedIndex]?.text || "Cliente";
 
             let telefono =
                 document.getElementById("modalTelefono").value || "";
@@ -3033,13 +3090,44 @@ HIDDEN
                 return;
             }
 
-            const mensaje =
+            window.telefonoWhatsapp = telefono;
+
+            const textarea =
+                document.getElementById("whatsappMensaje");
+
+            textarea.value =
                 `Hola ${nombre},\n\n`;
+
+            document.getElementById("modalWhatsapp")
+                .style.display = "flex";
+        }
+
+        function cerrarModalWhatsapp() {
+
+            document.getElementById("modalWhatsapp")
+                .style.display = "none";
+        }
+
+        function enviarWhatsapp() {
+
+            const mensaje =
+                document.getElementById("whatsappMensaje").value;
+
+            const telefono =
+                window.telefonoWhatsapp || "";
+
+            if (!telefono) {
+
+                alert("No hay teléfono disponible");
+                return;
+            }
 
             window.open(
                 `https://wa.me/57${telefono}?text=${encodeURIComponent(mensaje)}`,
                 "_blank"
             );
+
+            cerrarModalWhatsapp();
         }
 
     </script>
