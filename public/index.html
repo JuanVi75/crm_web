@@ -3014,6 +3014,34 @@ HIDDEN
             });
         };
 
+        function abrirWhatsappContacto() {
+
+            const select =
+                document.getElementById("contactoSelect");
+
+            const nombre =
+                select.options[select.selectedIndex]?.text || "";
+
+            let telefono =
+                document.getElementById("modalTelefono").value || "";
+
+            telefono = telefono.replace(/\D/g, "");
+
+            if (!telefono) {
+
+                alert("El contacto no tiene teléfono registrado");
+                return;
+            }
+
+            const mensaje =
+                `Hola ${nombre},\n\n`;
+
+            window.open(
+                `https://wa.me/57${telefono}?text=${encodeURIComponent(mensaje)}`,
+                "_blank"
+            );
+        }
+
     </script>
 
 </body>
