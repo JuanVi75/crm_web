@@ -3106,11 +3106,10 @@ MODAL WHATSAPP
                 return;
             }
 
-            const usuarioLogueado = window.usuarioLogueado;
+            const usuarioLogueado = getUsuarioLogueado();
 
             const nombreEmisor = obtenerNombreEmisor(usuarioLogueado);
 
-            // 🔴 SI FALLA, SE DETIENE TODO
             if (!nombreEmisor) return;
 
             window.telefonoWhatsapp = telefono;
@@ -3168,7 +3167,6 @@ Quedo atento a sus comentarios.`;
 
         function obtenerNombreEmisor(usuarioLogueado) {
 
-            // 🔴 Validación base
             if (!usuarioLogueado) {
                 alert("No hay usuario logueado");
                 return null;
@@ -3176,26 +3174,34 @@ Quedo atento a sus comentarios.`;
 
             const rol = (usuarioLogueado.rol || "").toUpperCase();
 
-            // 🔥 CASO ADMIN: siempre preguntar
             if (rol === "ADMIN") {
 
                 const nombre = prompt("Ingrese el nombre del asesor que enviará el mensaje:");
 
                 if (!nombre || nombre.trim() === "") {
-                    alert("Debe ingresar el nombre del asesor para continuar");
+                    alert("Debe ingresar el nombre del asesor");
                     return null;
                 }
 
                 return nombre.trim();
             }
 
-            // 🔵 CASO NORMAL: usar nombre real del usuario
-            if (usuarioLogueado.nombre && usuarioLogueado.nombre.trim() !== "") {
-                return usuarioLogueado.nombre.trim();
+            return usuarioLogueado.nombre;
+        }
+
+        function getUsuarioLogueado() {
+
+            const nombre = localStorage.getItem("user");
+            const rol = localStorage.getItem("rol");
+
+            if (!nombre || !rol) {
+                return null;
             }
 
-            alert("El usuario no tiene nombre registrado");
-            return null;
+            return {
+                nombre: nombre,
+                rol: rol
+            };
         }
 
         function cerrarModalWhatsapp() {
