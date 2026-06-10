@@ -1,1 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departamentos</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0b1220;
+            color: #fff;
+        }
+
+        .layout {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
+            padding: 12px;
+        }
+
+        .menu .item {
+            padding: 10px;
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .menu .item:hover {
+            background: #1e293b;
+        }
+
+        .content {
+            flex: 1;
+            padding: 15px;
+        }
+
+        .topbar {
+            background: #111827;
+            border: 1px solid #1e293b;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 8px 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            border: 1px solid #334155;
+            padding: 8px;
+        }
+
+        th {
+            background: #1e293b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="menu">
+                <div class="item" onclick="location.href='index.html'">🏠 Inicio</div>
+                <div class="item" onclick="location.href='departamentos.html'">🏢 Departamentos</div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <div class="topbar">
+                CONFIGURACIONES / DEPARTAMENTOS
+            </div>
+
+            <!-- FORMULARIO -->
+            <div class="panel">
+                <h3>Crear Departamento</h3>
+
+                <input id="dep_id" placeholder="ID">
+                <input id="dep_name" placeholder="Nombre Departamento">
+
+                <button onclick="crearDepartamento()">Guardar</button>
+            </div>
+
+            <!-- TABLA -->
+            <div class="panel">
+                <h3>Listado</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Departamento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="deptTableBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="js/departamentos.js"></script>
+
+</body>
+
+</html>
