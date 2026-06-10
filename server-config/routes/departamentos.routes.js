@@ -1,28 +1,17 @@
 const express = require("express");
 const router = express.Router();
-
 const db = require("../config/db");
 
-/* =========================
-   LISTAR
-========================= */
-router.get("/", (req, res) => {
-
-    db.query("SELECT * FROM departamentos ORDER BY id", (err, rows) => {
-
-        if (err) {
-            return res.status(500).json({ message: err.message });
-        }
-
-        res.json({ data: rows });
+// LISTAR
+router.get("/departamentos", (req, res) => {
+    db.query("SELECT * FROM departamentos", (err, rows) => {
+        if (err) return res.status(500).json(err);
+        res.json(rows);
     });
-
 });
 
-/* =========================
-   CREAR
-========================= */
-router.post("/", (req, res) => {
+// CREAR
+router.post("/departamentos", (req, res) => {
 
     const { id, depto } = req.body;
 
@@ -30,15 +19,10 @@ router.post("/", (req, res) => {
         "INSERT INTO departamentos (id, depto) VALUES (?, ?)",
         [id, depto],
         (err) => {
-
-            if (err) {
-                return res.status(500).json({ message: err.message });
-            }
-
+            if (err) return res.status(500).json(err);
             res.json({ ok: true });
         }
     );
-
 });
 
 module.exports = router;
