@@ -18,7 +18,7 @@
             font-family: Arial
         }
 
-        .main-container {
+        .main {
             display: flex;
             height: 100vh
         }
@@ -38,10 +38,10 @@
 
         .menu-item {
             padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
             color: #cbd5e1;
-            font-size: 13px
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 8px
         }
 
         .menu-item:hover {
@@ -59,11 +59,10 @@
         .topbar {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             background: #111827;
-            border: 1px solid #1e293b;
             padding: 10px;
-            border-radius: 10px
+            border-radius: 10px;
+            border: 1px solid #1e293b
         }
 
         .panel {
@@ -82,11 +81,11 @@
         .btn {
             padding: 12px;
             border-radius: 10px;
-            border: 1px solid #334155;
             background: #1e293b;
+            border: 1px solid #334155;
             color: #fff;
-            cursor: pointer;
-            font-size: 12px
+            font-size: 12px;
+            cursor: pointer
         }
 
         .btn:hover {
@@ -106,7 +105,7 @@
         }
 
         .box {
-            width: 600px;
+            width: 620px;
             background: #0f172a;
             border: 1px solid #1e293b;
             padding: 15px;
@@ -147,17 +146,17 @@
             background: #273449
         }
 
-        .modal-actions {
+        .row {
             display: flex;
-            gap: 10px;
-            margin-top: 10px
+            gap: 10px
         }
     </style>
+
 </head>
 
 <body>
 
-    <div class="main-container">
+    <div class="main">
 
         <!-- SIDEBAR OK -->
         <div class="sidebar">
@@ -184,12 +183,11 @@
             <div class="panel">
                 <div class="grid">
 
-                    <button class="btn" onclick="openM('cliente')">CLIENTE</button>
-                    <button class="btn" onclick="openM('contacto')">CONTACTO</button>
-                    <button class="btn" onclick="openM('sucursal')">SUCURSAL</button>
-                    <button class="btn" onclick="openM('departamento')">DEPARTAMENTO</button>
-                    <button class="btn" onclick="openM('ciudad')">CIUDAD</button>
-                    <button class="btn" onclick="openM('whatsapp')">WHATSAPP</button>
+                    <button class="btn" onclick="openModal('departamento')">DEPARTAMENTO</button>
+                    <button class="btn" onclick="openModal('ciudad')">CIUDAD</button>
+                    <button class="btn" onclick="openModal('contacto')">CONTACTO</button>
+                    <button class="btn" onclick="openModal('sucursal')">SUCURSAL</button>
+                    <button class="btn" onclick="openModal('whatsapp')">WHATSAPP</button>
 
                 </div>
             </div>
@@ -201,11 +199,11 @@
     <div class="modal" id="modal">
         <div class="box">
 
-            <div id="content"></div>
+            <div id="modalBody"></div>
 
-            <div class="modal-actions">
-                <button class="btn" onclick="guardar()">GUARDAR</button>
-                <button class="btn" onclick="closeM()">CERRAR</button>
+            <div class="row">
+                <button class="btn" onclick="save()">GUARDAR</button>
+                <button class="btn" onclick="closeModal()">CERRAR</button>
             </div>
 
         </div>
@@ -214,33 +212,37 @@
     <script>
 
         let current = null;
-        let debounce = null;
+
+        let timers = {
+            contacto: null,
+            sucursal: null
+        };
+
         let cache = {};
 
         document.getElementById("userInfo").innerText =
             (localStorage.getItem("user") || "") + " / " + (localStorage.getItem("rol") || "");
 
-        /* ================= OPEN ================= */
-        function openM(type) {
+        /* ================= OPEN MODAL ================= */
+        function openModal(type) {
 
             current = type;
             document.getElementById("modal").style.display = "flex";
 
             if (type === "departamento") {
-                document.getElementById("content").innerHTML = `
+                document.getElementById("modalBody").innerHTML = `
 <h3>Departamento</h3>
 <label>ID</label>
 <input id="dep_id">
-
 <label>Nombre</label>
 <input id="dep_name">
 `;
             }
 
             if (type === "ciudad") {
-                document.getElementById("content").innerHTML = `
+                document.getElementById("modalBody").innerHTML = `
 <h3>Ciudad</h3>
-<label>Código</label>
+<label>ID</label>
 <input id="ciu_id">
 
 <label>Departamento ID</label>
@@ -253,8 +255,8 @@
 
             if (type === "contacto" || type === "sucursal") {
 
-                document.getElementById("content").innerHTML = `
-<h3>${type}</h3>
+                document.getElementById("modalBody").innerHTML = `
+<h3>${type.toUpperCase()}</h3>
 
 <label>Buscar cliente</label>
 <input id="search_${type}" oninput="search('${type}')">
@@ -268,25 +270,38 @@
 <input id="nombre">
 
 ${type === "contacto" ? `
-<label>Cargo</label><input id="cargo">
-<label>Teléfono</label><input id="telefono">
-<label>Email</label><input id="email">
+<label>Cargo</label>
+<input id="cargo">
+<label>Teléfono</label>
+<input id="telefono">
+<label>Email</label>
+<input id="email">
 `: `
-<label>Ciudad</label><input id="ciudad">
-<label>Dirección</label><input id="direccion">
-<label>Teléfono</label><input id="telefono">
+<label>Ciudad</label>
+<input id="ciudad">
+<label>Dirección</label>
+<input id="direccion">
+<label>Teléfono</label>
+<input id="telefono">
 `}
+`;
+            }
+
+            if (type === "whatsapp") {
+                document.getElementById("modalBody").innerHTML = `
+<h3>WhatsApp</h3>
+<textarea id="msg"></textarea>
 `;
             }
 
         }
 
-        /* ================= SEARCH OPTIMIZADO ================= */
+        /* ================= SEARCH REAL ================= */
         function search(type) {
 
-            clearTimeout(debounce);
+            clearTimeout(timers[type]);
 
-            debounce = setTimeout(async () => {
+            timers[type] = setTimeout(async () => {
 
                 const q = document.getElementById("search_" + type).value.trim();
                 if (q.length < 2) return;
@@ -302,7 +317,6 @@ ${type === "contacto" ? `
                 const d = await r.json();
 
                 cache[key] = d.data || [];
-
                 render(type, d.data || []);
 
             }, 300);
@@ -311,12 +325,12 @@ ${type === "contacto" ? `
 
         function render(type, list) {
 
-            const el = document.getElementById("res_" + type);
+            let el = document.getElementById("res_" + type);
             el.innerHTML = "";
 
             list.forEach(c => {
                 el.innerHTML += `
-<div class="item" onclick="setCli('${type}','${c.id}','${c.cliente}')">
+<div class="item" onclick="select('${type}','${c.id}','${c.cliente}')">
 <b>${c.cliente}</b><br><small>${c.id}</small>
 </div>
 `;
@@ -324,7 +338,7 @@ ${type === "contacto" ? `
 
         }
 
-        function setCli(type, id, name) {
+        function select(type, id, name) {
 
             document.getElementById("cli_" + type).value = id;
             document.getElementById("nombre").value = name;
@@ -332,67 +346,65 @@ ${type === "contacto" ? `
 
         }
 
-        /* ================= GUARDAR ================= */
-        async function guardar() {
+        /* ================= SAVE ================= */
+        async function save() {
 
             let res;
-            let body = {};
 
             if (current === "departamento") {
-                body = { id: dep_id.value, depto: dep_name.value };
-
                 res = await fetch("/api/departamentos", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify({
+                        id: dep_id.value,
+                        depto: dep_name.value
+                    })
                 });
             }
 
             if (current === "ciudad") {
-                body = { id: ciu_id.value, id_depto: dep_fk.value, municipio: ciu_name.value };
-
                 res = await fetch("/api/ciudades", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify({
+                        id: ciu_id.value,
+                        id_depto: dep_fk.value,
+                        municipio: ciu_name.value
+                    })
                 });
             }
 
             if (current === "contacto") {
-                body = {
-                    cliente_id: cli_contacto.value,
-                    nombre: nombre.value,
-                    cargo: cargo.value,
-                    telefono: telefono.value,
-                    email: email.value
-                };
-
                 res = await fetch("/api/cliente_contactos", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify({
+                        cliente_id: cli_contacto.value,
+                        nombre: nombre.value,
+                        cargo: cargo.value,
+                        telefono: telefono.value,
+                        email: email.value
+                    })
                 });
             }
 
             if (current === "sucursal") {
-                body = {
-                    cliente_id: cli_sucursal.value,
-                    nombre: nombre.value,
-                    ciudad: ciudad.value,
-                    direccion: direccion.value,
-                    telefono: telefono.value
-                };
-
                 res = await fetch("/api/cliente_sucursales", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify({
+                        cliente_id: cli_sucursal.value,
+                        nombre: nombre.value,
+                        ciudad: ciudad.value,
+                        direccion: direccion.value,
+                        telefono: telefono.value
+                    })
                 });
             }
 
             if (current === "whatsapp") {
-                localStorage.setItem("whatsapp_msg", document.getElementById("content").querySelector("textarea").value);
-                closeM();
+                localStorage.setItem("msg", msg.value);
+                closeModal();
                 return;
             }
 
@@ -404,12 +416,12 @@ ${type === "contacto" ? `
             }
 
             alert("GUARDADO OK");
-            closeM();
+            closeModal();
 
         }
 
         /* ================= CLOSE ================= */
-        function closeM() {
+        function closeModal() {
             document.getElementById("modal").style.display = "none";
         }
 
