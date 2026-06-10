@@ -7,23 +7,7 @@ const db = mysql.createPool({
     database: process.env.DB_NAME,
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
-/* =========================
-   TEST CONEXIÓN
-========================= */
-db.getConnection((err, connection) => {
-
-    if (err) {
-        console.error("❌ Error conectando a MySQL:", err.message);
-        return;
-    }
-
-    if (connection) connection.release();
-
-    console.log("✅ Conectado correctamente a la base de datos CONFIG");
+    connectionLimit: 10
 });
 
 module.exports = db;
