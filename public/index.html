@@ -1732,7 +1732,7 @@ MODAL WHATSAPP
                         });
 
                     optPrincipal.textContent =
-                        `${tarea.contacto || ""}`;
+                        `${tarea.contacto || ""} - ${tarea.tel_contacto || ""}`;
 
                     select.appendChild(optPrincipal);
                 }
@@ -1848,7 +1848,7 @@ MODAL WHATSAPP
                     document.getElementById("contactoSelect");
 
                 let contactoFinal = "";
-                //let telFinal = "";
+                let telFinal = "";
 
                 // =========================================
                 // CONTACTO
@@ -3102,7 +3102,6 @@ MODAL WHATSAPP
             telefono = telefono.replace(/\D/g, "");
 
             if (!telefono) {
-
                 alert("El contacto no tiene teléfono registrado");
                 return;
             }
@@ -3112,18 +3111,27 @@ MODAL WHATSAPP
             document.getElementById("whatsappTelefono").value =
                 telefono;
 
-            document.getElementById("whatsappIndicativo").value =
-                "";
+            document.getElementById("whatsappIndicativo").value = "";
 
-            document.getElementById("whatsappMensaje").value =
-                `Buen día ${nombre}:
+            // 🔥 Obtener usuario logueado desde variable global o sesión
+            const usuarioLogueado = window.usuarioLogueado || null;
 
-Le habla ${nombreUsuario} de RE INGENIERIA, espero que se encuentre muy bien.
+            const nombreEmisor = obtenerNombreEmisor(usuarioLogueado);
+
+            if (!nombreEmisor) return;
+
+            const mensajeBase = `Buen día ${nombre}:
+
+Le habla ${nombreEmisor} de RE INGENIERIA, espero que se encuentre muy bien.
 
 Le escribo porque estamos programando visitas técnicas y cotizaciones para los próximos proyectos de cerramiento perimetral del semestre. Como anteriormente mostró interés en nuestras soluciones, quería consultarle si aún existe la posibilidad de evaluar una propuesta para su empresa.
+
 Si es de su interés, con gusto puedo reservar un espacio para revisar el proyecto sin compromiso.
 
 Quedo atento a sus comentarios.`;
+
+            document.getElementById("whatsappMensaje").value =
+                mensajeBase;
 
             document.getElementById("modalWhatsapp")
                 .style.display = "flex";
@@ -3145,7 +3153,6 @@ Quedo atento a sus comentarios.`;
             telefono = telefono.replace(/\D/g, "");
 
             if (!telefono) {
-
                 alert("No hay teléfono disponible");
                 return;
             }
@@ -3154,9 +3161,6 @@ Quedo atento a sus comentarios.`;
                 indicativo
                     ? indicativo + telefono
                     : telefono;
-            
-            document.getElementById("m_nota").value =
-                "SE LE ESCRIBE AL CLIENTE MENSAJE DE PRESENCIA DE NUESTRA MARCA, A LA ESPERA DE RESPUESTA POR PARTE DEL CLIENTE";
 
             window.open(
                 `https://wa.me/${numeroFinal}?text=${encodeURIComponent(mensaje)}`,
@@ -3164,6 +3168,31 @@ Quedo atento a sus comentarios.`;
             );
 
             cerrarModalWhatsapp();
+        }
+
+        function obtenerNombreEmisor(usuarioLogueado) {
+
+            let nombreEmisor = "";
+
+            if (!usuarioLogueado) {
+                return "Asesor";
+            }
+
+            if (usuarioLogueado.rol === "ADMIN") {
+
+                nombreEmisor = prompt("Ingrese el nombre del asesor que enviará el mensaje:");
+
+                if (!nombreEmisor || nombreEmisor.trim() === "") {
+                    alert("Debe ingresar un nombre de asesor.");
+                    return null;
+                }
+
+            } else {
+
+                nombreEmisor = usuarioLogueado.nombre || "Asesor";
+            }
+
+            return nombreEmisor;
         }
 
         function cerrarModalWhatsapp() {
