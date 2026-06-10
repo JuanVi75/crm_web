@@ -3106,21 +3106,19 @@ MODAL WHATSAPP
                 return;
             }
 
-            window.telefonoWhatsapp = telefono;
-
-            document.getElementById("whatsappTelefono").value =
-                telefono;
-
-            document.getElementById("whatsappIndicativo").value = "";
-
-            // 🔥 Obtener usuario logueado desde variable global o sesión
-            const usuarioLogueado = window.usuarioLogueado || null;
+            const usuarioLogueado = window.usuarioLogueado;
 
             const nombreEmisor = obtenerNombreEmisor(usuarioLogueado);
 
+            // 🔴 SI FALLA, SE DETIENE TODO
             if (!nombreEmisor) return;
 
-            const mensajeBase = `Buen día ${nombre}:
+            window.telefonoWhatsapp = telefono;
+
+            document.getElementById("whatsappTelefono").value = telefono;
+            document.getElementById("whatsappIndicativo").value = "";
+
+            const mensaje = `Buen día ${nombre}:
 
 Le habla ${nombreEmisor} de RE INGENIERIA, espero que se encuentre muy bien.
 
@@ -3130,11 +3128,9 @@ Si es de su interés, con gusto puedo reservar un espacio para revisar el proyec
 
 Quedo atento a sus comentarios.`;
 
-            document.getElementById("whatsappMensaje").value =
-                mensajeBase;
+            document.getElementById("whatsappMensaje").value = mensaje;
 
-            document.getElementById("modalWhatsapp")
-                .style.display = "flex";
+            document.getElementById("modalWhatsapp").style.display = "flex";
         }
 
         function enviarWhatsapp() {
@@ -3172,27 +3168,34 @@ Quedo atento a sus comentarios.`;
 
         function obtenerNombreEmisor(usuarioLogueado) {
 
-            let nombreEmisor = "";
-
+            // 🔴 Validación base
             if (!usuarioLogueado) {
-                return "Asesor";
+                alert("No hay usuario logueado");
+                return null;
             }
 
-            if (usuarioLogueado.rol === "ADMIN") {
+            const rol = (usuarioLogueado.rol || "").toUpperCase();
 
-                nombreEmisor = prompt("Ingrese el nombre del asesor que enviará el mensaje:");
+            // 🔥 CASO ADMIN: siempre preguntar
+            if (rol === "ADMIN") {
 
-                if (!nombreEmisor || nombreEmisor.trim() === "") {
-                    alert("Debe ingresar un nombre de asesor.");
+                const nombre = prompt("Ingrese el nombre del asesor que enviará el mensaje:");
+
+                if (!nombre || nombre.trim() === "") {
+                    alert("Debe ingresar el nombre del asesor para continuar");
                     return null;
                 }
 
-            } else {
-
-                nombreEmisor = usuarioLogueado.nombre || "Asesor";
+                return nombre.trim();
             }
 
-            return nombreEmisor;
+            // 🔵 CASO NORMAL: usar nombre real del usuario
+            if (usuarioLogueado.nombre && usuarioLogueado.nombre.trim() !== "") {
+                return usuarioLogueado.nombre.trim();
+            }
+
+            alert("El usuario no tiene nombre registrado");
+            return null;
         }
 
         function cerrarModalWhatsapp() {
