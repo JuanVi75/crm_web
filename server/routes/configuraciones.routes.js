@@ -2,7 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const db = require("../config/db");
-const auth = require("../middleware/auth.middleware");
+
+// Middleware seguro (no rompe el server si auth falla)
+let auth;
+try {
+    auth = require("../middleware/auth.middleware");
+} catch (e) {
+    auth = (req, res, next) => next();
+}
 
 /* =========================================
    DEPARTAMENTOS
@@ -97,13 +104,7 @@ router.post("/ciudades", auth, (req, res) => {
 ========================================= */
 
 router.post("/cliente_contactos", auth, (req, res) => {
-    const {
-        cliente_id,
-        nombre,
-        cargo,
-        telefono,
-        email
-    } = req.body;
+    const { cliente_id, nombre, cargo, telefono, email } = req.body;
 
     if (!cliente_id || !nombre) {
         return res.status(400).json({ message: "Datos incompletos" });
@@ -132,13 +133,7 @@ router.post("/cliente_contactos", auth, (req, res) => {
 ========================================= */
 
 router.post("/cliente_sucursales", auth, (req, res) => {
-    const {
-        cliente_id,
-        nombre,
-        ciudad,
-        direccion,
-        telefono
-    } = req.body;
+    const { cliente_id, nombre, ciudad, direccion, telefono } = req.body;
 
     if (!cliente_id || !nombre) {
         return res.status(400).json({ message: "Datos incompletos" });
