@@ -15,7 +15,7 @@
             margin: 0;
             background: #0b1220;
             color: #fff;
-            font-family: Arial
+            font-family: Arial;
         }
 
         .main {
@@ -27,7 +27,7 @@
             width: 220px;
             background: #0f172a;
             border-right: 1px solid #1e293b;
-            padding: 12px
+            padding: 12px;
         }
 
         .menu-item {
@@ -35,7 +35,7 @@
             color: #cbd5e1;
             font-size: 13px;
             cursor: pointer;
-            border-radius: 8px
+            border-radius: 8px;
         }
 
         .menu-item:hover {
@@ -47,27 +47,27 @@
             padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 14px
+            gap: 14px;
         }
 
         .topbar {
             background: #111827;
             padding: 10px;
             border-radius: 10px;
-            border: 1px solid #1e293b
+            border: 1px solid #1e293b;
         }
 
         .panel {
             background: #111827;
             border: 1px solid #1e293b;
             border-radius: 12px;
-            padding: 12px
+            padding: 12px;
         }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px
+            gap: 10px;
         }
 
         .btn {
@@ -77,7 +77,7 @@
             color: #fff;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 12px
+            font-size: 12px;
         }
 
         .modal {
@@ -86,7 +86,7 @@
             inset: 0;
             background: rgba(0, 0, 0, .6);
             align-items: center;
-            justify-content: center
+            justify-content: center;
         }
 
         .box {
@@ -94,12 +94,12 @@
             background: #0f172a;
             border: 1px solid #1e293b;
             padding: 15px;
-            border-radius: 10px
+            border-radius: 10px;
         }
 
         label {
             font-size: 11px;
-            color: #94a3b8
+            color: #94a3b8;
         }
 
         input,
@@ -111,20 +111,20 @@
             border: 1px solid #334155;
             color: #fff;
             border-radius: 8px;
-            font-size: 12px
+            font-size: 12px;
         }
 
         .search {
             max-height: 160px;
             overflow: auto;
             background: #1e293b;
-            border-radius: 8px
+            border-radius: 8px;
         }
 
         .item {
             padding: 8px;
             cursor: pointer;
-            font-size: 12px
+            font-size: 12px;
         }
 
         .item:hover {
@@ -134,17 +134,15 @@
         .row {
             display: flex;
             gap: 10px;
-            margin-top: 10px
+            margin-top: 10px;
         }
     </style>
-
 </head>
 
 <body>
 
     <div class="main">
 
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="menu-item" onclick="location.href='index.html'">🏠 INICIO</div>
             <div class="menu-item" onclick="location.href='clientes.html'">👥 CLIENTES</div>
@@ -155,7 +153,6 @@
             <div class="menu-item" onclick="location.href='configuraciones.html'">⚙️ CONFIGURACIONES</div>
         </div>
 
-        <!-- CONTENT -->
         <div class="content">
 
             <div class="topbar"><b>CONFIGURACIONES</b></div>
@@ -195,12 +192,16 @@
         let debounce = {};
         let cache = {};
 
-        /* ================= OPEN ================= */
+        /* =========================
+           OPEN MODAL
+        ========================= */
+
         function openModal(type) {
+
             current = type;
-            document.getElementById("modal").style.display = "flex";
 
             const body = document.getElementById("body");
+            document.getElementById("modal").style.display = "flex";
 
             if (type === "departamento") {
                 body.innerHTML = `
@@ -215,8 +216,6 @@
             if (type === "ciudad") {
                 body.innerHTML = `
 <h3>Ciudad</h3>
-<label>ID</label>
-<input id="ciu_id">
 <label>Depto ID</label>
 <input id="dep_id">
 <label>Municipio</label>
@@ -240,19 +239,13 @@
 <input id="nombre">
 
 ${type === "contacto" ? `
-<label>Cargo</label>
-<input id="cargo">
-<label>Teléfono</label>
-<input id="telefono">
-<label>Email</label>
-<input id="email">
-`: `
-<label>Ciudad</label>
-<input id="ciudad">
-<label>Dirección</label>
-<input id="direccion">
-<label>Teléfono</label>
-<input id="telefono">
+<label>Cargo</label><input id="cargo">
+<label>Teléfono</label><input id="telefono">
+<label>Email</label><input id="email">
+` : `
+<label>Ciudad</label><input id="ciudad">
+<label>Dirección</label><input id="direccion">
+<label>Teléfono</label><input id="telefono">
 `}
 `;
             }
@@ -265,37 +258,49 @@ ${type === "contacto" ? `
             }
         }
 
-        /* ================= SEARCH ================= */
-        function searchClient() {
+        /* =========================
+           SEARCH OPTIMIZADO REAL
+        ========================= */
 
-            clearTimeout(debounce.search);
+        async function searchClient() {
 
-            debounce.search = setTimeout(async () => {
+            clearTimeout(debounce.s);
+
+            debounce.s = setTimeout(async () => {
 
                 const q = document.getElementById("search").value.trim();
+
                 if (q.length < 2) return;
 
-                if (cache[q]) {
-                    render(cache[q]);
-                    return;
+                if (cache[q]) return render(cache[q]);
+
+                try {
+
+                    const r = await fetch("/api/clientes?search=" + encodeURIComponent(q));
+                    const d = await r.json();
+
+                    const list = d.data || [];
+
+                    cache[q] = list;
+
+                    render(list);
+
+                } catch (e) {
+                    console.log("error search");
                 }
 
-                const r = await fetch("/api/clientes?search=" + encodeURIComponent(q));
-                const d = await r.json();
-
-                cache[q] = d.data || [];
-
-                render(cache[q]);
-
-            }, 300);
-
+            }, 250);
         }
 
         function render(list) {
+
             const el = document.getElementById("res");
+            if (!el) return;
+
             el.innerHTML = "";
 
             list.forEach(c => {
+
                 el.innerHTML += `
 <div class="item" onclick="selectClient('${c.id}','${c.cliente}')">
 <b>${c.cliente}</b><br><small>${c.id}</small>
@@ -305,12 +310,16 @@ ${type === "contacto" ? `
         }
 
         function selectClient(id, name) {
+
             document.getElementById("cli").value = id;
             document.getElementById("nombre").value = name;
             document.getElementById("res").innerHTML = "";
         }
 
-        /* ================= SAVE ================= */
+        /* =========================
+           SAVE
+        ========================= */
+
         async function save() {
 
             try {
@@ -333,7 +342,6 @@ ${type === "contacto" ? `
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            id: ciu_id.value,
                             id_depto: dep_id.value,
                             municipio: ciu_name.value
                         })
@@ -377,7 +385,7 @@ ${type === "contacto" ? `
                 const data = await res.json();
 
                 if (!res.ok) {
-                    alert(data.message || "ERROR BD");
+                    alert(data.message || "ERROR");
                     return;
                 }
 
@@ -387,10 +395,12 @@ ${type === "contacto" ? `
             } catch (e) {
                 alert("ERROR DE CONEXIÓN");
             }
-
         }
 
-        /* ================= CLOSE ================= */
+        /* =========================
+           CLOSE
+        ========================= */
+
         function closeModal() {
             document.getElementById("modal").style.display = "none";
         }
