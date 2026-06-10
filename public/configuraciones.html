@@ -152,12 +152,12 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 8px;
-            max-height: 140px;
+            max-height: 160px;
             overflow: auto;
         }
 
         .search-item {
-            padding: 6px;
+            padding: 7px;
             cursor: pointer;
             font-size: 11px;
         }
@@ -172,7 +172,7 @@
 
     <div class="main-container">
 
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR (INTACTO) -->
         <div class="sidebar">
             <div class="logo">CRM WEB</div>
 
@@ -228,138 +228,174 @@
     <script>
 
         let current = null;
+        let debounceTimer = null;
+        let cacheClientes = {};
 
         document.getElementById("userInfo").innerText =
             (localStorage.getItem("user") || "") + " / " + (localStorage.getItem("rol") || "");
 
+        /* ================= OPEN MODAL ================= */
         function openModal(type) {
 
             current = type;
             document.getElementById("modal").style.display = "flex";
 
+            /* CLIENTE */
             if (type === "cliente") {
                 document.getElementById("modalContent").innerHTML = `
-                <h3>Buscar Cliente</h3>
+<h3>Buscar Cliente</h3>
 
-                <input id="buscarCliente" placeholder="Nombre o NIT" oninput="buscarClientes()">
+<input id="buscarCliente" placeholder="Nombre o NIT" oninput="buscarClientesDebounced()">
 
-                <div id="resultados" class="search-results"></div>
+<div id="resultados" class="search-results"></div>
 
-                <label>NIT</label>
-                <input id="cliente_id" readonly>
+<label>NIT</label>
+<input id="cliente_id" readonly>
 
-                <label>Cliente</label>
-                <input id="cliente_nombre" readonly>
-                `;
+<label>Cliente</label>
+<input id="cliente_nombre" readonly>
+`;
             }
 
+            /* CONTACTO */
             if (type === "contacto") {
                 document.getElementById("modalContent").innerHTML = `
-                <h3>Contacto</h3>
+<h3>Contacto</h3>
 
-                <input id="buscarClienteContacto" placeholder="Buscar cliente" oninput="buscarClientesModal(this.value,'contacto')">
+<input id="buscarClienteContacto" placeholder="Buscar cliente" oninput="buscarClientesModalDebounced(this.value,'contacto')">
 
-                <div id="resultadosContacto" class="search-results"></div>
+<div id="resultadosContacto" class="search-results"></div>
 
-                <label>Cliente ID (NIT)</label>
-                <input id="cliente_id_contacto" readonly>
+<label>Cliente ID</label>
+<input id="cliente_id_contacto" readonly>
 
-                <label>Nombre</label>
-                <input id="nombre">
+<label>Nombre</label>
+<input id="nombre">
 
-                <label>Cargo</label>
-                <input id="cargo">
+<label>Cargo</label>
+<input id="cargo">
 
-                <label>Teléfono</label>
-                <input id="telefono">
+<label>Teléfono</label>
+<input id="telefono">
 
-                <label>Email</label>
-                <input id="email">
-                `;
+<label>Email</label>
+<input id="email">
+`;
             }
 
+            /* SUCURSAL */
             if (type === "sucursal") {
                 document.getElementById("modalContent").innerHTML = `
-                <h3>Sucursal</h3>
+<h3>Sucursal</h3>
 
-                <input id="buscarClienteSucursal" placeholder="Buscar cliente" oninput="buscarClientesModal(this.value,'sucursal')">
+<input id="buscarClienteSucursal" placeholder="Buscar cliente" oninput="buscarClientesModalDebounced(this.value,'sucursal')">
 
-                <div id="resultadosSucursal" class="search-results"></div>
+<div id="resultadosSucursal" class="search-results"></div>
 
-                <label>Cliente ID (NIT)</label>
-                <input id="cliente_id_sucursal" readonly>
+<label>Cliente ID</label>
+<input id="cliente_id_sucursal" readonly>
 
-                <label>Nombre</label>
-                <input id="nombre">
+<label>Nombre</label>
+<input id="nombre">
 
-                <label>Ciudad</label>
-                <input id="ciudad">
+<label>Ciudad</label>
+<input id="ciudad">
 
-                <label>Dirección</label>
-                <input id="direccion">
+<label>Dirección</label>
+<input id="direccion">
 
-                <label>Teléfono</label>
-                <input id="telefono">
-                `;
+<label>Teléfono</label>
+<input id="telefono">
+`;
             }
 
+            /* DEPARTAMENTO */
             if (type === "departamento") {
                 document.getElementById("modalContent").innerHTML = `
-                <h3>Departamento</h3>
+<h3>Departamento</h3>
 
-                <label>ID</label>
-                <input id="id">
+<label>ID</label>
+<input id="depto_id">
 
-                <label>Departamento</label>
-                <input id="depto">
-                `;
+<label>Departamento</label>
+<input id="depto_nombre">
+`;
             }
 
+            /* CIUDAD */
             if (type === "ciudad") {
                 document.getElementById("modalContent").innerHTML = `
-                <h3>Ciudad</h3>
+<h3>Ciudad</h3>
 
-                <label>Código ciudad (ej: 3001)</label>
-                <input id="id">
+<label>Código (ej: 3001)</label>
+<input id="ciudad_id">
 
-                <label>Departamento ID</label>
-                <input id="id_depto">
+<label>Departamento ID</label>
+<input id="depto_id">
 
-                <label>Municipio</label>
-                <input id="municipio">
-                `;
+<label>Municipio</label>
+<input id="municipio">
+`;
             }
 
+            /* WHATSAPP */
             if (type === "whatsapp") {
                 document.getElementById("modalContent").innerHTML = `
-                <h3>Mensaje WhatsApp</h3>
-
-                <textarea id="mensaje" rows="6"></textarea>
-                `;
+<h3>WhatsApp</h3>
+<textarea id="mensaje" rows="6"></textarea>
+`;
             }
+
         }
 
+        /* ================= CLOSE ================= */
         function closeModal() {
             document.getElementById("modal").style.display = "none";
         }
 
+        /* ================= DEBOUNCED SEARCH CLIENTE ================= */
+        function buscarClientesDebounced() {
+
+            clearTimeout(debounceTimer);
+
+            debounceTimer = setTimeout(() => {
+                buscarClientes();
+            }, 350);
+
+        }
+
         async function buscarClientes() {
 
-            const q = document.getElementById("buscarCliente").value;
+            const q = document.getElementById("buscarCliente").value.trim();
             if (q.length < 2) return;
+
+            if (cacheClientes[q]) {
+                renderClientes(cacheClientes[q]);
+                return;
+            }
 
             const res = await fetch("/api/clientes?search=" + q);
             const data = await res.json();
 
+            cacheClientes[q] = data.data || [];
+
+            renderClientes(cacheClientes[q]);
+
+        }
+
+        function renderClientes(list) {
+
             const cont = document.getElementById("resultados");
             cont.innerHTML = "";
 
-            (data.data || []).forEach(c => {
+            list.forEach(c => {
                 cont.innerHTML += `
-                <div class="search-item" onclick="setCliente('${c.id}','${c.cliente}')">
-                    ${c.cliente} - ${c.id}
-                </div>`;
+<div class="search-item" onclick="setCliente('${c.id}','${c.cliente}')">
+${c.cliente} - ${c.id}
+</div>
+`;
             });
+
         }
 
         function setCliente(id, nombre) {
@@ -368,22 +404,52 @@
             document.getElementById("resultados").innerHTML = "";
         }
 
+        /* ================= MODAL SEARCH CONTACTO/SUCURSAL ================= */
+        function buscarClientesModalDebounced(val, tipo) {
+
+            clearTimeout(debounceTimer);
+
+            debounceTimer = setTimeout(() => {
+                buscarClientesModal(val, tipo);
+            }, 350);
+
+        }
+
         async function buscarClientesModal(val, tipo) {
 
             if (val.length < 2) return;
 
+            const cacheKey = tipo + "_" + val;
+
+            if (cacheClientes[cacheKey]) {
+                renderModal(tipo, cacheClientes[cacheKey]);
+                return;
+            }
+
             const res = await fetch("/api/clientes?search=" + val);
             const data = await res.json();
 
-            let cont = document.getElementById(tipo === "contacto" ? "resultadosContacto" : "resultadosSucursal");
+            cacheClientes[cacheKey] = data.data || [];
+
+            renderModal(tipo, cacheClientes[cacheKey]);
+
+        }
+
+        function renderModal(tipo, list) {
+
+            let contId = tipo === "contacto" ? "resultadosContacto" : "resultadosSucursal";
+
+            let cont = document.getElementById(contId);
             cont.innerHTML = "";
 
-            (data.data || []).forEach(c => {
+            list.forEach(c => {
                 cont.innerHTML += `
-                <div class="search-item" onclick="setClienteModal('${c.id}','${tipo}')">
-                    ${c.cliente} - ${c.id}
-                </div>`;
+<div class="search-item" onclick="setClienteModal('${c.id}','${tipo}')">
+${c.cliente} - ${c.id}
+</div>
+`;
             });
+
         }
 
         function setClienteModal(id, tipo) {
@@ -397,11 +463,14 @@
                 document.getElementById("cliente_id_sucursal").value = id;
                 document.getElementById("resultadosSucursal").innerHTML = "";
             }
+
         }
 
+        /* ================= GUARDAR ================= */
         async function guardar() {
 
             if (current === "contacto") {
+
                 await fetch("/api/cliente_contactos", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -413,9 +482,11 @@
                         email: email.value
                     })
                 });
+
             }
 
             if (current === "sucursal") {
+
                 await fetch("/api/cliente_sucursales", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -427,29 +498,34 @@
                         telefono: telefono.value
                     })
                 });
+
             }
 
             if (current === "departamento") {
+
                 await fetch("/api/departamentos", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        id: id.value,
-                        depto: depto.value
+                        id: depto_id.value,
+                        depto: depto_nombre.value
                     })
                 });
+
             }
 
             if (current === "ciudad") {
+
                 await fetch("/api/ciudades", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        id: id.value,
+                        id: ciudad_id.value,
                         municipio: municipio.value,
-                        id_depto: id_depto.value
+                        id_depto: depto_id.value
                     })
                 });
+
             }
 
             if (current === "whatsapp") {
@@ -457,6 +533,8 @@
             }
 
             closeModal();
+            alert("OK");
+
         }
 
     </script>
