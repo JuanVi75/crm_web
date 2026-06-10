@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM WEB - CONFIGURACIONES</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #0b1220;
+            color: white;
+            font-family: Arial;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #0f172a;
+            border-right: 1px solid #1e293b;
+            padding: 12px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+
+        .menu-item {
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .menu-item:hover {
+            background: #1e293b;
+        }
+
+        .content {
+            flex: 1;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111827;
+            border: 1px solid #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .btn-module {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .btn-module:hover {
+            background: #273449;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            width: 560px;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        label {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            font-size: 11px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            color: white;
+        }
+
+        .btn-green {
+            background: #16a34a;
+        }
+
+        .btn-gray {
+            background: #475569;
+        }
+
+        .search-results {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            max-height: 140px;
+            overflow: auto;
+        }
+
+        .search-item {
+            padding: 6px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .search-item:hover {
+            background: #273449;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">CRM WEB</div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">🏠 INICIO</div>
+            <div class="menu-item" onclick="window.location.href='clientes.html'">👥 CLIENTES</div>
+            <div class="menu-item" onclick="window.location.href='seguimientos.html'">📅 SEGUIMIENTOS</div>
+            <div class="menu-item">📞 LLAMADAS</div>
+            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">📄 COTIZACIONES</div>
+            <div class="menu-item" onclick="window.location.href='pedidos.html'">📦 PEDIDOS</div>
+            <div class="menu-item" onclick="window.location.href='configuraciones.html'">⚙️ CONFIGURACIONES</div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <div class="topbar">
+                <div><b>CONFIGURACIONES</b></div>
+                <div id="userInfo"></div>
+            </div>
+
+            <div class="panel">
+
+                <div class="grid-buttons">
+
+                    <div class="btn-module" onclick="openModal('cliente')">🔎 CLIENTE</div>
+                    <div class="btn-module" onclick="openModal('contacto')">👥 CONTACTO</div>
+                    <div class="btn-module" onclick="openModal('sucursal')">🏬 SUCURSAL</div>
+                    <div class="btn-module" onclick="openModal('departamento')">🏢 DEPARTAMENTO</div>
+                    <div class="btn-module" onclick="openModal('ciudad')">🌍 CIUDAD</div>
+                    <div class="btn-module" onclick="openModal('whatsapp')">💬 WHATSAPP</div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="modal">
+        <div class="modal-box">
+
+            <div id="modalContent"></div>
+
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-green" onclick="guardar()">Guardar</button>
+                <button class="btn btn-gray" onclick="closeModal()">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        let current = null;
+
+        document.getElementById("userInfo").innerText =
+            (localStorage.getItem("user") || "") + " / " + (localStorage.getItem("rol") || "");
+
+        function openModal(type) {
+
+            current = type;
+            document.getElementById("modal").style.display = "flex";
+
+            if (type === "cliente") {
+                document.getElementById("modalContent").innerHTML = `
+                <h3>Buscar Cliente</h3>
+
+                <input id="buscarCliente" placeholder="Nombre o NIT" oninput="buscarClientes()">
+
+                <div id="resultados" class="search-results"></div>
+
+                <label>NIT</label>
+                <input id="cliente_id" readonly>
+
+                <label>Cliente</label>
+                <input id="cliente_nombre" readonly>
+                `;
+            }
+
+            if (type === "contacto") {
+                document.getElementById("modalContent").innerHTML = `
+                <h3>Contacto</h3>
+
+                <input id="buscarClienteContacto" placeholder="Buscar cliente" oninput="buscarClientesModal(this.value,'contacto')">
+
+                <div id="resultadosContacto" class="search-results"></div>
+
+                <label>Cliente ID (NIT)</label>
+                <input id="cliente_id_contacto" readonly>
+
+                <label>Nombre</label>
+                <input id="nombre">
+
+                <label>Cargo</label>
+                <input id="cargo">
+
+                <label>Teléfono</label>
+                <input id="telefono">
+
+                <label>Email</label>
+                <input id="email">
+                `;
+            }
+
+            if (type === "sucursal") {
+                document.getElementById("modalContent").innerHTML = `
+                <h3>Sucursal</h3>
+
+                <input id="buscarClienteSucursal" placeholder="Buscar cliente" oninput="buscarClientesModal(this.value,'sucursal')">
+
+                <div id="resultadosSucursal" class="search-results"></div>
+
+                <label>Cliente ID (NIT)</label>
+                <input id="cliente_id_sucursal" readonly>
+
+                <label>Nombre</label>
+                <input id="nombre">
+
+                <label>Ciudad</label>
+                <input id="ciudad">
+
+                <label>Dirección</label>
+                <input id="direccion">
+
+                <label>Teléfono</label>
+                <input id="telefono">
+                `;
+            }
+
+            if (type === "departamento") {
+                document.getElementById("modalContent").innerHTML = `
+                <h3>Departamento</h3>
+
+                <label>ID</label>
+                <input id="id">
+
+                <label>Departamento</label>
+                <input id="depto">
+                `;
+            }
+
+            if (type === "ciudad") {
+                document.getElementById("modalContent").innerHTML = `
+                <h3>Ciudad</h3>
+
+                <label>Código ciudad (ej: 3001)</label>
+                <input id="id">
+
+                <label>Departamento ID</label>
+                <input id="id_depto">
+
+                <label>Municipio</label>
+                <input id="municipio">
+                `;
+            }
+
+            if (type === "whatsapp") {
+                document.getElementById("modalContent").innerHTML = `
+                <h3>Mensaje WhatsApp</h3>
+
+                <textarea id="mensaje" rows="6"></textarea>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+
+        async function buscarClientes() {
+
+            const q = document.getElementById("buscarCliente").value;
+            if (q.length < 2) return;
+
+            const res = await fetch("/api/clientes?search=" + q);
+            const data = await res.json();
+
+            const cont = document.getElementById("resultados");
+            cont.innerHTML = "";
+
+            (data.data || []).forEach(c => {
+                cont.innerHTML += `
+                <div class="search-item" onclick="setCliente('${c.id}','${c.cliente}')">
+                    ${c.cliente} - ${c.id}
+                </div>`;
+            });
+        }
+
+        function setCliente(id, nombre) {
+            document.getElementById("cliente_id").value = id;
+            document.getElementById("cliente_nombre").value = nombre;
+            document.getElementById("resultados").innerHTML = "";
+        }
+
+        async function buscarClientesModal(val, tipo) {
+
+            if (val.length < 2) return;
+
+            const res = await fetch("/api/clientes?search=" + val);
+            const data = await res.json();
+
+            let cont = document.getElementById(tipo === "contacto" ? "resultadosContacto" : "resultadosSucursal");
+            cont.innerHTML = "";
+
+            (data.data || []).forEach(c => {
+                cont.innerHTML += `
+                <div class="search-item" onclick="setClienteModal('${c.id}','${tipo}')">
+                    ${c.cliente} - ${c.id}
+                </div>`;
+            });
+        }
+
+        function setClienteModal(id, tipo) {
+
+            if (tipo === "contacto") {
+                document.getElementById("cliente_id_contacto").value = id;
+                document.getElementById("resultadosContacto").innerHTML = "";
+            }
+
+            if (tipo === "sucursal") {
+                document.getElementById("cliente_id_sucursal").value = id;
+                document.getElementById("resultadosSucursal").innerHTML = "";
+            }
+        }
+
+        async function guardar() {
+
+            if (current === "contacto") {
+                await fetch("/api/cliente_contactos", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        cliente_id: cliente_id_contacto.value,
+                        nombre: nombre.value,
+                        cargo: cargo.value,
+                        telefono: telefono.value,
+                        email: email.value
+                    })
+                });
+            }
+
+            if (current === "sucursal") {
+                await fetch("/api/cliente_sucursales", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        cliente_id: cliente_id_sucursal.value,
+                        nombre: nombre.value,
+                        ciudad: ciudad.value,
+                        direccion: direccion.value,
+                        telefono: telefono.value
+                    })
+                });
+            }
+
+            if (current === "departamento") {
+                await fetch("/api/departamentos", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: id.value,
+                        depto: depto.value
+                    })
+                });
+            }
+
+            if (current === "ciudad") {
+                await fetch("/api/ciudades", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: id.value,
+                        municipio: municipio.value,
+                        id_depto: id_depto.value
+                    })
+                });
+            }
+
+            if (current === "whatsapp") {
+                localStorage.setItem("whatsapp_msg", mensaje.value);
+            }
+
+            closeModal();
+        }
+
+    </script>
+
+</body>
+
+</html>
