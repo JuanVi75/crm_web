@@ -51,8 +51,6 @@
         }
 
         .topbar {
-            display: flex;
-            justify-content: space-between;
             background: #111827;
             padding: 10px;
             border-radius: 10px;
@@ -74,12 +72,12 @@
 
         .btn {
             padding: 12px;
-            border-radius: 10px;
             background: #1e293b;
             border: 1px solid #334155;
             color: #fff;
-            font-size: 12px;
-            cursor: pointer
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px
         }
 
         .modal {
@@ -160,9 +158,7 @@
         <!-- CONTENT -->
         <div class="content">
 
-            <div class="topbar">
-                <b>CONFIGURACIONES</b>
-            </div>
+            <div class="topbar"><b>CONFIGURACIONES</b></div>
 
             <div class="panel">
                 <div class="grid">
@@ -204,20 +200,27 @@
             current = type;
             document.getElementById("modal").style.display = "flex";
 
+            const body = document.getElementById("body");
+
             if (type === "departamento") {
                 body.innerHTML = `
 <h3>Departamento</h3>
-<label>ID</label><input id="dep_id">
-<label>Nombre</label><input id="dep_name">
+<label>ID</label>
+<input id="dep_id">
+<label>Nombre</label>
+<input id="dep_name">
 `;
             }
 
             if (type === "ciudad") {
                 body.innerHTML = `
 <h3>Ciudad</h3>
-<label>ID</label><input id="ciu_id">
-<label>Depto ID</label><input id="dep_id">
-<label>Municipio</label><input id="ciu_name">
+<label>ID</label>
+<input id="ciu_id">
+<label>Depto ID</label>
+<input id="dep_id">
+<label>Municipio</label>
+<input id="ciu_name">
 `;
             }
 
@@ -237,13 +240,19 @@
 <input id="nombre">
 
 ${type === "contacto" ? `
-<label>Cargo</label><input id="cargo">
-<label>Teléfono</label><input id="telefono">
-<label>Email</label><input id="email">
+<label>Cargo</label>
+<input id="cargo">
+<label>Teléfono</label>
+<input id="telefono">
+<label>Email</label>
+<input id="email">
 `: `
-<label>Ciudad</label><input id="ciudad">
-<label>Dirección</label><input id="direccion">
-<label>Teléfono</label><input id="telefono">
+<label>Ciudad</label>
+<input id="ciudad">
+<label>Dirección</label>
+<input id="direccion">
+<label>Teléfono</label>
+<input id="telefono">
 `}
 `;
             }
@@ -256,14 +265,14 @@ ${type === "contacto" ? `
             }
         }
 
-        /* ================= SEARCH OPTIMIZADO REAL ================= */
+        /* ================= SEARCH ================= */
         function searchClient() {
 
             clearTimeout(debounce.search);
 
             debounce.search = setTimeout(async () => {
 
-                let q = document.getElementById("search").value.trim();
+                const q = document.getElementById("search").value.trim();
                 if (q.length < 2) return;
 
                 if (cache[q]) {
@@ -271,44 +280,42 @@ ${type === "contacto" ? `
                     return;
                 }
 
-                let r = await fetch("/api/clientes?search=" + encodeURIComponent(q));
-                let d = await r.json();
+                const r = await fetch("/api/clientes?search=" + encodeURIComponent(q));
+                const d = await r.json();
 
-                let list = d.data || [];
+                cache[q] = d.data || [];
 
-                cache[q] = list;
-
-                render(list);
+                render(cache[q]);
 
             }, 300);
 
         }
 
         function render(list) {
-            let el = document.getElementById("res");
+            const el = document.getElementById("res");
             el.innerHTML = "";
 
             list.forEach(c => {
                 el.innerHTML += `
-<div class="item" onclick="select('${c.id}','${c.cliente}')">
+<div class="item" onclick="selectClient('${c.id}','${c.cliente}')">
 <b>${c.cliente}</b><br><small>${c.id}</small>
 </div>
 `;
             });
         }
 
-        function select(id, name) {
-            cli.value = id;
-            nombre.value = name;
-            res.innerHTML = "";
+        function selectClient(id, name) {
+            document.getElementById("cli").value = id;
+            document.getElementById("nombre").value = name;
+            document.getElementById("res").innerHTML = "";
         }
 
-        /* ================= SAVE REAL ================= */
+        /* ================= SAVE ================= */
         async function save() {
 
-            let res;
-
             try {
+
+                let res;
 
                 if (current === "departamento") {
                     res = await fetch("/api/departamentos", {
@@ -361,7 +368,13 @@ ${type === "contacto" ? `
                     });
                 }
 
-                let data = await res.json();
+                if (current === "whatsapp") {
+                    localStorage.setItem("msg", document.getElementById("msg").value);
+                    closeModal();
+                    return;
+                }
+
+                const data = await res.json();
 
                 if (!res.ok) {
                     alert(data.message || "ERROR BD");
