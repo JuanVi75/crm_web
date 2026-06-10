@@ -1,32 +1,16 @@
 const express = require("express");
-const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
 
-const db = require("./config/db");
+// FRONTEND CONFIG
+app.use("/config", express.static(path.join(__dirname, "../public/config")));
 
-/* =========================
-   FRONTEND CONFIG
-========================= */
-app.use("/config", express.static("../public/config"));
+// ROUTES
+app.use(require("./routes/departamentos.routes"));
 
-/* =========================
-   API CONFIG (MISMO DOMINIO)
-========================= */
-app.use("/config-api/departamentos", require("./routes/departamentos.routes"));
-
-/* =========================
-   HEALTH
-========================= */
-app.get("/", (req, res) => {
-   res.json({ message: "CONFIG SERVER OK" });
-});
-
-const PORT = process.env.PORT || 4001;
-
-app.listen(PORT, () => {
-   console.log("CONFIG SERVER RUNNING");
+app.listen(4001, () => {
+   console.log("✅ server-config activo en puerto 4001");
 });
