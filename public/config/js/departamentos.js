@@ -1,28 +1,22 @@
-const API = "/config-api/departamentos";
-
-document.addEventListener("DOMContentLoaded", () => {
-    cargar();
-});
+const API = "/departamentos";
 
 async function cargar() {
-
     const res = await fetch(API);
     const data = await res.json();
 
-    const tbody = document.getElementById("deptTableBody");
-
-    tbody.innerHTML = data.data.map(d => `
-        <tr>
-            <td>${d.id}</td>
-            <td>${d.depto}</td>
-        </tr>
-    `).join("");
+    document.getElementById("tbody").innerHTML =
+        data.map(d => `
+            <tr>
+                <td>${d.id}</td>
+                <td>${d.depto}</td>
+            </tr>
+        `).join("");
 }
 
-async function crearDepartamento() {
+async function guardar() {
 
-    const id = document.getElementById("dep_id").value;
-    const depto = document.getElementById("dep_name").value;
+    const id = document.getElementById("id").value;
+    const depto = document.getElementById("depto").value;
 
     await fetch(API, {
         method: "POST",
@@ -30,5 +24,10 @@ async function crearDepartamento() {
         body: JSON.stringify({ id, depto })
     });
 
+    document.getElementById("id").value = "";
+    document.getElementById("depto").value = "";
+
     cargar();
 }
+
+cargar();
