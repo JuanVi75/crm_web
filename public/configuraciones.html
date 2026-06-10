@@ -113,6 +113,11 @@
             border-radius: 10px
         }
 
+        label {
+            font-size: 11px;
+            color: #94a3b8
+        }
+
         input,
         textarea {
             width: 100%;
@@ -126,7 +131,7 @@
         }
 
         .search {
-            max-height: 150px;
+            max-height: 160px;
             overflow: auto;
             background: #1e293b;
             border-radius: 8px
@@ -141,6 +146,12 @@
         .item:hover {
             background: #273449
         }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px
+        }
     </style>
 </head>
 
@@ -152,13 +163,14 @@
         <div class="sidebar">
             <div class="logo">CRM WEB</div>
 
-            <div class="menu-item" onclick="window.location.href='index.html'">🏠 INICIO</div>
-            <div class="menu-item" onclick="window.location.href='clientes.html'">👥 CLIENTES</div>
-            <div class="menu-item" onclick="window.location.href='seguimientos.html'">📅 SEGUIMIENTOS</div>
-            <div class="menu-item" onclick="window.location.href='llamadas.html'">📞 LLAMADAS</div>
-            <div class="menu-item" onclick="window.location.href='cotizaciones.html'">📄 COTIZACIONES</div>
-            <div class="menu-item" onclick="window.location.href='pedidos.html'">📦 PEDIDOS</div>
-            <div class="menu-item" onclick="window.location.href='configuraciones.html'">⚙️ CONFIGURACIONES</div>
+            <div class="menu-item" onclick="location.href='index.html'">🏠 INICIO</div>
+            <div class="menu-item" onclick="location.href='clientes.html'">👥 CLIENTES</div>
+            <div class="menu-item" onclick="location.href='seguimientos.html'">📅 SEGUIMIENTOS</div>
+            <div class="menu-item" onclick="location.href='llamadas.html'">📞 LLAMADAS</div>
+            <div class="menu-item" onclick="location.href='cotizaciones.html'">📄 COTIZACIONES</div>
+            <div class="menu-item" onclick="location.href='pedidos.html'">📦 PEDIDOS</div>
+            <div class="menu-item" onclick="location.href='configuraciones.html'">⚙️ CONFIGURACIONES</div>
+
         </div>
 
         <!-- CONTENT -->
@@ -191,30 +203,24 @@
 
             <div id="content"></div>
 
-            <button onclick="save()" class="btn">GUARDAR</button>
-            <button onclick="closeM()" class="btn">CERRAR</button>
+            <div class="modal-actions">
+                <button class="btn" onclick="guardar()">GUARDAR</button>
+                <button class="btn" onclick="closeM()">CERRAR</button>
+            </div>
 
         </div>
     </div>
 
     <script>
 
-        /* ================= ESTADO SEPARADO (FIX LENTITUD) ================= */
-        let timers = {
-            cliente: null,
-            contacto: null,
-            sucursal: null
-        };
-
-        let cache = {};
-
         let current = null;
+        let debounce = null;
+        let cache = {};
 
         document.getElementById("userInfo").innerText =
             (localStorage.getItem("user") || "") + " / " + (localStorage.getItem("rol") || "");
 
-
-        /* ================= MODAL ================= */
+        /* ================= OPEN ================= */
         function openM(type) {
 
             current = type;
@@ -223,17 +229,25 @@
             if (type === "departamento") {
                 document.getElementById("content").innerHTML = `
 <h3>Departamento</h3>
-<input id="dep_id" placeholder="ID">
-<input id="dep_name" placeholder="Nombre">
+<label>ID</label>
+<input id="dep_id">
+
+<label>Nombre</label>
+<input id="dep_name">
 `;
             }
 
             if (type === "ciudad") {
                 document.getElementById("content").innerHTML = `
 <h3>Ciudad</h3>
-<input id="ciu_id" placeholder="Código">
-<input id="dep_id_fk" placeholder="Depto ID">
-<input id="ciu_name" placeholder="Municipio">
+<label>Código</label>
+<input id="ciu_id">
+
+<label>Departamento ID</label>
+<input id="dep_fk">
+
+<label>Municipio</label>
+<input id="ciu_name">
 `;
             }
 
@@ -242,44 +256,52 @@
                 document.getElementById("content").innerHTML = `
 <h3>${type}</h3>
 
-<input id="search_${type}" placeholder="Buscar cliente" oninput="searchClient('${type}')">
+<label>Buscar cliente</label>
+<input id="search_${type}" oninput="search('${type}')">
+
 <div id="res_${type}" class="search"></div>
 
-<input id="cli_id_${type}" placeholder="Cliente ID" readonly>
+<label>Cliente ID</label>
+<input id="cli_${type}" readonly>
+
+<label>Nombre</label>
 <input id="nombre">
+
 ${type === "contacto" ? `
-<input id="cargo">
-<input id="telefono">
-<input id="email">
+<label>Cargo</label><input id="cargo">
+<label>Teléfono</label><input id="telefono">
+<label>Email</label><input id="email">
 `: `
-<input id="ciudad">
-<input id="direccion">
-<input id="telefono">
+<label>Ciudad</label><input id="ciudad">
+<label>Dirección</label><input id="direccion">
+<label>Teléfono</label><input id="telefono">
 `}
 `;
             }
+
         }
 
         /* ================= SEARCH OPTIMIZADO ================= */
-        function searchClient(type) {
+        function search(type) {
 
-            clearTimeout(timers[type]);
+            clearTimeout(debounce);
 
-            timers[type] = setTimeout(async () => {
+            debounce = setTimeout(async () => {
 
-                const q = document.getElementById("search_" + type).value;
-
+                const q = document.getElementById("search_" + type).value.trim();
                 if (q.length < 2) return;
 
-                if (cache[type + "_" + q]) {
-                    render(type, cache[type + "_" + q]);
+                const key = type + "_" + q;
+
+                if (cache[key]) {
+                    render(type, cache[key]);
                     return;
                 }
 
-                const r = await fetch("/api/clientes?search=" + q);
+                const r = await fetch("/api/clientes?search=" + encodeURIComponent(q));
                 const d = await r.json();
 
-                cache[type + "_" + q] = d.data || [];
+                cache[key] = d.data || [];
 
                 render(type, d.data || []);
 
@@ -289,65 +311,56 @@ ${type === "contacto" ? `
 
         function render(type, list) {
 
-            let el = document.getElementById("res_" + type);
+            const el = document.getElementById("res_" + type);
             el.innerHTML = "";
 
             list.forEach(c => {
                 el.innerHTML += `
-<div class="item" onclick="setCli('${type}','${c.id}')">
-${c.cliente} - ${c.id}
+<div class="item" onclick="setCli('${type}','${c.id}','${c.cliente}')">
+<b>${c.cliente}</b><br><small>${c.id}</small>
 </div>
 `;
             });
+
         }
 
-        function setCli(type, id) {
+        function setCli(type, id, name) {
 
-            document.getElementById("cli_id_" + type).value = id;
+            document.getElementById("cli_" + type).value = id;
+            document.getElementById("nombre").value = name;
             document.getElementById("res_" + type).innerHTML = "";
+
         }
 
-        /* ================= GUARDAR CON VALIDACIÓN REAL ================= */
-        async function save() {
+        /* ================= GUARDAR ================= */
+        async function guardar() {
 
             let res;
             let body = {};
 
             if (current === "departamento") {
-
-                body = {
-                    id: dep_id.value,
-                    depto: dep_name.value
-                };
+                body = { id: dep_id.value, depto: dep_name.value };
 
                 res = await fetch("/api/departamentos", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(body)
                 });
-
             }
 
             if (current === "ciudad") {
-
-                body = {
-                    id: ciu_id.value,
-                    id_depto: dep_id_fk.value,
-                    municipio: ciu_name.value
-                };
+                body = { id: ciu_id.value, id_depto: dep_fk.value, municipio: ciu_name.value };
 
                 res = await fetch("/api/ciudades", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(body)
                 });
-
             }
 
             if (current === "contacto") {
-
                 body = {
-                    cliente_id: cli_id_contacto.value,
+                    cliente_id: cli_contacto.value,
                     nombre: nombre.value,
                     cargo: cargo.value,
                     telefono: telefono.value,
@@ -359,13 +372,11 @@ ${c.cliente} - ${c.id}
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(body)
                 });
-
             }
 
             if (current === "sucursal") {
-
                 body = {
-                    cliente_id: cli_id_sucursal.value,
+                    cliente_id: cli_sucursal.value,
                     nombre: nombre.value,
                     ciudad: ciudad.value,
                     direccion: direccion.value,
@@ -377,19 +388,18 @@ ${c.cliente} - ${c.id}
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(body)
                 });
-
             }
 
-            /* 🔥 VALIDACIÓN REAL */
-            if (!res) {
-                alert("ERROR: no se ejecutó petición");
+            if (current === "whatsapp") {
+                localStorage.setItem("whatsapp_msg", document.getElementById("content").querySelector("textarea").value);
+                closeM();
                 return;
             }
 
-            let data = await res.json();
+            const data = await res.json();
 
             if (!res.ok || data.error) {
-                alert("ERROR: " + (data.message || "No guardado"));
+                alert(data.message || "ERROR");
                 return;
             }
 
