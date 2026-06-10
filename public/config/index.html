@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>CONFIGURACIONES</title>
+
+   <style>
+      body {
+         margin: 0;
+         font-family: Arial;
+         background: #0b1220;
+         color: #fff;
+      }
+
+      .layout {
+         display: flex;
+         height: 100vh;
+      }
+
+      .sidebar {
+         width: 230px;
+         background: #0f172a;
+         border-right: 1px solid #1e293b;
+         padding: 12px;
+      }
+
+      .item {
+         padding: 10px;
+         background: #111827;
+         border: 1px solid #1e293b;
+         border-radius: 10px;
+         margin-bottom: 8px;
+         cursor: pointer;
+         color: #cbd5e1;
+      }
+
+      .item:hover {
+         background: #1e293b;
+      }
+
+      .content {
+         flex: 1;
+         padding: 15px;
+      }
+
+      .topbar {
+         background: #111827;
+         border: 1px solid #1e293b;
+         padding: 12px;
+         border-radius: 12px;
+         font-weight: bold;
+      }
+
+      .panel {
+         margin-top: 12px;
+         background: #111827;
+         border: 1px solid #1e293b;
+         border-radius: 12px;
+         padding: 12px;
+      }
+   </style>
+</head>
+
+<body>
+
+   <div class="layout">
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+
+         <div class="item" onclick="go('home')">🏠 Inicio</div>
+         <div class="item" onclick="go('departamentos')">🏢 Departamentos</div>
+
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+         <div class="topbar" id="topbar">
+            CONFIGURACIONES
+         </div>
+
+         <div class="panel" id="panel">
+            Bienvenido al módulo de configuraciones
+         </div>
+
+      </div>
+
+   </div>
+
+   <script>
+
+      function go(page) {
+
+         if (page === 'home') {
+            document.getElementById("topbar").innerText = "CONFIGURACIONES / INICIO";
+            document.getElementById("panel").innerHTML = `
+            <h3>Inicio</h3>
+            <p>Accede a los módulos desde el menú lateral.</p>
+        `;
+         }
+
+         if (page === 'departamentos') {
+            window.location.href = "departamentos.html";
+         }
+      }
+
+   </script>
+
+</body>
+
+</html>
