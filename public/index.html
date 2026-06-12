@@ -3162,8 +3162,7 @@ Quedo atento a sus comentarios.`;
 
 
             window.open(
-                `https://wa.me/${numeroFinal}?text=${encodeURIComponent(mensaje)}`,
-                "_blank"
+                `whatsapp://send?phone=${numeroFinal}&text=${encodeURIComponent(mensaje)}`
             );
 
             cerrarModalWhatsapp();
