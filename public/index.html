@@ -2872,17 +2872,17 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
-            const saludo = window.saludoSeleccionado;
+            const saludo =
+                window.saludoSeleccionado || "";
+
+            const mensajeExtra =
+                window.mensajeWhatsappSeleccionado || "";
 
             const textarea = document.getElementById("whatsappMensaje");
             const preview = document.getElementById("previewMensaje");
 
-            const mensajeExtra = window.mensajeWhatsappSeleccionado || "";
-
-            const saludoFinal = saludo ? saludo : "";
-
             const mensajeFinal =
-                `Buen día ${saludoFinal} ${nombre}:\n\n` +
+                `Buen día ${saludo} ${nombre}:\n\n` +
                 `Le habla ${nombreEmisor} de RE INGENIERIA.\n\n` +
                 (mensajeExtra ? mensajeExtra + "\n\n" : "") +
                 `Quedo atento a sus comentarios.`;
@@ -2897,7 +2897,6 @@ HIDDEN
 
             document.getElementById("modalWhatsapp").style.display = "flex";
         }
-
         // =========================================
         // ENVIAR WHATSAPP
         // =========================================
@@ -3128,15 +3127,19 @@ HIDDEN
                 const textarea = document.getElementById("whatsappMensaje");
                 const preview = document.getElementById("previewMensaje");
 
-                const saludo = window.saludoSeleccionado;
-                const contacto = document.getElementById("contactoSelect")
-                    ?.options[document.getElementById("contactoSelect").selectedIndex]?.text || "Cliente";
+                const saludo =
+                    window.saludoSeleccionado || "";
+
+                const contacto =
+                    document.getElementById("contactoSelect")
+                        ?.options[document.getElementById("contactoSelect").selectedIndex]
+                        ?.text || "Cliente";
 
                 const asesor =
-                    (textarea.value.match(/Le habla (.*?) de RE INGENIERIA/) || [])[1]
-                    || "ASESOR";
+                    (getUsuarioLogueado()?.nombre) || "ASESOR";
 
-                const mensajeExtra = window.mensajeWhatsappSeleccionado;
+                const mensajeExtra =
+                    window.mensajeWhatsappSeleccionado || "";
 
                 const mensaje =
                     `Buen día ${saludo} ${contacto}:\n\n` +
