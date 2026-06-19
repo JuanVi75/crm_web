@@ -3276,7 +3276,6 @@ HIDDEN
             if (e.target.id !== "mensajeWhatsappSelect") return;
 
             const opt = e.target.options[e.target.selectedIndex];
-
             const mensaje = opt ? opt.dataset.mensaje : "";
 
             window.mensajeWhatsappSeleccionado = mensaje;
@@ -3286,19 +3285,22 @@ HIDDEN
 
             if (!textarea) return;
 
-            // 🔥 SALUDO REAL (NO VARIABLE GLOBAL)
+            // 🔥 SALUDO CORRECTO (ESTADO + FALLBACK DOM)
             const saludo =
-                document.getElementById("m_saludo")?.value || "";
+                window.saludoSeleccionado ||
+                document.getElementById("m_saludo")?.value ||
+                "";
 
+            // 🔥 CONTACTO
             const contacto =
                 document.getElementById("contactoSelect")
                     ?.options[document.getElementById("contactoSelect").selectedIndex]
                     ?.text || "Cliente";
 
-            // 🔥 ASESOR REAL (debe venir del login)
+            // 🔥 ASESOR CORRECTO (SIN ROMPER FLUJO)
             const asesor =
                 window.nombreEmisor ||
-                "ASESOR";
+                "";
 
             const mensajeFinal =
                 `Buen día ${saludo} ${contacto}:\n\n` +
