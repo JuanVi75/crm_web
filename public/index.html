@@ -2997,12 +2997,10 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
-            // 🔥 AQUÍ ESTÁ EL FIX REAL
-            const saludo =
-                document.getElementById("m_saludo")?.value || "";
+            // 🔥 USAR ESTADO GLOBAL (NO DOM DIRECTO)
+            const saludo = window.saludoSeleccionado || "";
 
-            const mensajeExtra =
-                window.mensajeWhatsappSeleccionado || "";
+            const mensajeExtra = window.mensajeWhatsappSeleccionado || "";
 
             const textarea = document.getElementById("whatsappMensaje");
             const preview = document.getElementById("previewMensaje");
@@ -3242,42 +3240,42 @@ HIDDEN
 
         document.addEventListener("change", function (e) {
 
-    if (e.target.id !== "targetWhatsappSelect") return;
+            if (e.target.id !== "targetWhatsappSelect") return;
 
-    const target = e.target.value;
+            const target = e.target.value;
 
-    const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
 
-    if (!selectMensajes) return;
+            if (!selectMensajes) return;
 
-    // guardar TODOS los mensajes originales si no existe
-    if (!window.whatsappMensajesDataBackup) {
-        window.whatsappMensajesDataBackup = window.whatsappMensajesData || [];
-    }
+            // guardar TODOS los mensajes originales si no existe
+            if (!window.whatsappMensajesDataBackup) {
+                window.whatsappMensajesDataBackup = window.whatsappMensajesData || [];
+            }
 
-    const baseData = window.whatsappMensajesDataBackup;
+            const baseData = window.whatsappMensajesDataBackup;
 
-    selectMensajes.innerHTML =
-        `<option value="">-- Seleccionar mensaje --</option>`;
+            selectMensajes.innerHTML =
+                `<option value="">-- Seleccionar mensaje --</option>`;
 
-    if (!target) return;
+            if (!target) return;
 
-    const filtrados = baseData.filter(m => m.target === target);
+            const filtrados = baseData.filter(m => m.target === target);
 
-    filtrados.forEach(m => {
+            filtrados.forEach(m => {
 
-        const opt = document.createElement("option");
-        opt.value = m.id;
-        opt.textContent = `${m.nombre} (${m.etapa})`;
-        opt.dataset.mensaje = m.mensaje;
+                const opt = document.createElement("option");
+                opt.value = m.id;
+                opt.textContent = `${m.nombre} (${m.etapa})`;
+                opt.dataset.mensaje = m.mensaje;
 
-        selectMensajes.appendChild(opt);
-    });
+                selectMensajes.appendChild(opt);
+            });
 
-    // ❌ IMPORTANTE: NO TOCAR MENSAJE NI PREVIEW
-    // SOLO LIMPIAMOS SELECCIÓN ACTUAL
-    window.mensajeWhatsappSeleccionado = "";
-});
+            // ❌ IMPORTANTE: NO TOCAR MENSAJE NI PREVIEW
+            // SOLO LIMPIAMOS SELECCIÓN ACTUAL
+            window.mensajeWhatsappSeleccionado = "";
+        });
 
     </script>
 
