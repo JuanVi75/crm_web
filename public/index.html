@@ -2872,8 +2872,9 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
+            // 🔥 AQUÍ ESTÁ EL FIX REAL
             const saludo =
-                window.saludoSeleccionado || "";
+                document.getElementById("m_saludo")?.value || "";
 
             const mensajeExtra =
                 window.mensajeWhatsappSeleccionado || "";
@@ -2897,6 +2898,7 @@ HIDDEN
 
             document.getElementById("modalWhatsapp").style.display = "flex";
         }
+
         // =========================================
         // ENVIAR WHATSAPP
         // =========================================
@@ -3127,8 +3129,9 @@ HIDDEN
                 const textarea = document.getElementById("whatsappMensaje");
                 const preview = document.getElementById("previewMensaje");
 
+                // 🔥 SALUDO REAL DEL MODAL TAREAS
                 const saludo =
-                    window.saludoSeleccionado || "";
+                    document.getElementById("m_saludo")?.value || "";
 
                 const contacto =
                     document.getElementById("contactoSelect")
@@ -3136,7 +3139,7 @@ HIDDEN
                         ?.text || "Cliente";
 
                 const asesor =
-                    (getUsuarioLogueado()?.nombre) || "ASESOR";
+                    getUsuarioLogueado()?.nombre || "ASESOR";
 
                 const mensajeExtra =
                     window.mensajeWhatsappSeleccionado || "";
