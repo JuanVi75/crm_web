@@ -1718,36 +1718,6 @@ HIDDEN
             });
         };
 
-        document.addEventListener("change", function (e) {
-
-            if (e.target.id === "mensajeWhatsappSelect") {
-
-                const opt = e.target.options[e.target.selectedIndex];
-
-                window.mensajeWhatsappSeleccionado =
-                    opt?.dataset?.mensaje || "";
-
-                window.whatsappDirty = true;
-
-                const textarea = document.getElementById("whatsappMensaje");
-                if (!textarea) return;
-
-                const texto = textarea.value || "";
-                const partes = texto.split("\n\n");
-
-                const encabezado = partes[0] || "";
-
-                const mensaje = window.mensajeWhatsappSeleccionado
-                    ? "\n\n" + window.mensajeWhatsappSeleccionado + "\n\n"
-                    : "\n\n";
-
-                textarea.value =
-                    encabezado +
-                    mensaje +
-                    "Quedo atento a sus comentarios.";
-            }
-        });
-
         function ajustarAlturaTextarea(el) {
 
             el.style.height = "auto";
@@ -2905,23 +2875,18 @@ HIDDEN
             const saludo = window.saludoSeleccionado || "Ing.";
 
             const textarea = document.getElementById("whatsappMensaje");
-            if (!textarea) return;
-
-            const mensajeBase =
-                `Buen día ${saludo} ${nombre}:\n\n` +
-                `Le habla ${nombreEmisor} de RE INGENIERIA.\n\n`;
+            const preview = document.getElementById("previewMensaje");
 
             const mensajeExtra = window.mensajeWhatsappSeleccionado || "";
 
             const mensajeFinal =
-                mensajeBase +
+                `Buen día ${saludo} ${nombre}:\n\n` +
+                `Le habla ${nombreEmisor} de RE INGENIERIA.\n\n` +
                 (mensajeExtra ? mensajeExtra + "\n\n" : "") +
                 `Quedo atento a sus comentarios.`;
 
             textarea.value = mensajeFinal;
 
-            // PREVIEW CONSISTENTE (sin depender de eventos que a veces se pisan)
-            const preview = document.getElementById("previewMensaje");
             if (preview) {
                 preview.innerText = mensajeExtra || "(Sin mensaje seleccionado)";
             }
@@ -2938,13 +2903,14 @@ HIDDEN
         function enviarWhatsapp() {
 
             const mensaje =
-                document.getElementById("whatsappMensaje").value || "";
+                document.getElementById("whatsappMensaje")?.value || "";
 
             let telefono =
-                document.getElementById("whatsappTelefono").value || "";
+                document.getElementById("whatsappTelefono")?.value || "";
 
             const indicativo =
-                document.getElementById("whatsappIndicativo").value.replace(/\D/g, "");
+                (document.getElementById("whatsappIndicativo")?.value || "")
+                    .replace(/\D/g, "");
 
             telefono = telefono.replace(/\D/g, "");
 
@@ -2956,46 +2922,47 @@ HIDDEN
             const numeroFinal =
                 indicativo ? indicativo + telefono : telefono;
 
+            // SOLO NOTA (NO TOCAR MÁS MODAL TAREAS)
             const nota = document.getElementById("m_nota");
-
             if (nota) {
                 nota.value =
                     "SE LE ESCRIBE AL CLIENTE MENSAJE DE PRESENCIA DE NUESTRA MARCA, A LA ESPERA DE RESPUESTA POR PARTE DEL CLIENTE";
             }
 
+            // ENVIAR WHATSAPP
             window.open(
                 `whatsapp://send?phone=${numeroFinal}&text=${encodeURIComponent(mensaje)}`
             );
 
-            // RESET SOLO WHATSAPP (SIN TOCAR ESTADO DE TAREA)
+            // =========================
+            // RESET SOLO WHATSAPP (AISLADO)
+            // =========================
             window.mensajeWhatsappSeleccionado = "";
             window.saludoSeleccionado = "";
             window.whatsappDirty = false;
 
             const selectMensajes =
                 document.getElementById("mensajeWhatsappSelect");
-
             if (selectMensajes) selectMensajes.selectedIndex = 0;
 
-            const textarea =
+            const whatsappMsg =
                 document.getElementById("whatsappMensaje");
+            if (whatsappMsg) whatsappMsg.value = "";
 
-            if (textarea) textarea.value = "";
-
-            const tel =
+            const whatsappTel =
                 document.getElementById("whatsappTelefono");
+            if (whatsappTel) whatsappTel.value = "";
 
-            if (tel) tel.value = "";
-
-            const ind =
+            const whatsappInd =
                 document.getElementById("whatsappIndicativo");
+            if (whatsappInd) whatsappInd.value = "";
 
-            if (ind) ind.value = "";
-
-            // IMPORTANTE: limpiar preview también si existe
-            const preview = document.getElementById("previewMensaje");
+            // SOLO SI EXISTE (NO OBLIGATORIO)
+            const preview =
+                document.getElementById("previewMensaje");
             if (preview) preview.innerText = "";
 
+            // cerrar modal
             cerrarModalWhatsapp();
         }
 
@@ -3044,8 +3011,28 @@ HIDDEN
         // =========================================
         function cerrarModalWhatsapp() {
 
-            document.getElementById("modalWhatsapp").style.display = "none";
-            resetModalesCRM();
+            const modal = document.getElementById("modalWhatsapp");
+            if (modal) modal.style.display = "none";
+
+            // ❌ SOLO resetear WhatsApp, NO TAREAS
+            const mensajeSelect = document.getElementById("mensajeWhatsappSelect");
+            if (mensajeSelect) mensajeSelect.selectedIndex = 0;
+
+            const whatsappMsg = document.getElementById("whatsappMensaje");
+            if (whatsappMsg) whatsappMsg.value = "";
+
+            const whatsappTel = document.getElementById("whatsappTelefono");
+            if (whatsappTel) whatsappTel.value = "";
+
+            const whatsappInd = document.getElementById("whatsappIndicativo");
+            if (whatsappInd) whatsappInd.value = "";
+
+            window.mensajeWhatsappSeleccionado = "";
+            window.saludoSeleccionado = "";
+            window.whatsappDirty = false;
+
+            const preview = document.getElementById("previewMensaje");
+            if (preview) preview.innerText = "";
         }
 
         function hacerModalArrastrable(modalId) {
@@ -3099,19 +3086,11 @@ HIDDEN
         function resetModalesCRM() {
 
             // =========================
-            // MODAL TAREAS (RESET MINIMO Y SEGURO)
+            // IMPORTANTE: NO TOCAR ESTADO DE TAREAS
             // =========================
-            const contacto = document.getElementById("contactoSelect");
-            if (contacto) contacto.selectedIndex = 0;
-
-            const telefono = document.getElementById("modalTelefono");
-            if (telefono) telefono.value = "";
-
-            const saludo = document.getElementById("m_saludo");
-            if (saludo) saludo.value = "";
 
             // =========================
-            // MODAL WHATSAPP (RESET COMPLETO CONTROLADO)
+            // SOLO RESET WHATSAPP
             // =========================
             const mensajeSelect = document.getElementById("mensajeWhatsappSelect");
             if (mensajeSelect) mensajeSelect.selectedIndex = 0;
@@ -3128,13 +3107,48 @@ HIDDEN
             const preview = document.getElementById("previewMensaje");
             if (preview) preview.innerText = "";
 
-            // =========================
-            // LIMPIEZA DE ESTADO GLOBAL (SOLO WHATSAPP)
-            // =========================
             window.mensajeWhatsappSeleccionado = "";
             window.saludoSeleccionado = "";
             window.whatsappDirty = false;
         }
+
+        document.addEventListener("change", function (e) {
+
+            if (e.target.id === "mensajeWhatsappSelect") {
+
+                const opt = e.target.options[e.target.selectedIndex];
+
+                window.mensajeWhatsappSeleccionado =
+                    opt?.dataset?.mensaje || "";
+
+                window.whatsappDirty = true;
+
+                const textarea = document.getElementById("whatsappMensaje");
+                const preview = document.getElementById("previewMensaje");
+
+                const saludo = window.saludoSeleccionado || "Ing.";
+                const contacto = document.getElementById("contactoSelect")
+                    ?.options[document.getElementById("contactoSelect").selectedIndex]?.text || "Cliente";
+
+                const asesor =
+                    (textarea.value.match(/Le habla (.*?) de RE INGENIERIA/) || [])[1]
+                    || "ASESOR";
+
+                const mensajeExtra = window.mensajeWhatsappSeleccionado;
+
+                const mensaje =
+                    `Buen día ${saludo} ${contacto}:\n\n` +
+                    `Le habla ${asesor} de RE INGENIERIA.\n\n` +
+                    (mensajeExtra ? mensajeExtra + "\n\n" : "") +
+                    `Quedo atento a sus comentarios.`;
+
+                textarea.value = mensaje;
+
+                if (preview) {
+                    preview.innerText = mensajeExtra || "(Sin mensaje seleccionado)";
+                }
+            }
+        });
 
     </script>
 
