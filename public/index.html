@@ -2811,16 +2811,20 @@ HIDDEN
 
             const modalWhatsapp = document.getElementById("modalWhatsapp");
 
-            if (modalWhatsapp &&
-                window.getComputedStyle(modalWhatsapp).display !== "none") {
-
+            if (
+                modalWhatsapp &&
+                window.getComputedStyle(modalWhatsapp).display !== "none"
+            ) {
                 cerrarModalWhatsapp();
                 return;
             }
 
             const modalTarea = document.getElementById("modalTarea");
 
-            if (modalTarea && !modalTarea.classList.contains("hidden")) {
+            if (
+                modalTarea &&
+                !modalTarea.classList.contains("hidden")
+            ) {
                 cerrarModalTarea();
             }
 
