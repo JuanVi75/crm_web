@@ -2008,6 +2008,8 @@ HIDDEN
             // RESET VARIABLES
             // =========================================
             window.tareaActual = null;
+
+            resetModalesCRM();
         }
 
         async function cargarTareasHoy() {
@@ -2747,44 +2749,45 @@ HIDDEN
 
                 mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
 
-                // =========================================
-                // DATOS BASE
-                // =========================================
-                const textarea = document.getElementById("whatsappMensaje");
-
-                const lineas = textarea.value.split("\n\n");
-
-                const saludo = lineas[0] || "";
-
-                const usuarioLogueado = getUsuarioLogueado();
-                const asesor = obtenerNombreEmisor(usuarioLogueado) || "";
-
-                // =========================================
-                // BLOQUES FIJOS
-                // =========================================
-                const bloqueAsesor =
-                    asesor
-                        ? `\nLe habla ${asesor} de RE INGENIERIA.\n`
-                        : "";
-
-                const mensaje =
-                    mensajeWhatsappSeleccionado
-                        ? `\n\n${mensajeWhatsappSeleccionado}\n\n`
-                        : "\n\n";
-
-                const firma = "Quedo atento a sus comentarios.";
-
-                // =========================================
-                // RECONSTRUCCIÓN CONTROLADA
-                // =========================================
-                textarea.value =
-                    saludo +
-                    "\n\n" +
-                    bloqueAsesor +
-                    mensaje +
-                    firma;
+                renderMensajeWhatsapp();
             }
         });
+
+        function ajustarAlturaTextarea(el) {
+
+            el.style.height = "auto";
+
+            el.style.height = (el.scrollHeight) + "px";
+        }
+
+        function resetModalesCRM() {
+
+            // =========================
+            // MODAL TAREAS
+            // =========================
+            const contacto = document.getElementById("contactoSelect");
+            if (contacto) contacto.selectedIndex = 0;
+
+            const telefono = document.getElementById("modalTelefono");
+            if (telefono) telefono.value = "";
+
+            // =========================
+            // MODAL WHATSAPP
+            // =========================
+            const mensajeSelect = document.getElementById("mensajeWhatsappSelect");
+            if (mensajeSelect) mensajeSelect.selectedIndex = 0;
+
+            const whatsappMsg = document.getElementById("whatsappMensaje");
+            if (whatsappMsg) whatsappMsg.value = "";
+
+            const whatsappTel = document.getElementById("whatsappTelefono");
+            if (whatsappTel) whatsappTel.value = "";
+
+            const whatsappInd = document.getElementById("whatsappIndicativo");
+            if (whatsappInd) whatsappInd.value = "";
+
+            mensajeWhatsappSeleccionado = "";
+        }
 
         function actualizarPreviewWhatsapp() {
             const textarea = document.getElementById("whatsappMensaje");
@@ -2960,7 +2963,7 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
-            // 🔥 SALUDO NO SE PIDE CADA VEZ: SE GUARDA EN MEMORIA
+            // 🔥 SALUDO PERSISTENTE
             if (!window.saludoSeleccionado) {
                 window.saludoSeleccionado = "Ing.";
             }
@@ -2975,9 +2978,23 @@ ${window.mensajeWhatsappSeleccionado || ""}
 Quedo atento a sus comentarios.
 `.trim();
 
-            document.getElementById("whatsappMensaje").value = mensajeFinal;
-
+            // 🔥 IMPORTANTE: esperar render del modal antes de escribir textarea
             document.getElementById("modalWhatsapp").style.display = "flex";
+
+            setTimeout(() => {
+
+                const textarea = document.getElementById("whatsappMensaje");
+
+                if (textarea) {
+                    textarea.value = mensajeFinal;
+
+                    // opcional pero recomendado (auto ajuste si lo tienes)
+                    if (typeof ajustarAlturaTextarea === "function") {
+                        ajustarAlturaTextarea(textarea);
+                    }
+                }
+
+            }, 50);
         }
 
         // =========================================
@@ -3066,6 +3083,7 @@ Quedo atento a sus comentarios.
         function cerrarModalWhatsapp() {
 
             document.getElementById("modalWhatsapp").style.display = "none";
+            resetModalesCRM();
         }
 
         function hacerModalArrastrable(modalId) {
@@ -3115,6 +3133,39 @@ Quedo atento a sus comentarios.
             hacerModalArrastrable("modalWhatsapp");
             hacerModalArrastrable("modalTarea");
         });
+
+        function renderMensajeWhatsapp() {
+
+            const textarea = document.getElementById("whatsappMensaje");
+
+            const lineas = textarea.value.split("\n\n");
+
+            const saludo = lineas[0] || "";
+
+            const usuarioLogueado = getUsuarioLogueado();
+            const asesor = obtenerNombreEmisor(usuarioLogueado) || "";
+
+            const bloqueAsesor =
+                asesor
+                    ? `\nLe habla ${asesor} de RE INGENIERIA.\n`
+                    : "";
+
+            const mensaje =
+                mensajeWhatsappSeleccionado
+                    ? `\n\n${mensajeWhatsappSeleccionado}\n\n`
+                    : "\n\n";
+
+            const firma = "Quedo atento a sus comentarios.";
+
+            textarea.value =
+                saludo +
+                "\n\n" +
+                bloqueAsesor +
+                mensaje +
+                firma;
+
+            ajustarAlturaTextarea(textarea);
+        }
 
     </script>
 
