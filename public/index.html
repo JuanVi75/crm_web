@@ -1880,7 +1880,7 @@ HIDDEN
 
     <!--=========================================
             MODAL WHATSAPP
-=========================================-->
+    =========================================-->
     <div id="modalWhatsapp" style="
     display:none;
     position:fixed;
@@ -2163,6 +2163,7 @@ HIDDEN
                 alert("Error cargando tarea");
             }
         }
+
         async function guardarTarea() {
 
             try {
@@ -3025,7 +3026,6 @@ HIDDEN
         // =========================================
         // ENVIAR WHATSAPP
         // =========================================
-
         function enviarWhatsapp() {
 
             const mensaje =
@@ -3240,41 +3240,38 @@ HIDDEN
 
         document.addEventListener("change", function (e) {
 
-            if (e.target.id !== "targetWhatsappSelect") return;
+            if (e.target.id !== "mensajeWhatsappSelect") return;
 
-            const target = e.target.value;
+            const opt = e.target.options[e.target.selectedIndex];
 
-            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+            const mensaje = opt?.dataset?.mensaje || "";
 
-            if (!selectMensajes) return;
+            window.mensajeWhatsappSeleccionado = mensaje;
 
-            // guardar TODOS los mensajes originales si no existe
-            if (!window.whatsappMensajesDataBackup) {
-                window.whatsappMensajesDataBackup = window.whatsappMensajesData || [];
+            const textarea = document.getElementById("whatsappMensaje");
+            const preview = document.getElementById("previewMensaje");
+
+            const saludo = window.saludoSeleccionado || "";
+            const contacto =
+                document.getElementById("contactoSelect")
+                    ?.options[document.getElementById("contactoSelect").selectedIndex]
+                    ?.text || "Cliente";
+
+            const asesor =
+                (textarea.value.match(/Le habla (.*?) de RE INGENIERIA/) || [])[1]
+                || "ASESOR";
+
+            const mensajeFinal =
+                `Buen día ${saludo} ${contacto}:\n\n` +
+                `Le habla ${asesor} de RE INGENIERIA.\n\n` +
+                (mensaje ? mensaje + "\n\n" : "") +
+                `Quedo atento a sus comentarios.`;
+
+            textarea.value = mensajeFinal;
+
+            if (preview) {
+                preview.innerText = mensaje || "(Sin mensaje seleccionado)";
             }
-
-            const baseData = window.whatsappMensajesDataBackup;
-
-            selectMensajes.innerHTML =
-                `<option value="">-- Seleccionar mensaje --</option>`;
-
-            if (!target) return;
-
-            const filtrados = baseData.filter(m => m.target === target);
-
-            filtrados.forEach(m => {
-
-                const opt = document.createElement("option");
-                opt.value = m.id;
-                opt.textContent = `${m.nombre} (${m.etapa})`;
-                opt.dataset.mensaje = m.mensaje;
-
-                selectMensajes.appendChild(opt);
-            });
-
-            // ❌ IMPORTANTE: NO TOCAR MENSAJE NI PREVIEW
-            // SOLO LIMPIAMOS SELECCIÓN ACTUAL
-            window.mensajeWhatsappSeleccionado = "";
         });
 
     </script>
