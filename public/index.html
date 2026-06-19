@@ -1496,16 +1496,15 @@ HIDDEN
     MODAL WHATSAPP
 ========================================= -->
     <div id="modalWhatsapp" style="
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.7);
-    z-index:999999;
-    align-items:center;
-    justify-content:center;
-">
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.7);
+        z-index:999999;
+        align-items:center;
+        justify-content:center;
+    ">
 
-        <!-- 🔥 BOX (NECESARIO PARA DRAG) -->
         <div id="modalWhatsappBox" style="
         width:600px;
         max-width:95%;
@@ -1513,67 +1512,45 @@ HIDDEN
         border:1px solid #334155;
         border-radius:14px;
         padding:20px;
-        position:absolute;
-        top:120px;
-        left:120px;
         cursor:move;
+        position:relative;
     ">
 
             <h2 style="margin-top:0;color:#25D366;">
                 WhatsApp
             </h2>
 
-            <!-- 🔥 SELECT MENSAJES (FALTABA) -->
+            <!-- =========================
+            SELECT MENSAJES
+        ========================== -->
             <div class="form-group">
-
-                <label>MENSAJE CAMPAÑA</label>
-
+                <label>MENSAJE A ENVIAR</label>
                 <select id="mensajeWhatsappSelect">
                     <option value="">-- Seleccionar mensaje --</option>
                 </select>
-
             </div>
 
             <div class="form-group">
-
                 <label>INDICATIVO PAÍS (OPCIONAL)</label>
-                <input type="text" id="whatsappIndicativo">
-
+                <input type="text" id="whatsappIndicativo" placeholder="Ej: 57, 1, 52, 34">
             </div>
 
             <div class="form-group">
-
                 <label>TELÉFONO</label>
                 <input type="text" id="whatsappTelefono" readonly>
-
             </div>
 
             <div class="form-group">
-
-                <label>MENSAJE</label>
+                <label>MENSAJE PREVISUALIZADO</label>
                 <textarea id="whatsappMensaje" rows="8" style="width:100%;"></textarea>
-
             </div>
 
-            <div style="
-            display:flex;
-            gap:10px;
-            justify-content:flex-end;
-            margin-top:15px;
-        ">
-
-                <button class="btn btn-gray" onclick="cerrarModalWhatsapp()">
-                    CANCELAR
-                </button>
-
-                <button class="btn btn-green" onclick="enviarWhatsapp()">
-                    ENVIAR
-                </button>
-
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:15px;">
+                <button class="btn btn-gray" onclick="cerrarModalWhatsapp()">CANCELAR</button>
+                <button class="btn btn-green" onclick="enviarWhatsapp()">ENVIAR</button>
             </div>
 
         </div>
-
     </div>
 
     <script>
@@ -1589,6 +1566,7 @@ HIDDEN
 
         let tareaActualIndex = null;
         let tareasHoyGlobal = [];
+        let mensajeWhatsappSeleccionado = "";
 
 
         // =========================================
@@ -2936,10 +2914,21 @@ HIDDEN
             cerrarModalWhatsapp();
         }
 
-        // =========================================
-        // MENSAJE SELECCIONADO GLOBAL
-        // =========================================
-        let mensajeWhatsappSeleccionado = "";
+        document.addEventListener("change", function (e) {
+
+            if (e.target.id === "mensajeWhatsappSelect") {
+
+                const opt = e.target.options[e.target.selectedIndex];
+
+                mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
+
+                // 🔥 PREVIEW AUTOMÁTICO
+                document.getElementById("whatsappMensaje").value =
+                    document.getElementById("whatsappMensaje").value.split("\n\n")[0] +
+                    "\n\n" +
+                    mensajeWhatsappSeleccionado;
+            }
+        });
 
         // =========================================
         // VALIDAR SI HAY DATOS
@@ -3095,28 +3084,20 @@ HIDDEN
 
             if (!nombreEmisor) return;
 
-            window.telefonoWhatsapp = telefono;
-
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
-            // =========================================
-            // SALUDO DINÁMICO
-            // =========================================
-            const saludo = prompt("Seleccione saludo: Ing., Arq., Sr., Sra., Don, Doña");
-
-            // =========================================
-            // MENSAJE FINAL DINÁMICO
-            // =========================================
-            const mensaje = `Buen día ${saludo || ""} ${nombre}:
+            const mensajeFinal = `
+Buen día ${nombre}:
 
 Le habla ${nombreEmisor} de RE INGENIERIA, espero que se encuentre muy bien.
 
 ${mensajeWhatsappSeleccionado || ""}
 
-Quedo atento a sus comentarios.`;
+Quedo atento a sus comentarios.
+`.trim();
 
-            document.getElementById("whatsappMensaje").value = mensaje;
+            document.getElementById("whatsappMensaje").value = mensajeFinal;
 
             document.getElementById("modalWhatsapp").style.display = "flex";
         }
@@ -3126,10 +3107,16 @@ Quedo atento a sus comentarios.`;
         // =========================================
         function enviarWhatsapp() {
 
-            const mensaje = document.getElementById("whatsappMensaje").value;
+            const mensaje =
+                document.getElementById("whatsappMensaje").value;
 
-            let telefono = document.getElementById("whatsappTelefono").value || "";
-            const indicativo = document.getElementById("whatsappIndicativo").value.replace(/\D/g, "");
+            let telefono =
+                document.getElementById("whatsappTelefono").value || "";
+
+            const indicativo =
+                document.getElementById("whatsappIndicativo")
+                    .value
+                    .replace(/\D/g, "");
 
             telefono = telefono.replace(/\D/g, "");
 
@@ -3138,14 +3125,41 @@ Quedo atento a sus comentarios.`;
                 return;
             }
 
-            const numeroFinal = indicativo ? indicativo + telefono : telefono;
+            const numeroFinal =
+                indicativo
+                    ? indicativo + telefono
+                    : telefono;
 
+            // =========================================
+            // NOTA CRM (NO RELACIONADA AL MENSAJE WHATSAPP)
+            // =========================================
             document.getElementById("m_nota").value =
-                "SE ENVÍA MENSAJE DE CONTACTO INICIAL DESDE CRM RE INGENIERÍA";
+                "SE LE ESCRIBE AL CLIENTE MENSAJE DE PRESENCIA DE NUESTRA MARCA, A LA ESPERA DE RESPUESTA POR PARTE DEL CLIENTE";
 
+            // =========================================
+            // ENVÍO A WHATSAPP
+            // =========================================
             window.open(
                 `whatsapp://send?phone=${numeroFinal}&text=${encodeURIComponent(mensaje)}`
             );
+
+            // =========================================
+            // LIMPIEZA DE VARIABLES DEL FLUJO
+            // =========================================
+            mensajeWhatsappSeleccionado = "";
+
+            const selectMensajes =
+                document.getElementById("mensajeWhatsappSelect");
+
+            if (selectMensajes) {
+                selectMensajes.selectedIndex = 0;
+            }
+
+            document.getElementById("whatsappMensaje").value = "";
+
+            document.getElementById("whatsappTelefono").value = "";
+
+            document.getElementById("whatsappIndicativo").value = "";
 
             cerrarModalWhatsapp();
         }
@@ -3202,6 +3216,8 @@ Quedo atento a sus comentarios.`;
 
             const modal = document.getElementById("modalWhatsappBox");
 
+            if (!modal) return;
+
             let isDown = false;
             let offset = [0, 0];
 
@@ -3213,7 +3229,6 @@ Quedo atento a sus comentarios.`;
                     modal.offsetLeft - e.clientX,
                     modal.offsetTop - e.clientY
                 ];
-
             });
 
             document.addEventListener("mouseup", () => {
