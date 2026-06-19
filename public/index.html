@@ -2807,14 +2807,23 @@ HIDDEN
         // =========================================
         document.addEventListener("keydown", function (e) {
 
-            if (e.key === "Escape") {
+            if (e.key !== "Escape") return;
 
-                const modal = document.getElementById("modalTarea");
+            const modalWhatsapp = document.getElementById("modalWhatsapp");
 
-                if (!modal.classList.contains("hidden")) {
-                    cerrarModalTarea();
-                }
+            if (modalWhatsapp &&
+                window.getComputedStyle(modalWhatsapp).display !== "none") {
+
+                cerrarModalWhatsapp();
+                return;
             }
+
+            const modalTarea = document.getElementById("modalTarea");
+
+            if (modalTarea && !modalTarea.classList.contains("hidden")) {
+                cerrarModalTarea();
+            }
+
         });
 
         // =========================================
