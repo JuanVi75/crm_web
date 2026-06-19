@@ -3240,6 +3240,39 @@ HIDDEN
 
         document.addEventListener("change", function (e) {
 
+            if (e.target.id !== "targetWhatsappSelect") return;
+
+            const target = e.target.value;
+
+            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+
+            if (!selectMensajes) return;
+
+            selectMensajes.innerHTML =
+                `<option value="">-- Seleccionar mensaje --</option>`;
+
+            const data = window.whatsappMensajesData || [];
+
+            const filtrados = target
+                ? data.filter(m => m.target === target)
+                : [];
+
+            filtrados.forEach(m => {
+
+                const opt = document.createElement("option");
+
+                opt.value = m.id;
+                opt.textContent = `${m.nombre} (${m.etapa})`;
+                opt.dataset.mensaje = m.mensaje;
+
+                selectMensajes.appendChild(opt);
+            });
+
+            window.mensajeWhatsappSeleccionado = "";
+        });
+
+        document.addEventListener("change", function (e) {
+
             if (e.target.id !== "mensajeWhatsappSelect") return;
 
             const opt = e.target.options[e.target.selectedIndex];
