@@ -2038,7 +2038,7 @@ HIDDEN
                 document.getElementById("m_nota").value = "";
                 document.getElementById("m_proxima_accion").value = "";
                 document.getElementById("m_fecha_proxima").value = "";
-                document.getElementById("m_tipo").value = "LLAMADA";
+                document.getElementById("m_tipo").value = "WHATSAPP";
                 document.getElementById("m_estado").value = "ACTIVO";
 
                 // RESET SALUDO (MODAL TAREAS)
@@ -2732,18 +2732,45 @@ HIDDEN
         // =========================================
         function modalTieneDatos() {
 
-            const nota = document.getElementById("m_nota").value.trim();
-            const accion = document.getElementById("m_proxima_accion").value.trim();
-            const fecha = document.getElementById("m_fecha_proxima").value.trim();
-            const tipo = document.getElementById("m_tipo").value;
-            const estado = document.getElementById("m_estado").value;
+            const nota =
+                document.getElementById("m_nota").value.trim();
+
+            const accion =
+                document.getElementById("m_proxima_accion").value.trim();
+
+            const fecha =
+                document.getElementById("m_fecha_proxima").value.trim();
+
+            const tipo =
+                document.getElementById("m_tipo").value;
+
+            const estado =
+                document.getElementById("m_estado").value;
+
+            const saludo =
+                document.getElementById("m_saludo")?.value || "";
+
+            const contacto =
+                document.getElementById("contactoSelect")?.value || "";
 
             return (
+
+                // CAMPOS DE TEXTO
                 nota !== "" ||
                 accion !== "" ||
                 fecha !== "" ||
-                tipo !== "WHATSAPP" ||
-                estado !== "ACTIVO"
+
+                // SELECTS
+                saludo !== "" ||
+                contacto !== "" ||
+
+                // VALORES DISTINTOS A LOS DEFAULT
+                tipo !== "LLAMADA" ||
+                estado !== "ACTIVO" ||
+
+                // CAMBIOS EN WHATSAPP
+                window.whatsappDirty
+
             );
         }
 
