@@ -11,7 +11,7 @@ const dashboardRoutes = require("./routes/dashboard");
 const seguimientosRoutes = require("./routes/seguimientos.routes");
 const cotizacionesRoutes = require("./routes/cotizaciones.routes");
 const pedidosRoutes = require("./routes/pedidos.routes");
-const configWhatsappMensajesRoutes = require("./routes/configWhatsappMensajes.routes");
+const configWhatsappMensajesRoutes = require("./routes/whatsappMensajes.routes");
 
 const PORT = process.env.PORT || 3000;
 
