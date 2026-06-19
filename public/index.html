@@ -3248,7 +3248,7 @@ HIDDEN
 
             if (!selectMensajes) return;
 
-            // RESET SOLO DEL SELECT (NO DEL TEXTO)
+            // limpiar select
             selectMensajes.innerHTML =
                 `<option value="">-- Seleccionar mensaje --</option>`;
 
@@ -3268,13 +3268,17 @@ HIDDEN
                 selectMensajes.appendChild(opt);
             });
 
-            // SOLO RESET DE SELECCIÓN ACTUAL
+            // reset estado
             window.mensajeWhatsappSeleccionado = "";
 
             selectMensajes.selectedIndex = 0;
 
-            // ❌ NO BORRAR TEXTAREA
-            // ❌ NO BORRAR PREVIEW
+            // 🔥 IMPORTANTE: disparar reset del flujo de mensaje
+            const textarea = document.getElementById("whatsappMensaje");
+            const preview = document.getElementById("previewMensaje");
+
+            if (textarea) textarea.value = "";
+            if (preview) preview.innerText = "";
         });
 
     </script>
