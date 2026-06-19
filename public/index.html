@@ -3242,38 +3242,42 @@ HIDDEN
 
         document.addEventListener("change", function (e) {
 
-            if (e.target.id !== "targetWhatsappSelect") return;
+    if (e.target.id !== "targetWhatsappSelect") return;
 
-            const target = e.target.value;
+    const target = e.target.value;
 
-            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+    const selectMensajes = document.getElementById("mensajeWhatsappSelect");
 
-            if (!selectMensajes) return;
+    if (!selectMensajes) return;
 
-            selectMensajes.innerHTML =
-                `<option value="">-- Seleccionar mensaje --</option>`;
+    // guardar TODOS los mensajes originales si no existe
+    if (!window.whatsappMensajesDataBackup) {
+        window.whatsappMensajesDataBackup = window.whatsappMensajesData || [];
+    }
 
-            if (!target) return;
+    const baseData = window.whatsappMensajesDataBackup;
 
-            const filtrados = (window.whatsappMensajesData || [])
-                .filter(m => m.target === target);
+    selectMensajes.innerHTML =
+        `<option value="">-- Seleccionar mensaje --</option>`;
 
-            filtrados.forEach(m => {
+    if (!target) return;
 
-                const opt = document.createElement("option");
-                opt.value = m.id;
-                opt.textContent = `${m.nombre} (${m.etapa})`;
-                opt.dataset.mensaje = m.mensaje;
+    const filtrados = baseData.filter(m => m.target === target);
 
-                selectMensajes.appendChild(opt);
-            });
+    filtrados.forEach(m => {
 
-            // reset dependientes
-            window.mensajeWhatsappSeleccionado = "";
-            document.getElementById("whatsappMensaje").value = "";
-            document.getElementById("previewMensaje").innerText = "";
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = `${m.nombre} (${m.etapa})`;
+        opt.dataset.mensaje = m.mensaje;
 
-        });
+        selectMensajes.appendChild(opt);
+    });
+
+    // ❌ IMPORTANTE: NO TOCAR MENSAJE NI PREVIEW
+    // SOLO LIMPIAMOS SELECCIÓN ACTUAL
+    window.mensajeWhatsappSeleccionado = "";
+});
 
     </script>
 
