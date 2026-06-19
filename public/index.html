@@ -3240,45 +3240,38 @@ HIDDEN
 
         document.addEventListener("change", function (e) {
 
-            if (e.target.id !== "targetWhatsappSelect") return;
+            if (e.target.id !== "mensajeWhatsappSelect") return;
 
-            const target = e.target.value;
+            const opt = e.target.options[e.target.selectedIndex];
 
-            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+            const mensaje = opt ? opt.dataset.mensaje : "";
 
-            if (!selectMensajes) return;
+            window.mensajeWhatsappSeleccionado = mensaje;
 
-            // limpiar select
-            selectMensajes.innerHTML =
-                `<option value="">-- Seleccionar mensaje --</option>`;
-
-            const data = window.whatsappMensajesData || [];
-
-            const filtrados = target
-                ? data.filter(m => m.target === target)
-                : [];
-
-            filtrados.forEach(m => {
-
-                const opt = document.createElement("option");
-                opt.value = m.id;
-                opt.textContent = `${m.nombre} (${m.etapa})`;
-                opt.dataset.mensaje = m.mensaje;
-
-                selectMensajes.appendChild(opt);
-            });
-
-            // reset estado
-            window.mensajeWhatsappSeleccionado = "";
-
-            selectMensajes.selectedIndex = 0;
-
-            // 🔥 IMPORTANTE: disparar reset del flujo de mensaje
             const textarea = document.getElementById("whatsappMensaje");
             const preview = document.getElementById("previewMensaje");
 
-            if (textarea) textarea.value = "";
-            if (preview) preview.innerText = "";
+            if (!textarea) return;
+
+            const saludo = window.saludoSeleccionado || "";
+            const contacto =
+                document.getElementById("contactoSelect")
+                    ?.options[document.getElementById("contactoSelect").selectedIndex]
+                    ?.text || "Cliente";
+
+            const asesor = window.nombreEmisor || "ASESOR";
+
+            const mensajeFinal =
+                `Buen día ${saludo} ${contacto}:\n\n` +
+                `Le habla ${asesor} de RE INGENIERIA.\n\n` +
+                (mensaje ? mensaje + "\n\n" : "") +
+                `Quedo atento a sus comentarios.`;
+
+            textarea.value = mensajeFinal;
+
+            if (preview) {
+                preview.innerText = mensaje || "(Sin mensaje seleccionado)";
+            }
         });
 
     </script>
