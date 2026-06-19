@@ -1395,15 +1395,14 @@ HIDDEN
                     </div>
 
                     <img src="img/whatsapp.png" onclick="abrirWhatsappContacto()" style="
-                    width:38px;
-                    height:38px;
-                    cursor:pointer;
-                    margin-bottom:2px;
-                ">
-
+                        width:38px;
+                        height:38px;
+                        cursor:pointer;
+                        margin-bottom:2px;
+                     ">
                 </div>
 
-                <!-- SALUDO (🔵 AQUI SE QUEDA COMO PEDISTE) -->
+                <!-- SALUDO -->
                 <div class="form-group">
 
                     <label>SALUDO</label>
@@ -1473,17 +1472,20 @@ HIDDEN
             <div class="modal-footer">
 
                 <button class="modal-btn secondary-btn" onclick="tareaAnterior()">
-                    << /button>
+                    &lt;
+                </button>
 
-                        <button class="modal-btn primary-btn" onclick="guardarTarea()">
-                            GUARDAR
-                        </button>
+                <button class="modal-btn primary-btn" onclick="guardarTarea()">
+                    GUARDAR
+                </button>
 
-                        <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">></button>
+                <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">
+                    &gt;
+                </button>
 
-                        <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
-                            CERRAR
-                        </button>
+                <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
+                    CERRAR
+                </button>
 
             </div>
 
@@ -1576,198 +1578,94 @@ HIDDEN
 
             try {
 
-                // =========================================
-                // VALIDAR
-                // =========================================
                 if (!tarea) {
-
                     console.error("Tarea inválida");
-
                     return;
                 }
 
-                // =========================================
-                // RESET GUARDADO
-                // =========================================
                 window.seguimientoGuardado = false;
-
-                // =========================================
-                // GUARDAR ACTUAL
-                // =========================================
                 window.tareaActual = tarea;
 
-                // =========================================
-                // INDEX
-                // =========================================
                 window.tareaActualIndex =
-                    window.tareasHoy.findIndex(
-                        t => t.id === tarea.id
-                    );
+                    window.tareasHoy.findIndex(t => t.id === tarea.id);
 
-                // =========================================
-                // MODAL
-                // =========================================
-                document
-                    .getElementById("modalTarea")
-                    .classList
-                    .remove("hidden");
+                document.getElementById("modalTarea")
+                    .classList.remove("hidden");
 
-                // =========================================
-                // CLIENTE
-                // =========================================
                 document.getElementById("modalCliente").innerText =
                     tarea.cliente || "SIN CLIENTE";
 
-                // =========================================
-                // LIMPIAR CAMPOS
-                // =========================================
                 document.getElementById("m_nota").value = "";
-
                 document.getElementById("m_proxima_accion").value = "";
-
                 document.getElementById("m_fecha_proxima").value = "";
+                document.getElementById("m_tipo").value = "LLAMADA";
+                document.getElementById("m_estado").value = "ACTIVO";
 
-                document.getElementById("m_tipo").value =
-                    "LLAMADA";
+                const select = document.getElementById("contactoSelect");
+                const inputTelefono = document.getElementById("modalTelefono");
 
-                document.getElementById("m_estado").value =
-                    "ACTIVO";
-
-                // =========================================
-                // ELEMENTOS
-                // =========================================
-                const select =
-                    document.getElementById("contactoSelect");
-
-                const inputTelefono =
-                    document.getElementById("modalTelefono");
-
-                // =========================================
-                // RESET UI
-                // =========================================
                 select.innerHTML = "";
-
                 inputTelefono.value = "";
 
-                // =========================================
-                // OPTION DEFAULT
-                // =========================================
-                const optDefault =
-                    document.createElement("option");
-
+                const optDefault = document.createElement("option");
                 optDefault.value = "";
-
-                optDefault.textContent =
-                    "SELECCIONE CONTACTO";
-
+                optDefault.textContent = "SELECCIONE CONTACTO";
                 select.appendChild(optDefault);
 
-                // =========================================
-                // CONSULTAR CONTACTOS
-                // =========================================
-                const res = await fetch(
-                    `/api/clientes/${tarea.cliente_id}/contactos`
-                );
-
+                const res = await fetch(`/api/clientes/${tarea.cliente_id}/contactos`);
                 const contactos = await res.json();
 
-                // =========================================
-                // CONTACTO PRINCIPAL CLIENTE
-                // =========================================
-                if (
-                    tarea.contacto ||
-                    tarea.tel_contacto
-                ) {
+                if (tarea.contacto || tarea.tel_contacto) {
 
-                    const optPrincipal =
-                        document.createElement("option");
+                    const optPrincipal = document.createElement("option");
 
-                    optPrincipal.value =
-                        JSON.stringify({
+                    optPrincipal.value = JSON.stringify({
+                        nombre: tarea.contacto || "",
+                        telefono: tarea.tel_contacto || ""
+                    });
 
-                            nombre:
-                                tarea.contacto || "",
-
-                            telefono:
-                                tarea.tel_contacto || ""
-                        });
-
-                    optPrincipal.textContent =
-                        `${tarea.contacto || ""}`;
-
+                    optPrincipal.textContent = tarea.contacto || "";
                     select.appendChild(optPrincipal);
                 }
 
-                // =========================================
-                // CONTACTOS ADICIONALES
-                // =========================================
                 if (Array.isArray(contactos)) {
 
                     contactos.forEach(c => {
 
-                        // =========================================
-                        // EVITAR DUPLICADOS
-                        // =========================================
-                        if (
+                        if (c.nombre === tarea.contacto &&
+                            c.telefono === tarea.tel_contacto) return;
 
-                            c.nombre === tarea.contacto &&
-                            c.telefono === tarea.tel_contacto
+                        const opt = document.createElement("option");
 
-                        ) {
+                        opt.value = JSON.stringify({
+                            nombre: c.nombre || "",
+                            telefono: c.telefono || ""
+                        });
 
-                            return;
-                        }
-
-                        const opt =
-                            document.createElement("option");
-
-                        opt.value =
-                            JSON.stringify({
-
-                                nombre:
-                                    c.nombre || "",
-
-                                telefono:
-                                    c.telefono || ""
-                            });
-
-                        opt.textContent =
-                            `${c.nombre || ""}`;
-
+                        opt.textContent = c.nombre || "";
                         select.appendChild(opt);
                     });
                 }
 
-                // =========================================
-                // SIEMPRE VACIO
-                // =========================================
                 select.selectedIndex = 0;
-
                 inputTelefono.value = "";
 
-                // =========================================
-                // CAMBIO CONTACTO
-                // =========================================
                 select.onchange = function () {
 
                     if (!select.value) {
-
                         inputTelefono.value = "";
-
                         return;
                     }
 
-                    const contacto =
-                        JSON.parse(select.value);
-
-                    inputTelefono.value =
-                        contacto.telefono || "";
+                    const contacto = JSON.parse(select.value);
+                    inputTelefono.value = contacto.telefono || "";
                 };
 
+                // 🔥 IMPORTANTE: mantener mensaje seleccionado entre tareas
+                window.mensajeWhatsappSeleccionado = window.mensajeWhatsappSeleccionado || "";
+
             } catch (err) {
-
                 console.error(err);
-
                 alert("Error cargando tarea");
             }
         }
@@ -1776,217 +1674,85 @@ HIDDEN
 
             try {
 
-                // =========================================
-                // ESTADO GUARDADO
-                // =========================================
                 window.seguimientoGuardado = true;
 
-                // =========================================
-                // VALIDAR TAREA ACTUAL
-                // =========================================
                 if (!window.tareaActual) {
-
                     alert("No hay tarea seleccionada");
                     return;
                 }
 
-                // =========================================
-                // ESTADO
-                // =========================================
-                const estado =
-                    document.getElementById("m_estado").value;
+                const estado = document.getElementById("m_estado").value;
+                const fechaInput = document.getElementById("m_fecha_proxima").value;
 
-                // =========================================
-                // FECHA PROXIMA
-                // =========================================
-                const fechaInput =
-                    document.getElementById("m_fecha_proxima").value;
-
-                // =========================================
-                // CONTACTO SELECCIONADO
-                // =========================================
-                const contactoSelect =
-                    document.getElementById("contactoSelect");
+                const contactoSelect = document.getElementById("contactoSelect");
 
                 let contactoFinal = "";
                 let telFinal = "";
 
-                // =========================================
-                // CONTACTO
-                // =========================================
-                if (
-                    contactoSelect &&
-                    contactoSelect.value &&
-                    contactoSelect.value !== "UNICO"
-                ) {
+                if (contactoSelect && contactoSelect.value && contactoSelect.value !== "") {
 
-                    const contacto =
-                        JSON.parse(contactoSelect.value);
+                    const contacto = JSON.parse(contactoSelect.value);
 
-                    contactoFinal =
-                        contacto.nombre || "";
-
-                    telFinal =
-                        contacto.telefono || "";
+                    contactoFinal = contacto.nombre || "";
+                    telFinal = contacto.telefono || "";
 
                 } else {
 
-                    contactoFinal =
-                        window.tareaActual.contacto || "";
-
-                    telFinal =
-                        window.tareaActual.tel_contacto || "";
+                    contactoFinal = window.tareaActual.contacto || "";
+                    telFinal = window.tareaActual.tel_contacto || "";
                 }
 
-                // =========================================
-                // TERMINAR TAREA ACTUAL
-                // =========================================
-                const cerrarActual =
-                    await fetch(
-                        `/api/seguimientos/${window.tareaActual.id}`,
-                        {
+                await fetch(`/api/seguimientos/${window.tareaActual.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    },
+                    body: JSON.stringify({ estado: "TERMINADO" })
+                });
 
-                            method: "PUT",
-
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Authorization":
-                                    "Bearer " + localStorage.getItem("token")
-                            },
-
-                            body: JSON.stringify({
-                                estado: "TERMINADO"
-                            })
-                        }
-                    );
-
-                const cerrarData =
-                    await cerrarActual.json();
-
-                if (!cerrarData.success) {
-
-                    alert("No se pudo cerrar la tarea actual");
-                    return;
-                }
-
-                // =========================================
-                // BODY NUEVO SEGUIMIENTO
-                // =========================================
                 const body = {
-
-                    cliente_id:
-                        window.tareaActual.cliente_id,
-
-                    cliente:
-                        window.tareaActual.cliente,
-
-                    contacto:
-                        contactoFinal,
-
-                    tel_contacto:
-                        telFinal,
-
-                    tipo:
-                        document.getElementById("m_tipo").value,
-
-                    nota:
-                        document.getElementById("m_nota").value,
-
-                    proxima_accion:
-                        document.getElementById("m_proxima_accion").value,
-
-                    fecha_proxima:
-                        fechaInput || null,
-
-                    fecha:
-                        new Date().toISOString(),
-
-                    asesor:
-                        localStorage.getItem("user"),
-
-                    estado:
-                        estado
+                    cliente_id: window.tareaActual.cliente_id,
+                    cliente: window.tareaActual.cliente,
+                    contacto: contactoFinal,
+                    tel_contacto: telFinal,
+                    tipo: document.getElementById("m_tipo").value,
+                    nota: document.getElementById("m_nota").value,
+                    proxima_accion: document.getElementById("m_proxima_accion").value,
+                    fecha_proxima: fechaInput || null,
+                    fecha: new Date().toISOString(),
+                    asesor: localStorage.getItem("user"),
+                    estado: estado
                 };
 
-                // =========================================
-                // CREAR NUEVO SEGUIMIENTO
-                // =========================================
-                const res =
-                    await fetch("/api/seguimientos", {
+                const res = await fetch("/api/seguimientos", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    },
+                    body: JSON.stringify(body)
+                });
 
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        },
-
-                        body: JSON.stringify(body)
-                    });
-
-                const data =
-                    await res.json();
+                const data = await res.json();
 
                 if (!data.success) {
-
                     alert("Error guardando seguimiento");
                     return;
                 }
 
-                // =========================================
-                // CERRAR VENCIDOS
-                // =========================================
-                await fetch(
-                    "/api/seguimientos/cerrar-vencidos",
-                    {
-
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + localStorage.getItem("token")
-                        }
-                    }
-                );
-
-                // =========================================
-                // RECARGAR LISTA
-                // =========================================
                 await cargarTareasHoy();
-
-                // =========================================
-                // MENSAJE
-                // =========================================
                 alert("Seguimiento guardado");
 
-                // =========================================
-                // SI NO HAY MAS TAREAS
-                // =========================================
-                if (
-                    window.tareaActualIndex >=
-                    window.tareasHoy.length
-                ) {
-
+                if (window.tareaActualIndex >= window.tareasHoy.length) {
                     cerrarModalTarea();
-
                     return;
                 }
 
-                // =========================================
-                // SIGUIENTE TAREA
-                // =========================================
-                abrirTarea(
-                    window.tareasHoy[
-                    window.tareaActualIndex
-                    ]
-                );
+                abrirTarea(window.tareasHoy[window.tareaActualIndex]);
 
             } catch (err) {
-
                 console.error(err);
-
                 alert("Error servidor");
             }
         }
@@ -3087,12 +2853,17 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
+            // 🔥 SALUDO NO SE PIDE CADA VEZ: SE GUARDA EN MEMORIA
+            if (!window.saludoSeleccionado) {
+                window.saludoSeleccionado = "Ing.";
+            }
+
             const mensajeFinal = `
-Buen día ${nombre}:
+Buen día ${window.saludoSeleccionado} ${nombre}:
 
-Le habla ${nombreEmisor} de RE INGENIERIA, espero que se encuentre muy bien.
+Le habla ${nombreEmisor} de RE INGENIERIA.
 
-${mensajeWhatsappSeleccionado || ""}
+${window.mensajeWhatsappSeleccionado || ""}
 
 Quedo atento a sus comentarios.
 `.trim();
@@ -3107,16 +2878,10 @@ Quedo atento a sus comentarios.
         // =========================================
         function enviarWhatsapp() {
 
-            const mensaje =
-                document.getElementById("whatsappMensaje").value;
+            const mensaje = document.getElementById("whatsappMensaje").value;
 
-            let telefono =
-                document.getElementById("whatsappTelefono").value || "";
-
-            const indicativo =
-                document.getElementById("whatsappIndicativo")
-                    .value
-                    .replace(/\D/g, "");
+            let telefono = document.getElementById("whatsappTelefono").value || "";
+            const indicativo = document.getElementById("whatsappIndicativo").value.replace(/\D/g, "");
 
             telefono = telefono.replace(/\D/g, "");
 
@@ -3125,40 +2890,24 @@ Quedo atento a sus comentarios.
                 return;
             }
 
-            const numeroFinal =
-                indicativo
-                    ? indicativo + telefono
-                    : telefono;
+            const numeroFinal = indicativo ? indicativo + telefono : telefono;
 
-            // =========================================
-            // NOTA CRM (NO RELACIONADA AL MENSAJE WHATSAPP)
-            // =========================================
             document.getElementById("m_nota").value =
-                "SE LE ESCRIBE AL CLIENTE MENSAJE DE PRESENCIA DE NUESTRA MARCA, A LA ESPERA DE RESPUESTA POR PARTE DEL CLIENTE";
+                "SE ENVÍA MENSAJE DE CONTACTO INICIAL DESDE CRM RE INGENIERÍA";
 
-            // =========================================
-            // ENVÍO A WHATSAPP
-            // =========================================
             window.open(
                 `whatsapp://send?phone=${numeroFinal}&text=${encodeURIComponent(mensaje)}`
             );
 
-            // =========================================
-            // LIMPIEZA DE VARIABLES DEL FLUJO
-            // =========================================
-            mensajeWhatsappSeleccionado = "";
+            // 🔥 RESET COMPLETO DEL FLUJO
+            window.mensajeWhatsappSeleccionado = "";
+            window.saludoSeleccionado = "";
 
-            const selectMensajes =
-                document.getElementById("mensajeWhatsappSelect");
-
-            if (selectMensajes) {
-                selectMensajes.selectedIndex = 0;
-            }
+            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+            if (selectMensajes) selectMensajes.selectedIndex = 0;
 
             document.getElementById("whatsappMensaje").value = "";
-
             document.getElementById("whatsappTelefono").value = "";
-
             document.getElementById("whatsappIndicativo").value = "";
 
             cerrarModalWhatsapp();
