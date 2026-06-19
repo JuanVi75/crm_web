@@ -1520,8 +1520,8 @@ HIDDEN
     </div>
 
     <!-- =========================================
-MODAL WHATSAPP
-========================================= -->
+        MODAL WHATSAPP
+    ========================================= -->
     <div id="modalWhatsapp" style="
     display:none;
     position:fixed;
@@ -2224,177 +2224,6 @@ MODAL WHATSAPP
             window.tareaActual = null;
         }
 
-        // =========================================
-        // VALIDAR SI HAY DATOS
-        // =========================================
-        function modalTieneDatos() {
-
-            const nota =
-                document.getElementById("m_nota").value.trim();
-
-            const accion =
-                document.getElementById("m_proxima_accion").value.trim();
-
-            const fecha =
-                document.getElementById("m_fecha_proxima").value.trim();
-
-            const tipo =
-                document.getElementById("m_tipo").value;
-
-            const estado =
-                document.getElementById("m_estado").value;
-
-            // =========================================
-            // VALIDAR CAMPOS ESCRITOS
-            // =========================================
-            return (
-                nota !== "" ||
-                accion !== "" ||
-                fecha !== "" ||
-                tipo !== "LLAMADA" ||
-                estado !== "ACTIVO"
-            );
-        }
-
-        // =========================================
-        // ANTERIOR
-        // =========================================
-        function tareaAnterior() {
-
-            // =========================================
-            // VALIDAR PRIMER REGISTRO
-            // =========================================
-            if (window.tareaActualIndex <= 0) {
-
-                return;
-            }
-
-            // =========================================
-            // VALIDAR DATOS SIN GUARDAR
-            // =========================================
-            if (modalTieneDatos()) {
-
-                const confirmar = confirm(
-                    "Hay información sin guardar. ¿Desea continuar?"
-                );
-
-                if (!confirmar) {
-                    return;
-                }
-            }
-
-            // =========================================
-            // ANTERIOR
-            // =========================================
-            window.tareaActualIndex--;
-
-            abrirTarea(
-                window.tareasHoy[
-                window.tareaActualIndex
-                ]
-            );
-        }
-
-        // =========================================
-        // SIGUIENTE
-        // =========================================
-        function tareaSiguiente() {
-
-            // =========================================
-            // VALIDAR LISTA
-            // =========================================
-            if (
-                !window.tareasHoy ||
-                window.tareasHoy.length === 0
-            ) {
-
-                alert("No hay tareas");
-
-                return;
-            }
-
-            // =========================================
-            // VALIDAR SI YA NO HAY MÁS
-            // =========================================
-            if (
-                window.tareaActualIndex >=
-                window.tareasHoy.length - 1
-            ) {
-
-                alert("No hay más tareas");
-
-                return;
-            }
-
-            // =========================================
-            // VALIDAR GUARDADO
-            // =========================================
-            if (!window.seguimientoGuardado) {
-
-                // =========================================
-                // VALIDAR DATOS SIN GUARDAR
-                // =========================================
-                if (modalTieneDatos()) {
-
-                    const confirmar = confirm(
-                        "Hay información sin guardar. ¿Desea continuar?"
-                    );
-
-                    if (!confirmar) {
-
-                        return;
-                    }
-                }
-            }
-
-            // =========================================
-            // RESET ESTADO GUARDADO
-            // =========================================
-            window.seguimientoGuardado = false;
-
-            // =========================================
-            // SIGUIENTE INDEX
-            // =========================================
-            window.tareaActualIndex++;
-
-            // =========================================
-            // VALIDAR EXISTENCIA
-            // =========================================
-            const siguienteTarea =
-                window.tareasHoy[
-                window.tareaActualIndex
-                ];
-
-            if (!siguienteTarea) {
-
-                alert("No hay más tareas");
-
-                return;
-            }
-
-            // =========================================
-            // ABRIR
-            // =========================================
-            abrirTarea(siguienteTarea);
-        }
-
-        // =========================================
-        // CERRAR CON ESC
-        // =========================================
-        document.addEventListener("keydown", function (e) {
-
-            if (e.key === "Escape") {
-
-                const modal =
-                    document.getElementById("modalTarea");
-
-                if (!modal.classList.contains("hidden")) {
-
-                    cerrarModalTarea();
-                }
-            }
-        });
-
         async function cargarTareasHoy() {
 
             try {
@@ -3088,50 +2917,6 @@ MODAL WHATSAPP
             });
         };
 
-        function abrirWhatsappContacto() {
-
-            const select =
-                document.getElementById("contactoSelect");
-
-            const nombre =
-                select.options[select.selectedIndex]?.text || "Cliente";
-
-            let telefono =
-                document.getElementById("modalTelefono").value || "";
-
-            telefono = telefono.replace(/\D/g, "");
-
-            if (!telefono) {
-                alert("El contacto no tiene teléfono registrado");
-                return;
-            }
-
-            const usuarioLogueado = getUsuarioLogueado();
-
-            const nombreEmisor = obtenerNombreEmisor(usuarioLogueado);
-
-            if (!nombreEmisor) return;
-
-            window.telefonoWhatsapp = telefono;
-
-            document.getElementById("whatsappTelefono").value = telefono;
-            document.getElementById("whatsappIndicativo").value = "";
-
-            const mensaje = `Buen día ${nombre}:
-
-Le habla ${nombreEmisor} de RE INGENIERIA, espero que se encuentre muy bien.
-
-Le escribo porque estamos programando visitas técnicas y cotizaciones para los próximos proyectos de cerramiento perimetral del semestre. Como anteriormente mostró interés en nuestras soluciones, quería consultarle si aún existe la posibilidad de evaluar una propuesta para su empresa.
-
-Si es de su interés, con gusto puedo reservar un espacio para revisar el proyecto sin compromiso.
-
-Quedo atento a sus comentarios.`;
-
-            document.getElementById("whatsappMensaje").value = mensaje;
-
-            document.getElementById("modalWhatsapp").style.display = "flex";
-        }
-
         function enviarWhatsapp() {
 
             const mensaje =
@@ -3168,6 +2953,223 @@ Quedo atento a sus comentarios.`;
             cerrarModalWhatsapp();
         }
 
+        // =========================================
+        // MENSAJE SELECCIONADO GLOBAL
+        // =========================================
+        let mensajeWhatsappSeleccionado = "";
+
+        // =========================================
+        // VALIDAR SI HAY DATOS
+        // =========================================
+        function modalTieneDatos() {
+
+            const nota = document.getElementById("m_nota").value.trim();
+            const accion = document.getElementById("m_proxima_accion").value.trim();
+            const fecha = document.getElementById("m_fecha_proxima").value.trim();
+            const tipo = document.getElementById("m_tipo").value;
+            const estado = document.getElementById("m_estado").value;
+
+            return (
+                nota !== "" ||
+                accion !== "" ||
+                fecha !== "" ||
+                tipo !== "WHATSAPP" ||
+                estado !== "ACTIVO"
+            );
+        }
+
+        // =========================================
+        // ANTERIOR
+        // =========================================
+        function tareaAnterior() {
+
+            if (window.tareaActualIndex <= 0) return;
+
+            if (modalTieneDatos()) {
+
+                const confirmar = confirm("Hay información sin guardar. ¿Desea continuar?");
+                if (!confirmar) return;
+            }
+
+            window.tareaActualIndex--;
+
+            abrirTarea(window.tareasHoy[window.tareaActualIndex]);
+        }
+
+        // =========================================
+        // SIGUIENTE
+        // =========================================
+        function tareaSiguiente() {
+
+            if (!window.tareasHoy || window.tareasHoy.length === 0) {
+                alert("No hay tareas");
+                return;
+            }
+
+            if (window.tareaActualIndex >= window.tareasHoy.length - 1) {
+                alert("No hay más tareas");
+                return;
+            }
+
+            if (!window.seguimientoGuardado) {
+
+                if (modalTieneDatos()) {
+
+                    const confirmar = confirm("Hay información sin guardar. ¿Desea continuar?");
+                    if (!confirmar) return;
+                }
+            }
+
+            window.seguimientoGuardado = false;
+            window.tareaActualIndex++;
+
+            const siguienteTarea = window.tareasHoy[window.tareaActualIndex];
+
+            if (!siguienteTarea) {
+                alert("No hay más tareas");
+                return;
+            }
+
+            abrirTarea(siguienteTarea);
+        }
+
+        // =========================================
+        // ESCAPE MODAL
+        // =========================================
+        document.addEventListener("keydown", function (e) {
+
+            if (e.key === "Escape") {
+
+                const modal = document.getElementById("modalTarea");
+
+                if (!modal.classList.contains("hidden")) {
+                    cerrarModalTarea();
+                }
+            }
+        });
+
+        // =========================================
+        // CARGAR MENSAJES WHATSAPP (BD)
+        // =========================================
+        async function cargarMensajesWhatsapp() {
+
+            try {
+
+                const res = await fetch("/api/config-whatsapp-mensajes");
+                const data = await res.json();
+
+                const select = document.getElementById("mensajeWhatsappSelect");
+
+                if (!select) return;
+
+                select.innerHTML = `<option value="">-- Seleccionar mensaje --</option>`;
+
+                data.forEach(m => {
+
+                    const opt = document.createElement("option");
+                    opt.value = m.id;
+                    opt.textContent = `${m.nombre} (${m.target} - ${m.etapa})`;
+                    opt.dataset.mensaje = m.mensaje;
+
+                    select.appendChild(opt);
+                });
+
+            } catch (err) {
+                console.error("ERROR MENSAJES WHATSAPP:", err);
+            }
+        }
+
+        // =========================================
+        // CAPTURAR MENSAJE SELECCIONADO
+        // =========================================
+        document.addEventListener("change", function (e) {
+
+            if (e.target && e.target.id === "mensajeWhatsappSelect") {
+
+                const opt = e.target.options[e.target.selectedIndex];
+                mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
+            }
+        });
+
+        // =========================================
+        // ABRIR WHATSAPP (MODAL)
+        // =========================================
+        function abrirWhatsappContacto() {
+
+            const select = document.getElementById("contactoSelect");
+            const nombre = select.options[select.selectedIndex]?.text || "Cliente";
+
+            let telefono = document.getElementById("modalTelefono").value || "";
+            telefono = telefono.replace(/\D/g, "");
+
+            if (!telefono) {
+                alert("El contacto no tiene teléfono registrado");
+                return;
+            }
+
+            const usuarioLogueado = getUsuarioLogueado();
+            const nombreEmisor = obtenerNombreEmisor(usuarioLogueado);
+
+            if (!nombreEmisor) return;
+
+            window.telefonoWhatsapp = telefono;
+
+            document.getElementById("whatsappTelefono").value = telefono;
+            document.getElementById("whatsappIndicativo").value = "";
+
+            // =========================================
+            // SALUDO DINÁMICO
+            // =========================================
+            const saludo = prompt("Seleccione saludo: Ing., Arq., Sr., Sra., Don, Doña");
+
+            // =========================================
+            // MENSAJE FINAL DINÁMICO
+            // =========================================
+            const mensaje = `Buen día ${saludo || ""} ${nombre}:
+
+Le habla ${nombreEmisor} de RE INGENIERIA, espero que se encuentre muy bien.
+
+${mensajeWhatsappSeleccionado || ""}
+
+Quedo atento a sus comentarios.`;
+
+            document.getElementById("whatsappMensaje").value = mensaje;
+
+            document.getElementById("modalWhatsapp").style.display = "flex";
+        }
+
+        // =========================================
+        // ENVIAR WHATSAPP
+        // =========================================
+        function enviarWhatsapp() {
+
+            const mensaje = document.getElementById("whatsappMensaje").value;
+
+            let telefono = document.getElementById("whatsappTelefono").value || "";
+            const indicativo = document.getElementById("whatsappIndicativo").value.replace(/\D/g, "");
+
+            telefono = telefono.replace(/\D/g, "");
+
+            if (!telefono) {
+                alert("No hay teléfono disponible");
+                return;
+            }
+
+            const numeroFinal = indicativo ? indicativo + telefono : telefono;
+
+            document.getElementById("m_nota").value =
+                "SE ENVÍA MENSAJE DE CONTACTO INICIAL DESDE CRM RE INGENIERÍA";
+
+            window.open(
+                `whatsapp://send?phone=${numeroFinal}&text=${encodeURIComponent(mensaje)}`
+            );
+
+            cerrarModalWhatsapp();
+        }
+
+        // =========================================
+        // OBTENER EMISOR
+        // =========================================
         function obtenerNombreEmisor(usuarioLogueado) {
 
             if (!usuarioLogueado) {
@@ -3179,7 +3181,7 @@ Quedo atento a sus comentarios.`;
 
             if (rol === "ADMIN") {
 
-                const nombre = prompt("Ingrese el nombre del asesor que enviará el mensaje:");
+                const nombre = prompt("Ingrese el nombre del asesor:");
 
                 if (!nombre || nombre.trim() === "") {
                     alert("Debe ingresar el nombre del asesor");
@@ -3192,27 +3194,63 @@ Quedo atento a sus comentarios.`;
             return usuarioLogueado.nombre;
         }
 
+        // =========================================
+        // USUARIO LOGUEADO
+        // =========================================
         function getUsuarioLogueado() {
 
             const nombre = localStorage.getItem("user");
             const rol = localStorage.getItem("rol");
 
-            if (!nombre || !rol) {
-                return null;
-            }
+            if (!nombre || !rol) return null;
 
-            return {
-                nombre: nombre,
-                rol: rol
-            };
+            return { nombre, rol };
         }
 
+        // =========================================
+        // CERRAR MODAL
+        // =========================================
         function cerrarModalWhatsapp() {
 
-            document.getElementById("modalWhatsapp")
-                .style.display = "none";
+            document.getElementById("modalWhatsapp").style.display = "none";
         }
 
+        function hacerModalArrastrable() {
+
+            const modal = document.getElementById("modalWhatsappBox");
+
+            let isDown = false;
+            let offset = [0, 0];
+
+            modal.addEventListener("mousedown", (e) => {
+
+                isDown = true;
+
+                offset = [
+                    modal.offsetLeft - e.clientX,
+                    modal.offsetTop - e.clientY
+                ];
+
+            });
+
+            document.addEventListener("mouseup", () => {
+                isDown = false;
+            });
+
+            document.addEventListener("mousemove", (e) => {
+
+                if (!isDown) return;
+
+                modal.style.position = "absolute";
+                modal.style.left = (e.clientX + offset[0]) + "px";
+                modal.style.top = (e.clientY + offset[1]) + "px";
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarMensajesWhatsapp();
+            hacerModalArrastrable();
+        });
 
     </script>
 
