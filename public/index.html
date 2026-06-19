@@ -1623,6 +1623,10 @@ HIDDEN
         window.tareaActual = null;
         window.tareaActualIndex = 0;
 
+        window.whatsappDirty = false;
+        window.saludoSeleccionado = "";
+        window.mensajeWhatsappSeleccionado = "";
+
         const API = "/api/dashboard";
 
         let tareaActualIndex = null;
@@ -1643,12 +1647,15 @@ HIDDEN
                 }
 
                 window.seguimientoGuardado = false;
+                window.whatsappDirty = false;
+
                 window.tareaActual = tarea;
 
                 window.tareaActualIndex =
                     window.tareasHoy.findIndex(t => t.id === tarea.id);
 
-                document.getElementById("modalTarea")
+                document
+                    .getElementById("modalTarea")
                     .classList.remove("hidden");
 
                 document.getElementById("modalCliente").innerText =
@@ -1659,6 +1666,9 @@ HIDDEN
                 document.getElementById("m_fecha_proxima").value = "";
                 document.getElementById("m_tipo").value = "LLAMADA";
                 document.getElementById("m_estado").value = "ACTIVO";
+
+                // 🔥 RESET SALUDO GLOBAL
+                window.saludoSeleccionado = "";
 
                 const select = document.getElementById("contactoSelect");
                 const inputTelefono = document.getElementById("modalTelefono");
@@ -1683,7 +1693,7 @@ HIDDEN
                         telefono: tarea.tel_contacto || ""
                     });
 
-                    optPrincipal.textContent = tarea.contacto || "";
+                    optPrincipal.textContent = `${tarea.contacto || ""}`;
                     select.appendChild(optPrincipal);
                 }
 
@@ -1691,8 +1701,10 @@ HIDDEN
 
                     contactos.forEach(c => {
 
-                        if (c.nombre === tarea.contacto &&
-                            c.telefono === tarea.tel_contacto) return;
+                        if (
+                            c.nombre === tarea.contacto &&
+                            c.telefono === tarea.tel_contacto
+                        ) return;
 
                         const opt = document.createElement("option");
 
@@ -1701,7 +1713,7 @@ HIDDEN
                             telefono: c.telefono || ""
                         });
 
-                        opt.textContent = c.nombre || "";
+                        opt.textContent = `${c.nombre || ""}`;
                         select.appendChild(opt);
                     });
                 }
@@ -1719,9 +1731,6 @@ HIDDEN
                     const contacto = JSON.parse(select.value);
                     inputTelefono.value = contacto.telefono || "";
                 };
-
-                // 🔥 IMPORTANTE: mantener mensaje seleccionado entre tareas
-                window.mensajeWhatsappSeleccionado = window.mensajeWhatsappSeleccionado || "";
 
             } catch (err) {
                 console.error(err);
@@ -1962,54 +1971,42 @@ HIDDEN
 
         function cerrarModalTarea() {
 
-            const modal =
-                document.getElementById("modalTarea");
+            const modal = document.getElementById("modalTarea");
 
-            // =========================================
-            // VALIDAR DATOS
-            // =========================================
-            if (modalTieneDatos()) {
+            const hayCambios =
+                window.whatsappDirty ||
+                document.getElementById("m_nota").value.trim() !== "" ||
+                document.getElementById("m_proxima_accion").value.trim() !== "" ||
+                document.getElementById("m_fecha_proxima").value.trim() !== "";
+
+            if (hayCambios) {
 
                 const confirmar = confirm(
                     "Hay información sin guardar. ¿Desea cerrar el modal?"
                 );
 
-                if (!confirmar) {
-                    return;
-                }
+                if (!confirmar) return;
             }
 
-            // =========================================
-            // OCULTAR MODAL
-            // =========================================
             modal.classList.add("hidden");
 
-            // =========================================
-            // LIMPIAR CAMPOS
-            // =========================================
             document.getElementById("modalCliente").innerText = "";
 
             document.getElementById("contactoSelect").innerHTML =
                 `<option value="">Seleccione contacto</option>`;
 
             document.getElementById("modalTelefono").value = "";
-
             document.getElementById("m_fecha_proxima").value = "";
-
             document.getElementById("m_tipo").value = "LLAMADA";
-
             document.getElementById("m_estado").value = "ACTIVO";
-
             document.getElementById("m_nota").value = "";
-
             document.getElementById("m_proxima_accion").value = "";
 
-            // =========================================
-            // RESET VARIABLES
-            // =========================================
+            // RESET COMPLETO
             window.tareaActual = null;
-
-            resetModalesCRM();
+            window.whatsappDirty = false;
+            window.saludoSeleccionado = "";
+            window.mensajeWhatsappSeleccionado = "";
         }
 
         async function cargarTareasHoy() {
@@ -2714,9 +2711,7 @@ HIDDEN
                 document.getElementById("whatsappTelefono").value || "";
 
             const indicativo =
-                document.getElementById("whatsappIndicativo")
-                    .value
-                    .replace(/\D/g, "");
+                document.getElementById("whatsappIndicativo").value.replace(/\D/g, "");
 
             telefono = telefono.replace(/\D/g, "");
 
@@ -2726,17 +2721,30 @@ HIDDEN
             }
 
             const numeroFinal =
-                indicativo
-                    ? indicativo + telefono
-                    : telefono;
-
-            document.getElementById("m_nota").value =
-                "SE LE ESCRIBE AL CLIENTE MENSAJE DE PRESENCIA DE NUESTRA MARCA, A LA ESPERA DE RESPUESTA POR PARTE DEL CLIENTE";
-
+                indicativo ? indicativo + telefono : telefono;
 
             window.open(
                 `whatsapp://send?phone=${numeroFinal}&text=${encodeURIComponent(mensaje)}`
             );
+
+            // 🔥 SOLO LIMPIA LO QUE TOCA
+            window.saludoSeleccionado = "";
+            window.mensajeWhatsappSeleccionado = "";
+            window.whatsappDirty = false;
+
+            const selectMensajes =
+                document.getElementById("mensajeWhatsappSelect");
+
+            const selectSaludo =
+                document.getElementById("m_saludo");
+
+            if (selectMensajes) selectMensajes.selectedIndex = 0;
+            if (selectSaludo) selectSaludo.selectedIndex = 0;
+
+            document.getElementById("whatsappMensaje").value = "";
+
+            document.getElementById("whatsappTelefono").value = "";
+            document.getElementById("whatsappIndicativo").value = "";
 
             cerrarModalWhatsapp();
         }
@@ -2747,9 +2755,17 @@ HIDDEN
 
                 const opt = e.target.options[e.target.selectedIndex];
 
-                mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
+                window.mensajeWhatsappSeleccionado =
+                    opt.dataset.mensaje || "";
 
-                renderMensajeWhatsapp();
+                window.whatsappDirty = true;
+
+                const base = document.getElementById("whatsappMensaje").value.split("\n\n")[0];
+
+                document.getElementById("whatsappMensaje").value =
+                    base +
+                    "\n\n" +
+                    window.mensajeWhatsappSeleccionado;
             }
         });
 
@@ -2928,18 +2944,6 @@ HIDDEN
         }
 
         // =========================================
-        // CAPTURAR MENSAJE SELECCIONADO
-        // =========================================
-        /*   document.addEventListener("change", function (e) {
-   
-               if (e.target && e.target.id === "mensajeWhatsappSelect") {
-   
-                   const opt = e.target.options[e.target.selectedIndex];
-                   mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
-               }
-           });*/
-
-        // =========================================
         // ABRIR WHATSAPP (MODAL)
         // =========================================
         function abrirWhatsappContacto() {
@@ -2963,13 +2967,11 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
-            // 🔥 SALUDO PERSISTENTE
-            if (!window.saludoSeleccionado) {
-                window.saludoSeleccionado = "Ing.";
-            }
+            // 🔥 SALUDO DEFAULT SI NO EXISTE
+            const saludo = window.saludoSeleccionado || "Ing.";
 
             const mensajeFinal = `
-Buen día ${window.saludoSeleccionado} ${nombre}:
+Buen día ${saludo} ${nombre}:
 
 Le habla ${nombreEmisor} de RE INGENIERIA.
 
@@ -2978,23 +2980,15 @@ ${window.mensajeWhatsappSeleccionado || ""}
 Quedo atento a sus comentarios.
 `.trim();
 
-            // 🔥 IMPORTANTE: esperar render del modal antes de escribir textarea
+            const textarea = document.getElementById("whatsappMensaje");
+            textarea.value = mensajeFinal;
+
+            // 🔥 PREVIEW SIEMPRE VISIBLE (evita vacío)
+            textarea.dispatchEvent(new Event("input"));
+
+            window.whatsappDirty = false;
+
             document.getElementById("modalWhatsapp").style.display = "flex";
-
-            setTimeout(() => {
-
-                const textarea = document.getElementById("whatsappMensaje");
-
-                if (textarea) {
-                    textarea.value = mensajeFinal;
-
-                    // opcional pero recomendado (auto ajuste si lo tienes)
-                    if (typeof ajustarAlturaTextarea === "function") {
-                        ajustarAlturaTextarea(textarea);
-                    }
-                }
-
-            }, 50);
         }
 
         // =========================================
@@ -3165,6 +3159,29 @@ Quedo atento a sus comentarios.
                 firma;
 
             ajustarAlturaTextarea(textarea);
+        }
+
+        function renderWhatsappPreview() {
+
+            const select = document.getElementById("contactoSelect");
+            const nombre = select.options[select.selectedIndex]?.text || "Cliente";
+
+            const telefono = document.getElementById("modalTelefono").value || "";
+
+            const usuarioLogueado = getUsuarioLogueado();
+            const nombreEmisor = obtenerNombreEmisor(usuarioLogueado);
+
+            const mensaje = `
+Buen día ${window.saludoSeleccionado || ""} ${nombre}:
+
+Le habla ${nombreEmisor} de RE INGENIERIA.
+
+${window.mensajeWhatsappSeleccionado || ""}
+
+Quedo atento a sus comentarios.
+`.trim();
+
+            document.getElementById("whatsappMensaje").value = mensaje;
         }
 
     </script>
