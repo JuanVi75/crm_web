@@ -3286,17 +3286,18 @@ HIDDEN
 
             if (!textarea) return;
 
-            const saludo = window.saludoSeleccionado || "";
+            // 🔥 SALUDO REAL (NO VARIABLE GLOBAL)
+            const saludo =
+                document.getElementById("m_saludo")?.value || "";
 
             const contacto =
                 document.getElementById("contactoSelect")
                     ?.options[document.getElementById("contactoSelect").selectedIndex]
                     ?.text || "Cliente";
 
-            // 🔥 FIX REAL: asesor con fallback múltiple
+            // 🔥 ASESOR REAL (debe venir del login)
             const asesor =
                 window.nombreEmisor ||
-                document.getElementById("modalCliente")?.innerText ||
                 "ASESOR";
 
             const mensajeFinal =
