@@ -1727,7 +1727,7 @@ HIDDEN
         }
 
     </script>
-    
+
     <!-- =========================================
     MODAL TAREAS
     ========================================= -->
@@ -1740,6 +1740,15 @@ HIDDEN
 
                 <div class="modal-title" id="modalCliente">
                     CLIENTE
+                </div>
+
+                <!-- SECTOR (NUEVO) -->
+                <div id="sectorCliente" style="
+                font-size:12px;
+                opacity:0.8;
+                margin-top:4px;
+            ">
+                    SECTOR: -
                 </div>
 
             </div>
@@ -1792,11 +1801,11 @@ HIDDEN
                     </div>
 
                     <img src="img/whatsapp.png" onclick="abrirWhatsappContacto()" style="
-                        width:38px;
-                        height:38px;
-                        cursor:pointer;
-                        margin-bottom:2px;
-                     ">
+                    width:38px;
+                    height:38px;
+                    cursor:pointer;
+                    margin-bottom:2px;
+                 ">
                 </div>
 
                 <!-- FECHA + TIPO + ESTADO -->
@@ -2026,8 +2035,6 @@ HIDDEN
                 // ESTADO GLOBAL CONTROLADO
                 // =========================
                 window.seguimientoGuardado = false;
-
-                // NO limpiar whatsappDirty aquí (eso es parte del flujo, no de apertura)
                 window.tareaActual = tarea;
 
                 window.tareaActualIndex =
@@ -2043,6 +2050,24 @@ HIDDEN
                     tarea.cliente || "SIN CLIENTE";
 
                 // =========================
+                // SECTOR CLIENTE (NUEVO)
+                // =========================
+                try {
+
+                    const resCliente = await fetch(`/api/clientes/${tarea.cliente_id}`);
+                    const cliente = await resCliente.json();
+
+                    const sectorEl = document.getElementById("sectorCliente");
+                    if (sectorEl) {
+                        sectorEl.innerText =
+                            `SECTOR: ${cliente.sector || 'SIN SECTOR'}`;
+                    }
+
+                } catch (e) {
+                    console.error("Error cargando sector:", e);
+                }
+
+                // =========================
                 // RESET SOLO CAMPOS DE TAREA
                 // =========================
                 document.getElementById("m_nota").value = "";
@@ -2051,12 +2076,11 @@ HIDDEN
                 document.getElementById("m_tipo").value = "WHATSAPP";
                 document.getElementById("m_estado").value = "ACTIVO";
 
-                // SALUDO SOLO DEL MODAL TAREA
                 const saludoSelect = document.getElementById("m_saludo");
                 if (saludoSelect) saludoSelect.value = "";
 
                 // =========================
-                // RESET SOLO ESTADO WHATSAPP (SIN ROMPER TAREA)
+                // RESET WHATSAPP SOLO FLUJO
                 // =========================
                 window.saludoSeleccionado = "";
                 window.mensajeWhatsappSeleccionado = "";
@@ -2134,7 +2158,6 @@ HIDDEN
                 alert("Error cargando tarea");
             }
         }
-
         async function guardarTarea() {
 
             try {
