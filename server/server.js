@@ -11,6 +11,7 @@ const dashboardRoutes = require("./routes/dashboard");
 const seguimientosRoutes = require("./routes/seguimientos.routes");
 const cotizacionesRoutes = require("./routes/cotizaciones.routes");
 const pedidosRoutes = require("./routes/pedidos.routes");
+const configWhatsappMensajesRoutes = require("./routes/configWhatsappMensajes.routes");
 
 const PORT = process.env.PORT || 3000;
 
@@ -153,6 +154,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/seguimientos", seguimientosRoutes);
 app.use("/api/cotizaciones", cotizacionesRoutes);
 app.use("/api/pedidos", pedidosRoutes);
+app.use("/api/config-whatsapp-mensajes", configWhatsappMensajesRoutes);
 
 // =========================================
 // START
