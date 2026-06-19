@@ -2872,15 +2872,17 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
-            const saludo = window.saludoSeleccionado || "Ing.";
+            const saludo = window.saludoSeleccionado;
 
             const textarea = document.getElementById("whatsappMensaje");
             const preview = document.getElementById("previewMensaje");
 
             const mensajeExtra = window.mensajeWhatsappSeleccionado || "";
 
+            const saludoFinal = saludo ? saludo : "";
+
             const mensajeFinal =
-                `Buen día ${saludo} ${nombre}:\n\n` +
+                `Buen día ${saludoFinal} ${nombre}:\n\n` +
                 `Le habla ${nombreEmisor} de RE INGENIERIA.\n\n` +
                 (mensajeExtra ? mensajeExtra + "\n\n" : "") +
                 `Quedo atento a sus comentarios.`;
@@ -3126,7 +3128,7 @@ HIDDEN
                 const textarea = document.getElementById("whatsappMensaje");
                 const preview = document.getElementById("previewMensaje");
 
-                const saludo = window.saludoSeleccionado || "Ing.";
+                const saludo = window.saludoSeleccionado;
                 const contacto = document.getElementById("contactoSelect")
                     ?.options[document.getElementById("contactoSelect").selectedIndex]?.text || "Cliente";
 
