@@ -3243,7 +3243,6 @@ HIDDEN
             if (e.target.id !== "mensajeWhatsappSelect") return;
 
             const opt = e.target.options[e.target.selectedIndex];
-
             const mensaje = opt?.dataset?.mensaje || "";
 
             window.mensajeWhatsappSeleccionado = mensaje;
@@ -3257,9 +3256,7 @@ HIDDEN
                     ?.options[document.getElementById("contactoSelect").selectedIndex]
                     ?.text || "Cliente";
 
-            const asesor =
-                (textarea.value.match(/Le habla (.*?) de RE INGENIERIA/) || [])[1]
-                || "ASESOR";
+            const asesor = window.nombreEmisor || "ASESOR";
 
             const mensajeFinal =
                 `Buen día ${saludo} ${contacto}:\n\n` +
@@ -3267,7 +3264,7 @@ HIDDEN
                 (mensaje ? mensaje + "\n\n" : "") +
                 `Quedo atento a sus comentarios.`;
 
-            textarea.value = mensajeFinal;
+            if (textarea) textarea.value = mensajeFinal;
 
             if (preview) {
                 preview.innerText = mensaje || "(Sin mensaje seleccionado)";
