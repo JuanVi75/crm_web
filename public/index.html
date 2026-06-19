@@ -1352,6 +1352,7 @@ HIDDEN
         });
 
     </script>
+
     <script>
         // =========================================
         // EVENTOS CALENDARIO
@@ -1726,6 +1727,7 @@ HIDDEN
         }
 
     </script>
+    
     <!-- =========================================
     MODAL TAREAS
     ========================================= -->
@@ -2008,7 +2010,6 @@ HIDDEN
         let tareasHoyGlobal = [];
         let mensajeWhatsappSeleccionado = "";
 
-
         // =========================================
         // ABRIR TAREA
         // =========================================
@@ -2021,34 +2022,49 @@ HIDDEN
                     return;
                 }
 
+                // =========================
+                // ESTADO GLOBAL CONTROLADO
+                // =========================
                 window.seguimientoGuardado = false;
-                window.whatsappDirty = false;
 
+                // NO limpiar whatsappDirty aquí (eso es parte del flujo, no de apertura)
                 window.tareaActual = tarea;
 
                 window.tareaActualIndex =
                     window.tareasHoy.findIndex(t => t.id === tarea.id);
 
+                // =========================
+                // ABRIR MODAL
+                // =========================
                 const modal = document.getElementById("modalTarea");
                 modal.classList.remove("hidden");
 
                 document.getElementById("modalCliente").innerText =
                     tarea.cliente || "SIN CLIENTE";
 
+                // =========================
+                // RESET SOLO CAMPOS DE TAREA
+                // =========================
                 document.getElementById("m_nota").value = "";
                 document.getElementById("m_proxima_accion").value = "";
                 document.getElementById("m_fecha_proxima").value = "";
                 document.getElementById("m_tipo").value = "WHATSAPP";
                 document.getElementById("m_estado").value = "ACTIVO";
 
-                // RESET SALUDO (MODAL TAREAS)
+                // SALUDO SOLO DEL MODAL TAREA
                 const saludoSelect = document.getElementById("m_saludo");
                 if (saludoSelect) saludoSelect.value = "";
 
-                // RESET WHATSAPP (NO TOCAR DATOS TAREA, SOLO FLUJO)
+                // =========================
+                // RESET SOLO ESTADO WHATSAPP (SIN ROMPER TAREA)
+                // =========================
                 window.saludoSeleccionado = "";
                 window.mensajeWhatsappSeleccionado = "";
+                window.whatsappDirty = false;
 
+                // =========================
+                // CONTACTOS
+                // =========================
                 const select = document.getElementById("contactoSelect");
                 const inputTelefono = document.getElementById("modalTelefono");
 
@@ -2354,8 +2370,30 @@ HIDDEN
 
             const modal = document.getElementById("modalTarea");
 
-            // VALIDAR TODO EL FORMULARIO
-            if (modalTieneDatos()) {
+            // =========================
+            // DETECCIÓN REAL DE CAMBIOS
+            // =========================
+            const nota = document.getElementById("m_nota")?.value?.trim() || "";
+            const accion = document.getElementById("m_proxima_accion")?.value?.trim() || "";
+            const fecha = document.getElementById("m_fecha_proxima")?.value?.trim() || "";
+            const tipo = document.getElementById("m_tipo")?.value || "";
+            const estado = document.getElementById("m_estado")?.value || "";
+            const saludo = document.getElementById("m_saludo")?.value || "";
+
+            const contactoSelect = document.getElementById("contactoSelect");
+            const contactoChanged = contactoSelect && contactoSelect.selectedIndex > 0;
+
+            const hayCambios =
+                window.whatsappDirty ||
+                nota !== "" ||
+                accion !== "" ||
+                fecha !== "" ||
+                saludo !== "" ||
+                contactoChanged ||
+                tipo !== "WHATSAPP" ||
+                estado !== "ACTIVO";
+
+            if (hayCambios) {
 
                 const confirmar = confirm(
                     "Hay información sin guardar. ¿Desea cerrar el modal?"
@@ -2364,6 +2402,9 @@ HIDDEN
                 if (!confirmar) return;
             }
 
+            // =========================
+            // CERRAR MODAL
+            // =========================
             modal.classList.add("hidden");
 
             document.getElementById("modalCliente").innerText = "";
@@ -2374,7 +2415,6 @@ HIDDEN
             document.getElementById("modalTelefono").value = "";
             document.getElementById("m_fecha_proxima").value = "";
 
-            // DEFAULTS
             document.getElementById("m_tipo").value = "WHATSAPP";
             document.getElementById("m_estado").value = "ACTIVO";
 
@@ -2384,11 +2424,12 @@ HIDDEN
             const saludoSelect = document.getElementById("m_saludo");
             if (saludoSelect) saludoSelect.value = "";
 
+            // =========================
             // RESET CONTROLADO
+            // =========================
             window.whatsappDirty = false;
             window.mensajeWhatsappSeleccionado = "";
             window.saludoSeleccionado = "";
-
             window.tareaActual = null;
         }
 
@@ -2720,51 +2761,51 @@ HIDDEN
             }
         }
 
-
         // =========================================
         // VALIDAR SI HAY DATOS
         // =========================================
         function modalTieneDatos() {
 
             const nota =
-                document.getElementById("m_nota").value.trim();
+                document.getElementById("m_nota")?.value?.trim() || "";
 
             const accion =
-                document.getElementById("m_proxima_accion").value.trim();
+                document.getElementById("m_proxima_accion")?.value?.trim() || "";
 
             const fecha =
-                document.getElementById("m_fecha_proxima").value.trim();
+                document.getElementById("m_fecha_proxima")?.value?.trim() || "";
 
             const tipo =
-                document.getElementById("m_tipo").value;
+                document.getElementById("m_tipo")?.value || "WHATSAPP";
 
             const estado =
-                document.getElementById("m_estado").value;
+                document.getElementById("m_estado")?.value || "ACTIVO";
 
             const saludo =
                 document.getElementById("m_saludo")?.value || "";
 
-            const contacto =
-                document.getElementById("contactoSelect")?.value || "";
+            const contactoSelect =
+                document.getElementById("contactoSelect");
+
+            const contactoSeleccionado =
+                contactoSelect?.selectedIndex > 0;
 
             return (
-
-                // CAMPOS DE TEXTO
+                // TEXTOS
                 nota !== "" ||
                 accion !== "" ||
                 fecha !== "" ||
 
-                // SELECTS
+                // SELECTS REALES (no string vacío)
                 saludo !== "" ||
-                contacto !== "" ||
+                contactoSeleccionado ||
 
-                // VALORES DISTINTOS A LOS DEFAULT
-                tipo !== "LLAMADA" ||
+                // CAMBIOS REALES VS DEFAULT
+                tipo !== "WHATSAPP" ||
                 estado !== "ACTIVO" ||
 
-                // CAMBIOS EN WHATSAPP
-                window.whatsappDirty
-
+                // ESTADO WHATSAPP
+                window.whatsappDirty === true
             );
         }
 
