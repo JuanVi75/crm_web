@@ -2998,8 +2998,14 @@ HIDDEN
             document.getElementById("whatsappTelefono").value = telefono;
             document.getElementById("whatsappIndicativo").value = "";
 
+            // SALUDO (estable primero global, luego DOM)
+            const saludo =
+                window.saludoSeleccionado ||
+                document.getElementById("m_saludo")?.value ||
+                "";
+            
             // 🔥 USAR ESTADO GLOBAL (NO DOM DIRECTO)
-            const saludo = window.saludoSeleccionado || "";
+            //const saludo = window.saludoSeleccionado || "";
 
             const mensajeExtra = window.mensajeWhatsappSeleccionado || "";
 
