@@ -1354,8 +1354,8 @@ HIDDEN
     </script>
 
     <!-- =========================================
-        MODAL TAREAS
-    ========================================= -->
+    MODAL TAREAS
+========================================= -->
     <div class="modal-overlay hidden" id="modalTarea">
 
         <div class="modal-box">
@@ -1395,102 +1395,76 @@ HIDDEN
                     </div>
 
                     <img src="img/whatsapp.png" onclick="abrirWhatsappContacto()" style="
-                        width:38px;
-                        height:38px;
-                        cursor:pointer;
-                        margin-bottom:2px;
-                    ">
+                    width:38px;
+                    height:38px;
+                    cursor:pointer;
+                    margin-bottom:2px;
+                ">
+
+                </div>
+
+                <!-- SALUDO (🔵 AQUI SE QUEDA COMO PEDISTE) -->
+                <div class="form-group">
+
+                    <label>SALUDO</label>
+
+                    <select id="m_saludo">
+                        <option value="">-- SALUDO --</option>
+                        <option value="Ing.">Ing.</option>
+                        <option value="Arq.">Arq.</option>
+                        <option value="Sr.">Sr.</option>
+                        <option value="Sra.">Sra.</option>
+                        <option value="Don">Don</option>
+                        <option value="Doña">Doña</option>
+                    </select>
 
                 </div>
 
                 <!-- FECHA + TIPO + ESTADO -->
                 <div class="form-row-3">
 
-                    <!-- FECHA -->
                     <div class="form-group">
-
                         <label>PROXIMA FECHA</label>
-
                         <input type="date" id="m_fecha_proxima">
-
                     </div>
 
-                    <!-- TIPO -->
                     <div class="form-group small-field">
-
                         <label>TIPO</label>
-
                         <select id="m_tipo">
 
-                            <option value="LLAMADA" selected>
-                                LLAMADA
-                            </option>
-
-                            <option value="WHATSAPP">
-                                WHATSAPP
-                            </option>
-
-                            <option value="FACEBOOK">
-                                FACEBOOK
-                            </option>
-
-                            <option value="VISITA">
-                                VISITA
-                            </option>
-
-                            <option value="EMAIL">
-                                EMAIL
-                            </option>
-
-                            <option value="COTIZACION">
-                                COTIZACION
-                            </option>
+                            <option value="LLAMADA" selected>LLAMADA</option>
+                            <option value="WHATSAPP">WHATSAPP</option>
+                            <option value="FACEBOOK">FACEBOOK</option>
+                            <option value="VISITA">VISITA</option>
+                            <option value="EMAIL">EMAIL</option>
+                            <option value="COTIZACION">COTIZACION</option>
 
                         </select>
-
                     </div>
 
-                    <!-- ESTADO -->
                     <div class="form-group small-field">
-
                         <label>ESTADO</label>
-
                         <select id="m_estado">
 
-                            <option value="ACTIVO" selected>
-                                ACTIVO
-                            </option>
-
-                            <option value="STAND BY">
-                                STAND BY
-                            </option>
-
-                            <option value="TERMINADO">
-                                TERMINADO
-                            </option>
+                            <option value="ACTIVO" selected>ACTIVO</option>
+                            <option value="STAND BY">STAND BY</option>
+                            <option value="TERMINADO">TERMINADO</option>
 
                         </select>
-
                     </div>
 
                 </div>
 
                 <!-- NOTA -->
                 <div class="form-group">
-
                     <label>NOTA</label>
-
-                    <textarea id="m_nota" rows="2" placeholder=""></textarea>
-
+                    <textarea id="m_nota" rows="2"></textarea>
                 </div>
 
                 <!-- PROXIMA ACCION -->
                 <div class="form-group">
-
                     <label>PROXIMA ACCION</label>
-
-                    <input type="text" id="m_proxima_accion" value="">
-
+                    <input type="text" id="m_proxima_accion">
                 </div>
 
             </div>
@@ -1499,15 +1473,13 @@ HIDDEN
             <div class="modal-footer">
 
                 <button class="modal-btn secondary-btn" onclick="tareaAnterior()">
-                    < </button>
+                    << /button>
 
                         <button class="modal-btn primary-btn" onclick="guardarTarea()">
                             GUARDAR
                         </button>
 
-                        <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">
-                            >
-                        </button>
+                        <button class="modal-btn secondary-btn" onclick="tareaSiguiente()">></button>
 
                         <button class="modal-btn danger-btn" onclick="cerrarModalTarea()">
                             CERRAR
@@ -1519,9 +1491,10 @@ HIDDEN
 
     </div>
 
+
     <!-- =========================================
-        MODAL WHATSAPP
-    ========================================= -->
+    MODAL WHATSAPP
+========================================= -->
     <div id="modalWhatsapp" style="
     display:none;
     position:fixed;
@@ -1532,34 +1505,45 @@ HIDDEN
     justify-content:center;
 ">
 
-        <div style="
+        <!-- 🔥 BOX (NECESARIO PARA DRAG) -->
+        <div id="modalWhatsappBox" style="
         width:600px;
         max-width:95%;
         background:#111827;
         border:1px solid #334155;
         border-radius:14px;
         padding:20px;
+        position:absolute;
+        top:120px;
+        left:120px;
+        cursor:move;
     ">
 
-            <h2 style="
-            margin-top:0;
-            color:#25D366;
-        ">
+            <h2 style="margin-top:0;color:#25D366;">
                 WhatsApp
             </h2>
+
+            <!-- 🔥 SELECT MENSAJES (FALTABA) -->
+            <div class="form-group">
+
+                <label>MENSAJE CAMPAÑA</label>
+
+                <select id="mensajeWhatsappSelect">
+                    <option value="">-- Seleccionar mensaje --</option>
+                </select>
+
+            </div>
 
             <div class="form-group">
 
                 <label>INDICATIVO PAÍS (OPCIONAL)</label>
-
-                <input type="text" id="whatsappIndicativo" placeholder="Ej: 57, 1, 52, 34">
+                <input type="text" id="whatsappIndicativo">
 
             </div>
 
             <div class="form-group">
 
                 <label>TELÉFONO</label>
-
                 <input type="text" id="whatsappTelefono" readonly>
 
             </div>
@@ -1567,7 +1551,6 @@ HIDDEN
             <div class="form-group">
 
                 <label>MENSAJE</label>
-
                 <textarea id="whatsappMensaje" rows="8" style="width:100%;"></textarea>
 
             </div>
