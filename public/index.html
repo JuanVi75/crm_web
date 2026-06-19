@@ -1878,12 +1878,9 @@ HIDDEN
 
     </div>
 
-
     <!--=========================================
             MODAL WHATSAPP
-        =========================================
-    -->
-
+=========================================-->
     <div id="modalWhatsapp" style="
     display:none;
     position:fixed;
@@ -1925,6 +1922,14 @@ HIDDEN
                 <!-- COLUMNA IZQUIERDA -->
                 <div style="display:flex;flex-direction:column;gap:10px;">
 
+                    <!-- 🔥 NUEVO: TARGET -->
+                    <div class="form-group">
+                        <label>TARGET</label>
+                        <select id="targetWhatsappSelect">
+                            <option value="">-- Seleccionar target --</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label>MENSAJE PREDEFINIDO</label>
                         <select id="mensajeWhatsappSelect">
@@ -1945,21 +1950,21 @@ HIDDEN
                     <div class="form-group">
                         <label>PREVIEW CORTO</label>
                         <div id="previewMensaje" style="
-                            background:#0b1220;
-                            border:1px solid #334155;
-                            padding:10px;
-                            border-radius:8px;
-                            color:#cbd5e1;
-                            font-size:13px;
-                            height:120px;
-                            overflow:auto;
-                        ">
+                        background:#0b1220;
+                        border:1px solid #334155;
+                        padding:10px;
+                        border-radius:8px;
+                        color:#cbd5e1;
+                        font-size:13px;
+                        height:120px;
+                        overflow:auto;
+                    ">
                         </div>
                     </div>
 
                 </div>
 
-                <!-- COLUMNA DERECHA (MENSAJE GRANDE) -->
+                <!-- COLUMNA DERECHA -->
                 <div style="display:flex;flex-direction:column;">
 
                     <label style="margin-bottom:6px;">MENSAJE COMPLETO</label>
@@ -2925,21 +2930,43 @@ HIDDEN
                 const res = await fetch("/api/config-whatsapp-mensajes");
                 const data = await res.json();
 
-                const select = document.getElementById("mensajeWhatsappSelect");
+                const selectMensajes = document.getElementById("mensajeWhatsappSelect");
+                const selectTarget = document.getElementById("targetWhatsappSelect");
 
-                if (!select) return;
+                if (!selectMensajes) return;
 
-                select.innerHTML = `<option value="">-- Seleccionar mensaje --</option>`;
+                // =========================
+                // GUARDAR DATA GLOBAL (IMPORTANTE PARA FILTRO)
+                // =========================
+                window.whatsappMensajesData = Array.isArray(data) ? data : [];
 
-                data.forEach(m => {
+                // =========================
+                // RESET SELECT MENSAJES
+                // =========================
+                selectMensajes.innerHTML =
+                    `<option value="">-- Seleccionar mensaje --</option>`;
 
-                    const opt = document.createElement("option");
-                    opt.value = m.id;
-                    opt.textContent = `${m.nombre} (${m.target} - ${m.etapa})`;
-                    opt.dataset.mensaje = m.mensaje;
+                // =========================
+                // CREAR TARGETS ÚNICOS
+                // =========================
+                if (selectTarget) {
 
-                    select.appendChild(opt);
-                });
+                    selectTarget.innerHTML =
+                        `<option value="">-- Seleccionar target --</option>`;
+
+                    const targetsUnicos = [...new Set(
+                        window.whatsappMensajesData.map(m => m.target).filter(Boolean)
+                    )];
+
+                    targetsUnicos.forEach(t => {
+
+                        const opt = document.createElement("option");
+                        opt.value = t;
+                        opt.textContent = t;
+
+                        selectTarget.appendChild(opt);
+                    });
+                }
 
             } catch (err) {
                 console.error("ERROR MENSAJES WHATSAPP:", err);
