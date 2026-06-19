@@ -2354,17 +2354,8 @@ HIDDEN
 
             const modal = document.getElementById("modalTarea");
 
-            const nota = document.getElementById("m_nota").value.trim();
-            const accion = document.getElementById("m_proxima_accion").value.trim();
-            const fecha = document.getElementById("m_fecha_proxima").value.trim();
-
-            const hayCambios =
-                window.whatsappDirty ||
-                nota !== "" ||
-                accion !== "" ||
-                fecha !== "";
-
-            if (hayCambios) {
+            // VALIDAR TODO EL FORMULARIO
+            if (modalTieneDatos()) {
 
                 const confirmar = confirm(
                     "Hay información sin guardar. ¿Desea cerrar el modal?"
@@ -2382,15 +2373,18 @@ HIDDEN
 
             document.getElementById("modalTelefono").value = "";
             document.getElementById("m_fecha_proxima").value = "";
-            document.getElementById("m_tipo").value = "LLAMADA";
+
+            // DEFAULTS
+            document.getElementById("m_tipo").value = "WHATSAPP";
             document.getElementById("m_estado").value = "ACTIVO";
+
             document.getElementById("m_nota").value = "";
             document.getElementById("m_proxima_accion").value = "";
 
             const saludoSelect = document.getElementById("m_saludo");
             if (saludoSelect) saludoSelect.value = "";
 
-            // RESET CONTROLADO (NO ROMPER ESTADO GLOBAL DE TAREA SI NO SE GUARDA)
+            // RESET CONTROLADO
             window.whatsappDirty = false;
             window.mensajeWhatsappSeleccionado = "";
             window.saludoSeleccionado = "";
