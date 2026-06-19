@@ -3287,12 +3287,17 @@ HIDDEN
             if (!textarea) return;
 
             const saludo = window.saludoSeleccionado || "";
+
             const contacto =
                 document.getElementById("contactoSelect")
                     ?.options[document.getElementById("contactoSelect").selectedIndex]
                     ?.text || "Cliente";
 
-            const asesor = window.nombreEmisor || "";
+            // 🔥 FIX REAL: asesor con fallback múltiple
+            const asesor =
+                window.nombreEmisor ||
+                document.getElementById("modalCliente")?.innerText ||
+                "ASESOR";
 
             const mensajeFinal =
                 `Buen día ${saludo} ${contacto}:\n\n` +
