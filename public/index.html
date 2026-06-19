@@ -2747,28 +2747,42 @@ HIDDEN
 
                 mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
 
-                const saludo = document.getElementById("whatsappMensaje")
-                    .value
-                    .split("\n\n")[0]; // SOLO PRIMER BLOQUE
+                // =========================================
+                // DATOS BASE
+                // =========================================
+                const textarea = document.getElementById("whatsappMensaje");
 
-                const firma = "\n\nQuedo atento a sus comentarios.";
+                const lineas = textarea.value.split("\n\n");
 
-                const asesorLine = "\nLe habla {asesor} de RE INGENIERIA.\n";
+                const saludo = lineas[0] || "";
 
-                const cuerpo = mensajeWhatsappSeleccionado
-                    ? "\n\n" + mensajeWhatsappSeleccionado + "\n\n"
-                    : "\n\n";
+                const usuarioLogueado = getUsuarioLogueado();
+                const asesor = obtenerNombreEmisor(usuarioLogueado) || "";
 
-                document.getElementById("whatsappMensaje").value =
+                // =========================================
+                // BLOQUES FIJOS
+                // =========================================
+                const bloqueAsesor =
+                    asesor
+                        ? `\nLe habla ${asesor} de RE INGENIERIA.\n`
+                        : "";
+
+                const mensaje =
+                    mensajeWhatsappSeleccionado
+                        ? `\n\n${mensajeWhatsappSeleccionado}\n\n`
+                        : "\n\n";
+
+                const firma = "Quedo atento a sus comentarios.";
+
+                // =========================================
+                // RECONSTRUCCIÓN CONTROLADA
+                // =========================================
+                textarea.value =
                     saludo +
                     "\n\n" +
-                    asesorLine +
-                    cuerpo +
+                    bloqueAsesor +
+                    mensaje +
                     firma;
-
-                // preview opcional
-                const preview = document.getElementById("previewMensaje");
-                if (preview) preview.innerText = mensajeWhatsappSeleccionado;
             }
         });
 
