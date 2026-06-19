@@ -3242,45 +3242,37 @@ HIDDEN
 
         document.addEventListener("change", function (e) {
 
-            if (e.target.id === "mensajeWhatsappSelect") {
+            if (e.target.id !== "targetWhatsappSelect") return;
 
-                const opt = e.target.options[e.target.selectedIndex];
+            const target = e.target.value;
 
-                window.mensajeWhatsappSeleccionado =
-                    opt?.dataset?.mensaje || "";
+            const selectMensajes = document.getElementById("mensajeWhatsappSelect");
 
-                window.whatsappDirty = true;
+            if (!selectMensajes) return;
 
-                const textarea = document.getElementById("whatsappMensaje");
-                const preview = document.getElementById("previewMensaje");
+            selectMensajes.innerHTML =
+                `<option value="">-- Seleccionar mensaje --</option>`;
 
-                // 🔥 SALUDO REAL DEL MODAL TAREAS
-                const saludo =
-                    document.getElementById("m_saludo")?.value || "";
+            if (!target) return;
 
-                const contacto =
-                    document.getElementById("contactoSelect")
-                        ?.options[document.getElementById("contactoSelect").selectedIndex]
-                        ?.text || "Cliente";
+            const filtrados = (window.whatsappMensajesData || [])
+                .filter(m => m.target === target);
 
-                const asesor =
-                    getUsuarioLogueado()?.nombre || "ASESOR";
+            filtrados.forEach(m => {
 
-                const mensajeExtra =
-                    window.mensajeWhatsappSeleccionado || "";
+                const opt = document.createElement("option");
+                opt.value = m.id;
+                opt.textContent = `${m.nombre} (${m.etapa})`;
+                opt.dataset.mensaje = m.mensaje;
 
-                const mensaje =
-                    `Buen día ${saludo} ${contacto}:\n\n` +
-                    `Le habla ${asesor} de RE INGENIERIA.\n\n` +
-                    (mensajeExtra ? mensajeExtra + "\n\n" : "") +
-                    `Quedo atento a sus comentarios.`;
+                selectMensajes.appendChild(opt);
+            });
 
-                textarea.value = mensaje;
+            // reset dependientes
+            window.mensajeWhatsappSeleccionado = "";
+            document.getElementById("whatsappMensaje").value = "";
+            document.getElementById("previewMensaje").innerText = "";
 
-                if (preview) {
-                    preview.innerText = mensajeExtra || "(Sin mensaje seleccionado)";
-                }
-            }
         });
 
     </script>
