@@ -3285,22 +3285,22 @@ HIDDEN
 
             if (!textarea) return;
 
-            // 🔥 SALUDO CORRECTO (ESTADO + FALLBACK DOM)
+            // SALUDO (estable primero global, luego DOM)
             const saludo =
                 window.saludoSeleccionado ||
                 document.getElementById("m_saludo")?.value ||
                 "";
 
-            // 🔥 CONTACTO
             const contacto =
                 document.getElementById("contactoSelect")
                     ?.options[document.getElementById("contactoSelect").selectedIndex]
                     ?.text || "Cliente";
 
-            // 🔥 ASESOR CORRECTO (SIN ROMPER FLUJO)
+            // ASESOR (restaurado sin dejarlo vacío)
             const asesor =
                 window.nombreEmisor ||
-                "";
+                window.tareaActual?.asesor ||
+                "ASESOR";
 
             const mensajeFinal =
                 `Buen día ${saludo} ${contacto}:\n\n` +
