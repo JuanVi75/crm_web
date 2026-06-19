@@ -2747,16 +2747,28 @@ HIDDEN
 
                 mensajeWhatsappSeleccionado = opt.dataset.mensaje || "";
 
-                const base = document.getElementById("whatsappMensaje").value;
+                const saludo = document.getElementById("whatsappMensaje")
+                    .value
+                    .split("\n\n")[0]; // SOLO PRIMER BLOQUE
+
+                const firma = "\n\nQuedo atento a sus comentarios.";
+
+                const asesorLine = "\nLe habla {asesor} de RE INGENIERIA.\n";
+
+                const cuerpo = mensajeWhatsappSeleccionado
+                    ? "\n\n" + mensajeWhatsappSeleccionado + "\n\n"
+                    : "\n\n";
 
                 document.getElementById("whatsappMensaje").value =
-                    base.split("\n\n")[0] +
+                    saludo +
                     "\n\n" +
-                    mensajeWhatsappSeleccionado;
+                    asesorLine +
+                    cuerpo +
+                    firma;
 
-                // PREVIEW VISUAL
-                document.getElementById("previewMensaje").innerText =
-                    mensajeWhatsappSeleccionado;
+                // preview opcional
+                const preview = document.getElementById("previewMensaje");
+                if (preview) preview.innerText = mensajeWhatsappSeleccionado;
             }
         });
 
