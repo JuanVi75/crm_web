@@ -56,8 +56,15 @@
 
         .form-grid {
             display: grid;
-            grid-template-columns: 160px 160px 220px 1fr;
+            grid-template-columns: repeat(6, 1fr);
             gap: 10px;
+            align-items: end;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
             align-items: end;
         }
 
@@ -81,11 +88,6 @@
             background: #1e293b;
             color: white;
             padding: 0 10px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
         }
 
         .btn {
@@ -287,6 +289,7 @@
                         </select>
                     </div>
 
+                    <!-- BOTONES -->
                     <div class="actions">
                         <button class="btn btn-primary" onclick="consultar()">CONSULTAR</button>
                         <button class="btn btn-secondary" onclick="seleccionarTodo()">MARCAR TODAS</button>
