@@ -229,37 +229,16 @@
 
         <div class="sidebar">
 
-            <div class="logo">
-                CRM WEB
-            </div>
+            <div class="logo">CRM WEB</div>
 
-            <div class="menu-item" onclick="location='index.html'">
-                🏠 INICIO
-            </div>
+            <div class="menu-item" onclick="location='index.html'">🏠 INICIO</div>
+            <div class="menu-item" onclick="location='clientes.html'">👥 CLIENTES</div>
+            <div class="menu-item" onclick="location='seguimientos.html'">📅 SEGUIMIENTOS</div>
+            <div class="menu-item" onclick="location='llamadas.html'">📞 LLAMADAS</div>
+            <div class="menu-item" onclick="location='cotizaciones.html'">📄 COTIZACIONES</div>
+            <div class="menu-item" onclick="location='pedidos.html'">📦 PEDIDOS</div>
 
-            <div class="menu-item" onclick="location='clientes.html'">
-                👥 CLIENTES
-            </div>
-
-            <div class="menu-item" onclick="location='seguimientos.html'">
-                📅 SEGUIMIENTOS
-            </div>
-
-            <div class="menu-item" onclick="location='llamadas.html'">
-                📞 LLAMADAS
-            </div>
-
-            <div class="menu-item" onclick="location='cotizaciones.html'">
-                📄 COTIZACIONES
-            </div>
-
-            <div class="menu-item" onclick="location='pedidos.html'">
-                📦 PEDIDOS
-            </div>
-
-            <div class="menu-item active">
-                💰 COMISIONES
-            </div>
+            <div class="menu-item active">💰 COMISIONES</div>
 
         </div>
 
@@ -267,18 +246,13 @@
 
             <div class="topbar">
 
-                <div class="page-title">
-                    Comisiones
-                </div>
+                <div class="page-title">Comisiones</div>
 
                 <div class="user-info" id="userInfo"></div>
 
             </div>
 
-            <!-- =========================
-        FILTROS
-        ========================= -->
-
+            <!-- FILTROS -->
             <div class="panel">
 
                 <div class="form-grid">
@@ -310,10 +284,7 @@
 
             </div>
 
-            <!-- =========================
-        KPI
-        ========================= -->
-
+            <!-- KPIS -->
             <div class="kpis">
 
                 <div class="kpi">
@@ -338,11 +309,8 @@
 
             </div>
 
-            <!-- =========================
-        TABS CONTAINER
-        ========================= -->
-
-            <div class="panel tabs-container">
+            <!-- TABS -->
+            <div class="panel">
 
                 <div class="tabs">
                     <div class="tab active" onclick="cambiarTab(0)">📦 Pedidos</div>
@@ -350,92 +318,85 @@
                     <div class="tab" onclick="cambiarTab(2)">📊 Resumen</div>
                 </div>
 
-                <!-- ========================= TAB 1 ========================= -->
-
+                <!-- TAB 1 -->
                 <div class="tab-content active">
 
-                    <div class="tab-inner">
+                    <div class="table-header" style="grid-template-columns:120px 110px 1.8fr 140px 120px;">
 
-                        <div class="table-header" style="grid-template-columns:120px 110px 1.8fr 140px 120px;">
-                            <div>Documento</div>
-                            <div>Fecha</div>
-                            <div>Cliente</div>
-                            <div>Venta Neta</div>
-                            <div>Comisión</div>
-                        </div>
-
-                        <div id="tablaPedidos" class="table-body"></div>
+                        <div>Documento</div>
+                        <div>Fecha</div>
+                        <div>Cliente</div>
+                        <div>Venta Neta</div>
+                        <div>Comisión</div>
 
                     </div>
 
+                    <div id="tablaPedidos" class="table-body"></div>
+
                 </div>
 
-                <!-- ========================= TAB 2 ========================= -->
-
+                <!-- TAB 2 -->
                 <div class="tab-content">
 
-                    <div class="tab-inner">
+                    <div class="table-header" style="grid-template-columns:45px 120px 110px 1.8fr 140px 120px;">
 
-                        <div class="table-header" style="grid-template-columns:45px 120px 110px 1.8fr 140px 120px;">
-
-                            <div></div>
-                            <div>Cotización</div>
-                            <div>Fecha</div>
-                            <div>Cliente</div>
-                            <div>Venta Neta</div>
-                            <div>Comisión</div>
-
-                        </div>
-
-                        <div id="tablaCotizaciones" class="table-body"></div>
+                        <div></div>
+                        <div>Cotización</div>
+                        <div>Fecha</div>
+                        <div>Cliente</div>
+                        <div>Venta Neta</div>
+                        <div>Comisión</div>
 
                     </div>
 
+                    <div id="tablaCotizaciones" class="table-body"></div>
+
                 </div>
 
-                <!-- ========================= TAB 3 ========================= -->
-
+                <!-- TAB 3 -->
                 <div class="tab-content">
 
-                    <div class="tab-inner">
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
 
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+                        <div class="panel">
 
-                            <div class="panel">
-                                <h3>Ventas Reales</h3>
-                                <table style="width:100%;font-size:13px;">
-                                    <tr>
-                                        <td>Total Venta</td>
-                                        <td id="rVenta" style="text-align:right;font-weight:bold;">$0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Comisión</td>
-                                        <td id="rComision" style="text-align:right;font-weight:bold;">$0</td>
-                                    </tr>
-                                </table>
-                            </div>
+                            <h3>Ventas Reales</h3>
 
-                            <div class="panel">
-                                <h3>Proyección</h3>
-                                <table style="width:100%;font-size:13px;">
-                                    <tr>
-                                        <td>Venta</td>
-                                        <td id="pVenta" style="text-align:right;font-weight:bold;">$0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Comisión</td>
-                                        <td id="pComision" style="text-align:right;font-weight:bold;">$0</td>
-                                    </tr>
-                                </table>
-                            </div>
+                            <table style="width:100%;font-size:13px;">
+                                <tr>
+                                    <td>Total Venta</td>
+                                    <td id="rVenta" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>Comisión</td>
+                                    <td id="rComision" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                            </table>
 
                         </div>
 
-                        <div class="footer-total">
-                            <div>TOTAL ESPERADO DE COMISIONES</div>
-                            <div id="granTotal">$0</div>
+                        <div class="panel">
+
+                            <h3>Proyección</h3>
+
+                            <table style="width:100%;font-size:13px;">
+                                <tr>
+                                    <td>Venta</td>
+                                    <td id="pVenta" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>Comisión</td>
+                                    <td id="pComision" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                            </table>
+
                         </div>
 
+                    </div>
+
+                    <div class="footer-total">
+                        <div>TOTAL ESPERADO DE COMISIONES</div>
+                        <div id="granTotal">$0</div>
                     </div>
 
                 </div>
