@@ -598,32 +598,36 @@
 
         }
 
-        function cumpleFiltro(item) {
+        function filtroPedidos(item) {
 
             let f = new Date(fechaSQL(item.fecha));
-
-            let fi = new Date(fechaInicio.value);
-
-            let ff = new Date(fechaFin.value);
+            let fi = new Date(fechaInicioPedidos.value);
+            let ff = new Date(fechaFinPedidos.value);
 
             if (f < fi) return false;
-
             if (f > ff) return false;
 
-            if (ROL === "ASESOR") {
+            if (ROL === "ASESOR") return item.asesor === USER;
 
-                return item.asesor === USER;
-
-            }
-
-            if (asesorFiltro.value) {
-
-                return item.asesor === asesorFiltro.value;
-
-            }
+            if (asesorFiltro.value) return item.asesor === asesorFiltro.value;
 
             return true;
+        }
 
+        function filtroCotizaciones(item) {
+
+            let f = new Date(fechaSQL(item.fecha));
+            let fi = new Date(fechaInicioCot.value);
+            let ff = new Date(fechaFinCot.value);
+
+            if (f < fi) return false;
+            if (f > ff) return false;
+
+            if (ROL === "ASESOR") return item.asesor === USER;
+
+            if (asesorFiltro.value) return item.asesor === asesorFiltro.value;
+
+            return true;
         }
 
         function renderPedidos() {
@@ -635,7 +639,7 @@
             let totalComision = 0;
 
             pedidos
-                .filter(cumpleFiltro)
+                .filter(filtroPedidos)
                 .sort((a, b) => {
 
                     return new Date(b.fecha) - new Date(a.fecha);
@@ -787,7 +791,7 @@ RENDER COTIZACIONES
             let html = "";
 
             cotizaciones
-                .filter(cumpleFiltro)
+                .filter(filtroCotizaciones)
                 .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
                 .forEach(c => {
 
