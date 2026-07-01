@@ -2,19 +2,17 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+
     <title>COMISIONES - CRM WEB</title>
+
+    <link rel="stylesheet" href="css/styles.css">
 
     <style>
         * {
             box-sizing: border-box;
-        }
-
-        html,
-        body {
-            height: 100%;
-            margin: 0;
         }
 
         .main-container {
@@ -29,7 +27,6 @@
             flex-direction: column;
             gap: 14px;
             padding: 14px;
-            height: 100vh;
             overflow: hidden;
         }
 
@@ -37,7 +34,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex: 0 0 auto;
         }
 
         .page-title {
@@ -51,16 +47,11 @@
             text-align: right;
         }
 
-        /* =========================
-           FILTROS Y KPI FIJOS
-        ========================= */
-
         .panel {
             background: #111827;
             border: 1px solid #243244;
             border-radius: 12px;
             padding: 14px;
-            flex: 0 0 auto;
         }
 
         .form-grid {
@@ -121,11 +112,14 @@
             background: #dc2626;
         }
 
+        .btn:hover {
+            filter: brightness(1.15);
+        }
+
         .kpis {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            flex: 0 0 auto;
         }
 
         .kpi {
@@ -135,9 +129,22 @@
             padding: 12px;
         }
 
+        .kpi:nth-child(2) {
+            border-left-color: #22c55e;
+        }
+
+        .kpi:nth-child(3) {
+            border-left-color: #f59e0b;
+        }
+
+        .kpi:nth-child(4) {
+            border-left-color: #ec4899;
+        }
+
         .kpi-title {
             color: #94a3b8;
             font-size: 11px;
+            margin-bottom: 6px;
         }
 
         .kpi-value {
@@ -146,13 +153,12 @@
         }
 
         /* =========================
-           TABS (CLAVE DEL SCROLL)
-        ========================= */
+       TABS
+    ========================= */
 
         .tabs {
             display: flex;
             gap: 2px;
-            flex: 0 0 auto;
         }
 
         .tab {
@@ -169,31 +175,24 @@
             color: #fff;
         }
 
-        /* CONTENEDOR TABS */
-        .tabs-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            /* 🔥 CRÍTICO */
-            overflow: hidden;
-        }
-
+        /* 🔥 CLAVE: SOLO UNA TAB ACTIVA */
         .tab-content {
             display: none;
-            flex: 1;
-            min-height: 0;
-            /* 🔥 CRÍTICO */
         }
 
         .tab-content.active {
             display: flex;
             flex-direction: column;
             flex: 1;
+        }
+
+        .tab-inner {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
             min-height: 0;
         }
 
-        /* TABLAS CON SCROLL */
         .table-header {
             display: grid;
             gap: 8px;
@@ -202,14 +201,13 @@
             border-radius: 8px;
             font-weight: bold;
             font-size: 11px;
-            flex: 0 0 auto;
+            margin-bottom: 8px;
         }
 
         .table-body {
             flex: 1;
             overflow-y: auto;
             min-height: 0;
-            /* 🔥 ESTE ES EL SCROLL REAL */
         }
 
         .footer-total {
@@ -219,11 +217,12 @@
             padding: 12px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 18px;
             font-weight: bold;
-            flex: 0 0 auto;
         }
     </style>
+
 </head>
 
 <body>
@@ -231,26 +230,36 @@
     <div class="main-container">
 
         <div class="sidebar">
+
             <div class="logo">CRM WEB</div>
-            <div class="menu-item">🏠 INICIO</div>
-            <div class="menu-item">👥 CLIENTES</div>
-            <div class="menu-item">📅 SEGUIMIENTOS</div>
-            <div class="menu-item">📞 LLAMADAS</div>
-            <div class="menu-item">📄 COTIZACIONES</div>
-            <div class="menu-item">📦 PEDIDOS</div>
+
+            <div class="menu-item" onclick="location='index.html'">🏠 INICIO</div>
+            <div class="menu-item" onclick="location='clientes.html'">👥 CLIENTES</div>
+            <div class="menu-item" onclick="location='seguimientos.html'">📅 SEGUIMIENTOS</div>
+            <div class="menu-item" onclick="location='llamadas.html'">📞 LLAMADAS</div>
+            <div class="menu-item" onclick="location='cotizaciones.html'">📄 COTIZACIONES</div>
+            <div class="menu-item" onclick="location='pedidos.html'">📦 PEDIDOS</div>
+
             <div class="menu-item active">💰 COMISIONES</div>
+
         </div>
 
         <main class="content">
 
             <div class="topbar">
+
                 <div class="page-title">Comisiones</div>
-                <div class="user-info"></div>
+
+                <div class="user-info" id="userInfo"></div>
+
             </div>
 
             <!-- FILTROS -->
             <div class="panel">
+
                 <div class="form-grid">
+
+                    <!-- PEDIDOS -->
                     <div class="field">
                         <label>Fecha Inicial Pedidos</label>
                         <input type="date" id="fechaInicioPedidos">
@@ -261,6 +270,7 @@
                         <input type="date" id="fechaFinPedidos">
                     </div>
 
+                    <!-- COTIZACIONES -->
                     <div class="field">
                         <label>Fecha Inicial Cotizaciones</label>
                         <input type="date" id="fechaInicioCot">
@@ -271,83 +281,140 @@
                         <input type="date" id="fechaFinCot">
                     </div>
 
-                    <div class="field">
+                    <!-- ASESOR -->
+                    <div class="field" id="boxAsesor">
                         <label>Asesor</label>
                         <select id="asesorFiltro">
                             <option value="">TODOS</option>
                         </select>
                     </div>
 
+                    <!-- BOTONES -->
                     <div class="actions">
-                        <button class="btn btn-primary">CONSULTAR</button>
-                        <button class="btn btn-secondary">MARCAR TODAS</button>
-                        <button class="btn btn-danger">LIMPIAR</button>
+                        <button class="btn btn-primary" onclick="consultar()">CONSULTAR</button>
+                        <button class="btn btn-secondary" onclick="seleccionarTodo()">MARCAR TODAS</button>
+                        <button class="btn btn-danger" onclick="quitarTodo()">LIMPIAR</button>
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- KPI -->
+            <!-- KPIS -->
             <div class="kpis">
+
                 <div class="kpi">
                     <div class="kpi-title">VENTA REAL</div>
-                    <div class="kpi-value">$0</div>
+                    <div class="kpi-value" id="kpiVentaReal">$0</div>
                 </div>
+
                 <div class="kpi">
                     <div class="kpi-title">COMISIÓN REAL</div>
-                    <div class="kpi-value">$0</div>
+                    <div class="kpi-value" id="kpiComisionReal">$0</div>
                 </div>
+
                 <div class="kpi">
                     <div class="kpi-title">PROYECCIÓN</div>
-                    <div class="kpi-value">$0</div>
+                    <div class="kpi-value" id="kpiVentaProy">$0</div>
                 </div>
+
                 <div class="kpi">
                     <div class="kpi-title">COMISIÓN PROYECTADA</div>
-                    <div class="kpi-value">$0</div>
+                    <div class="kpi-value" id="kpiComisionProy">$0</div>
                 </div>
+
             </div>
 
             <!-- TABS -->
-            <div class="panel tabs-wrapper">
+            <div class="panel">
 
                 <div class="tabs">
-                    <div class="tab active">📦 Pedidos</div>
-                    <div class="tab">📄 Proyección</div>
-                    <div class="tab">📊 Resumen</div>
+                    <div class="tab active" onclick="cambiarTab(0)">📦 Pedidos</div>
+                    <div class="tab" onclick="cambiarTab(1)">📄 Proyección</div>
+                    <div class="tab" onclick="cambiarTab(2)">📊 Resumen</div>
                 </div>
 
                 <!-- TAB 1 -->
                 <div class="tab-content active">
 
-                    <div class="table-header" style="grid-template-columns:120px 110px 1fr 120px 120px;">
-                        <div>Doc</div>
+                    <div class="table-header" style="grid-template-columns:120px 110px 1.8fr 140px 120px;">
+
+                        <div>Documento</div>
                         <div>Fecha</div>
                         <div>Cliente</div>
-                        <div>Venta</div>
+                        <div>Venta Neta</div>
                         <div>Comisión</div>
+
                     </div>
 
-                    <div class="table-body"></div>
+                    <div id="tablaPedidos" class="table-body"></div>
 
                 </div>
 
                 <!-- TAB 2 -->
                 <div class="tab-content">
 
-                    <div class="table-header" style="grid-template-columns:120px 110px 1fr 120px 120px;">
-                        <div>Doc</div>
+                    <div class="table-header" style="grid-template-columns:45px 120px 110px 1.8fr 140px 120px;">
+
+                        <div></div>
+                        <div>Cotización</div>
                         <div>Fecha</div>
                         <div>Cliente</div>
-                        <div>Venta</div>
+                        <div>Venta Neta</div>
                         <div>Comisión</div>
+
                     </div>
 
-                    <div class="table-body"></div>
+                    <div id="tablaCotizaciones" class="table-body"></div>
 
                 </div>
 
                 <!-- TAB 3 -->
                 <div class="tab-content">
-                    <div class="table-body"></div>
+
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+
+                        <div class="panel">
+
+                            <h3>Ventas Reales</h3>
+
+                            <table style="width:100%;font-size:13px;">
+                                <tr>
+                                    <td>Total Venta</td>
+                                    <td id="rVenta" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>Comisión</td>
+                                    <td id="rComision" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <div class="panel">
+
+                            <h3>Proyección</h3>
+
+                            <table style="width:100%;font-size:13px;">
+                                <tr>
+                                    <td>Venta</td>
+                                    <td id="pVenta" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>Comisión</td>
+                                    <td id="pComision" style="text-align:right;font-weight:bold;">$0</td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <div class="footer-total">
+                        <div>TOTAL ESPERADO DE COMISIONES</div>
+                        <div id="granTotal">$0</div>
+                    </div>
+
                 </div>
 
             </div>
@@ -356,194 +423,192 @@
 
     </div>
 
-</body>
+    <script>
 
-<script>
+        function cambiarTab(i) {
 
-    function cambiarTab(i) {
+            document
+                .querySelectorAll(".tab")
+                .forEach(x => x.classList.remove("active"));
 
-        document
-            .querySelectorAll(".tab")
-            .forEach(x => x.classList.remove("active"));
+            document
+                .querySelectorAll(".tab-content")
+                .forEach(x => x.classList.remove("active"));
 
-        document
-            .querySelectorAll(".tab-content")
-            .forEach(x => x.classList.remove("active"));
+            document
+                .querySelectorAll(".tab")[i]
+                .classList.add("active");
 
-        document
-            .querySelectorAll(".tab")[i]
-            .classList.add("active");
-
-        document
-            .querySelectorAll(".tab-content")[i]
-            .classList.add("active");
-
-    }
-
-    const API_PEDIDOS = "/api/pedidos";
-    const API_COTIZACIONES = "/api/cotizaciones";
-
-    const TOKEN = localStorage.getItem("token");
-
-    const USER = localStorage.getItem("user") || "";
-    const ROL = localStorage.getItem("rol") || "";
-
-    let pedidos = [];
-    let cotizaciones = [];
-
-    userInfo.innerHTML = USER + "<br>" + ROL;
-
-    if (ROL === "ASESOR") {
-        boxAsesor.style.display = "none";
-    }
-
-    function money(v) {
-        return Number(v || 0).toLocaleString("es-CO", {
-            style: "currency",
-            currency: "COP",
-            minimumFractionDigits: 0
-        });
-    }
-
-    function num(v) {
-        return Number(v) || 0;
-    }
-
-    function fechaSQL(f) {
-        return String(f).substring(0, 10);
-    }
-
-    function fechaHoy() {
-
-        const h1 = new Date();
-        fechaFinPedidos.value = h1.toISOString().substring(0, 10);
-
-        const h2 = new Date();
-        h2.setMonth(h2.getMonth() - 1);
-        fechaInicioPedidos.value = h2.toISOString().substring(0, 10);
-
-        const c1 = new Date();
-        fechaFinCot.value = c1.toISOString().substring(0, 10);
-
-        const c2 = new Date();
-        c2.setMonth(c2.getMonth() - 1);
-        fechaInicioCot.value = c2.toISOString().substring(0, 10);
-    }
-
-    async function consultar() {
-
-        const paramsPedidos = new URLSearchParams();
-        const paramsCot = new URLSearchParams();
-
-        paramsPedidos.append("desde", fechaInicioPedidos.value);
-        paramsPedidos.append("hasta", fechaFinPedidos.value);
-
-        paramsCot.append("desde", fechaInicioCot.value);
-        paramsCot.append("hasta", fechaFinCot.value);
-
-        if (ROL === "ASESOR") {
-
-            paramsPedidos.append("asesor", USER);
-            paramsCot.append("asesor", USER);
-
-        } else if (asesorFiltro.value) {
-
-            paramsPedidos.append("asesor", asesorFiltro.value);
-            paramsCot.append("asesor", asesorFiltro.value);
+            document
+                .querySelectorAll(".tab-content")[i]
+                .classList.add("active");
 
         }
 
-        await Promise.all([
-            cargarPedidos(paramsPedidos),
-            cargarCotizaciones(paramsCot)
-        ]);
+        const API_PEDIDOS = "/api/pedidos";
+        const API_COTIZACIONES = "/api/cotizaciones";
 
-        calcularResumen();
-    }
+        const TOKEN = localStorage.getItem("token");
 
-    async function cargarPedidos(params) {
+        const USER = localStorage.getItem("user") || "";
+        const ROL = localStorage.getItem("rol") || "";
 
-        const r = await fetch(API_PEDIDOS + "?" + params.toString(), {
-            headers: {
-                Authorization: "Bearer " + TOKEN
+        let pedidos = [];
+        let cotizaciones = [];
+
+        userInfo.innerHTML = USER + "<br>" + ROL;
+
+        if (ROL === "ASESOR") {
+            boxAsesor.style.display = "none";
+        }
+
+        function money(v) {
+            return Number(v || 0).toLocaleString("es-CO", {
+                style: "currency",
+                currency: "COP",
+                minimumFractionDigits: 0
+            });
+        }
+
+        function num(v) {
+            return Number(v) || 0;
+        }
+
+        function fechaSQL(f) {
+            return String(f).substring(0, 10);
+        }
+
+        function fechaHoy() {
+
+            const h1 = new Date();
+            fechaFinPedidos.value = h1.toISOString().substring(0, 10);
+
+            const h2 = new Date();
+            h2.setMonth(h2.getMonth() - 1);
+            fechaInicioPedidos.value = h2.toISOString().substring(0, 10);
+
+            const c1 = new Date();
+            fechaFinCot.value = c1.toISOString().substring(0, 10);
+
+            const c2 = new Date();
+            c2.setMonth(c2.getMonth() - 1);
+            fechaInicioCot.value = c2.toISOString().substring(0, 10);
+        }
+
+        async function consultar() {
+
+            const paramsPedidos = new URLSearchParams();
+            const paramsCot = new URLSearchParams();
+
+            paramsPedidos.append("desde", fechaInicioPedidos.value);
+            paramsPedidos.append("hasta", fechaFinPedidos.value);
+
+            paramsCot.append("desde", fechaInicioCot.value);
+            paramsCot.append("hasta", fechaFinCot.value);
+
+            if (ROL === "ASESOR") {
+
+                paramsPedidos.append("asesor", USER);
+                paramsCot.append("asesor", USER);
+
+            } else if (asesorFiltro.value) {
+
+                paramsPedidos.append("asesor", asesorFiltro.value);
+                paramsCot.append("asesor", asesorFiltro.value);
+
             }
-        });
 
-        const j = await r.json();
+            await Promise.all([
+                cargarPedidos(paramsPedidos),
+                cargarCotizaciones(paramsCot)
+            ]);
 
-        pedidos = j.data || j;
+            calcularResumen();
+        }
 
-        renderPedidos();
-    }
+        async function cargarPedidos(params) {
 
-    async function cargarCotizaciones(params) {
-
-        const r = await fetch(
-            API_COTIZACIONES + "?" + params.toString(),
-            {
+            const r = await fetch(API_PEDIDOS + "?" + params.toString(), {
                 headers: {
                     Authorization: "Bearer " + TOKEN
                 }
-            }
-        );
+            });
 
-        const j = await r.json();
+            const j = await r.json();
 
-        cotizaciones = j.data || [];
+            pedidos = j.data || j;
 
-        renderCotizaciones();
-    }
+            renderPedidos();
+        }
 
-    function filtroPedidos(item) {
+        async function cargarCotizaciones(params) {
 
-        let f = new Date(fechaSQL(item.fecha));
-        let fi = new Date(fechaInicioPedidos.value);
-        let ff = new Date(fechaFinPedidos.value);
+            const r = await fetch(
+                API_COTIZACIONES + "?" + params.toString(),
+                {
+                    headers: {
+                        Authorization: "Bearer " + TOKEN
+                    }
+                }
+            );
 
-        if (f < fi) return false;
-        if (f > ff) return false;
+            const j = await r.json();
 
-        if (ROL === "ASESOR") return item.asesor === USER;
+            cotizaciones = j.data || [];
 
-        if (asesorFiltro.value) return item.asesor === asesorFiltro.value;
+            renderCotizaciones();
+        }
 
-        return true;
-    }
+        function filtroPedidos(item) {
 
-    function filtroCotizaciones(item) {
+            let f = new Date(fechaSQL(item.fecha));
+            let fi = new Date(fechaInicioPedidos.value);
+            let ff = new Date(fechaFinPedidos.value);
 
-        let f = new Date(fechaSQL(item.fecha));
-        let fi = new Date(fechaInicioCot.value);
-        let ff = new Date(fechaFinCot.value);
+            if (f < fi) return false;
+            if (f > ff) return false;
 
-        if (f < fi) return false;
-        if (f > ff) return false;
+            if (ROL === "ASESOR") return item.asesor === USER;
 
-        if (ROL === "ASESOR") return item.asesor === USER;
+            if (asesorFiltro.value) return item.asesor === asesorFiltro.value;
 
-        if (asesorFiltro.value) return item.asesor === asesorFiltro.value;
+            return true;
+        }
 
-        return true;
-    }
+        function filtroCotizaciones(item) {
 
-    function renderPedidos() {
+            let f = new Date(fechaSQL(item.fecha));
+            let fi = new Date(fechaInicioCot.value);
+            let ff = new Date(fechaFinCot.value);
 
-        let html = "";
-        let totalVenta = 0;
-        let totalComision = 0;
+            if (f < fi) return false;
+            if (f > ff) return false;
 
-        pedidos
-            .filter(filtroPedidos)
-            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-            .forEach(p => {
+            if (ROL === "ASESOR") return item.asesor === USER;
 
-                const venta = num(p.venta_neta);
-                const comision = venta * 0.025;
+            if (asesorFiltro.value) return item.asesor === asesorFiltro.value;
 
-                totalVenta += venta;
-                totalComision += comision;
+            return true;
+        }
 
-                html += `
+        function renderPedidos() {
+
+            let html = "";
+            let totalVenta = 0;
+            let totalComision = 0;
+
+            pedidos
+                .filter(filtroPedidos)
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+                .forEach(p => {
+
+                    const venta = num(p.venta_neta);
+                    const comision = venta * 0.025;
+
+                    totalVenta += venta;
+                    totalComision += comision;
+
+                    html += `
             <div class="filaPedido"
                 style="display:grid;grid-template-columns:120px 110px 1.8fr 140px 120px;gap:8px;padding:10px;border-bottom:1px solid #243244;align-items:center;font-size:12px;">
 
@@ -558,31 +623,31 @@
                 </div>
 
             </div>`;
-            });
+                });
 
-        if (html === "") {
-            html = `
+            if (html === "") {
+                html = `
         <div style="padding:40px;text-align:center;color:#94a3b8;">
             No existen pedidos para el rango seleccionado.
         </div>`;
+            }
+
+            tablaPedidos.innerHTML = html;
         }
 
-        tablaPedidos.innerHTML = html;
-    }
+        function renderCotizaciones() {
 
-    function renderCotizaciones() {
+            let html = "";
 
-        let html = "";
+            cotizaciones
+                .filter(filtroCotizaciones)
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+                .forEach(c => {
 
-        cotizaciones
-            .filter(filtroCotizaciones)
-            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-            .forEach(c => {
+                    const venta = num(c.venta_neta);
+                    const comision = venta * 0.025;
 
-                const venta = num(c.venta_neta);
-                const comision = venta * 0.025;
-
-                html += `
+                    html += `
             <div style="display:grid;grid-template-columns:45px 120px 110px 1.8fr 140px 120px;gap:8px;padding:10px;border-bottom:1px solid #243244;align-items:center;font-size:12px;">
 
                 <div style="text-align:center;">
@@ -600,111 +665,111 @@
                 </div>
 
             </div>`;
-            });
+                });
 
-        if (html === "") {
-            html = `
+            if (html === "") {
+                html = `
         <div style="padding:45px;text-align:center;color:#94a3b8;">
             No existen cotizaciones para el rango seleccionado.
         </div>`;
+            }
+
+            tablaCotizaciones.innerHTML = html;
         }
 
-        tablaCotizaciones.innerHTML = html;
-    }
-
-    function seleccionarTodo() {
-        document.querySelectorAll(".chkProy").forEach(c => c.checked = true);
-        calcularResumen();
-    }
-
-    function quitarTodo() {
-        document.querySelectorAll(".chkProy").forEach(c => c.checked = false);
-        calcularResumen();
-    }
-
-    function calcularResumen() {
-
-        let ventaReal = 0;
-
-        pedidos
-            .filter(filtroPedidos)
-            .forEach(p => {
-                ventaReal += num(p.venta_neta);
-            });
-
-        const comisionReal = ventaReal * 0.025;
-
-        let ventaProy = 0;
-
-        document
-            .querySelectorAll(".chkProy:checked")
-            .forEach(c => {
-                ventaProy += num(c.value);
-            });
-
-        const comisionProy = ventaProy * 0.025;
-
-        kpiVentaReal.innerHTML = money(ventaReal);
-        kpiComisionReal.innerHTML = money(comisionReal);
-        kpiVentaProy.innerHTML = money(ventaProy);
-        kpiComisionProy.innerHTML = money(comisionProy);
-
-        rVenta.innerHTML = money(ventaReal);
-        rComision.innerHTML = money(comisionReal);
-        pVenta.innerHTML = money(ventaProy);
-        pComision.innerHTML = money(comisionProy);
-
-        granTotal.innerHTML = money(comisionReal + comisionProy);
-    }
-
-    asesorFiltro.onchange = consultar;
-
-    fechaInicioPedidos.onchange = consultar;
-    fechaFinPedidos.onchange = consultar;
-    fechaInicioCot.onchange = consultar;
-    fechaFinCot.onchange = consultar;
-
-    window.onload = async function () {
-
-        fechaHoy();
-
-        await consultar();
-
-        await cargarAsesores();
-    };
-
-    async function cargarAsesores() {
-
-        if (ROL === "ASESOR") return;
-
-        const lista = [...new Set(
-            pedidos
-                .map(p => (p.asesor || "").trim())
-                .filter(a => a !== "")
-        )].sort();
-
-        asesorFiltro.innerHTML = `<option value="">TODOS</option>`;
-
-        lista.forEach(a => {
-            asesorFiltro.innerHTML += `<option value="${a}">${a}</option>`;
-        });
-    }
-
-    document.addEventListener("change", e => {
-        if (e.target.classList.contains("chkProy")) {
+        function seleccionarTodo() {
+            document.querySelectorAll(".chkProy").forEach(c => c.checked = true);
             calcularResumen();
         }
-    });
 
-    document.addEventListener("keydown", e => {
-        if (e.key === "Enter") consultar();
-    });
+        function quitarTodo() {
+            document.querySelectorAll(".chkProy").forEach(c => c.checked = false);
+            calcularResumen();
+        }
 
-    if (ROL !== "ASESOR") {
-        asesorFiltro.addEventListener("change", consultar);
-    }
+        function calcularResumen() {
 
-</script>
+            let ventaReal = 0;
+
+            pedidos
+                .filter(filtroPedidos)
+                .forEach(p => {
+                    ventaReal += num(p.venta_neta);
+                });
+
+            const comisionReal = ventaReal * 0.025;
+
+            let ventaProy = 0;
+
+            document
+                .querySelectorAll(".chkProy:checked")
+                .forEach(c => {
+                    ventaProy += num(c.value);
+                });
+
+            const comisionProy = ventaProy * 0.025;
+
+            kpiVentaReal.innerHTML = money(ventaReal);
+            kpiComisionReal.innerHTML = money(comisionReal);
+            kpiVentaProy.innerHTML = money(ventaProy);
+            kpiComisionProy.innerHTML = money(comisionProy);
+
+            rVenta.innerHTML = money(ventaReal);
+            rComision.innerHTML = money(comisionReal);
+            pVenta.innerHTML = money(ventaProy);
+            pComision.innerHTML = money(comisionProy);
+
+            granTotal.innerHTML = money(comisionReal + comisionProy);
+        }
+
+        asesorFiltro.onchange = consultar;
+
+        fechaInicioPedidos.onchange = consultar;
+        fechaFinPedidos.onchange = consultar;
+        fechaInicioCot.onchange = consultar;
+        fechaFinCot.onchange = consultar;
+
+        window.onload = async function () {
+
+            fechaHoy();
+
+            await consultar();
+
+            await cargarAsesores();
+        };
+
+        async function cargarAsesores() {
+
+            if (ROL === "ASESOR") return;
+
+            const lista = [...new Set(
+                pedidos
+                    .map(p => (p.asesor || "").trim())
+                    .filter(a => a !== "")
+            )].sort();
+
+            asesorFiltro.innerHTML = `<option value="">TODOS</option>`;
+
+            lista.forEach(a => {
+                asesorFiltro.innerHTML += `<option value="${a}">${a}</option>`;
+            });
+        }
+
+        document.addEventListener("change", e => {
+            if (e.target.classList.contains("chkProy")) {
+                calcularResumen();
+            }
+        });
+
+        document.addEventListener("keydown", e => {
+            if (e.key === "Enter") consultar();
+        });
+
+        if (ROL !== "ASESOR") {
+            asesorFiltro.addEventListener("change", consultar);
+        }
+
+    </script>
 
 </body>
 
