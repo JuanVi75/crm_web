@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>COMISIONES - CRM WEB</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        .table-header {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .pedidosHeader {
+            grid-template-columns:
+                140px 120px 1.8fr 140px 140px;
+        }
+
+        .cotHeader {
+            grid-template-columns:
+                40px 140px 120px 1.8fr 140px 140px;
+        }
+
+        .filaPedido {
+
+            display: grid;
+
+            grid-template-columns:
+                140px 120px 1.8fr 140px 140px;
+
+            gap: 8px;
+
+            padding: 8px;
+
+            border-bottom: 1px solid #243244;
+
+            font-size: 11px;
+
+        }
+
+        .filaCot {
+
+            display: grid;
+
+            grid-template-columns:
+                40px 140px 120px 1.8fr 140px 140px;
+
+            gap: 8px;
+
+            padding: 8px;
+
+            border-bottom: 1px solid #243244;
+
+            font-size: 11px;
+
+        }
+
+        .filaPedido:hover,
+        .filaCot:hover {
+
+            background: #1b2b40;
+
+        }
+
+        input[type=checkbox] {
+
+            transform: scale(1.2);
+
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f172a;
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            text-align: right;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .panel {
+
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 15px;
+
+        }
+
+        .form-grid {
+
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(170px, 1fr));
+
+            gap: 10px;
+
+        }
+
+        .field {
+
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+        }
+
+        .field label {
+
+            font-size: 11px;
+            color: #94a3b8;
+
+        }
+
+        .field input,
+        .field select {
+
+            height: 34px;
+
+            background: #1e293b;
+
+            border: 1px solid #334155;
+
+            border-radius: 8px;
+
+            padding: 8px;
+
+            color: white;
+
+        }
+
+        .btn {
+
+            height: 34px;
+
+            padding: 0 18px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            color: white;
+
+        }
+
+        .btn-primary {
+
+            background: #2563eb;
+
+        }
+
+        .btn-success {
+
+            background: #059669;
+
+        }
+
+        .cards {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(250px, 1fr));
+
+            gap: 15px;
+
+        }
+
+        .card {
+
+            background: #1e293b;
+
+            border: 1px solid #334155;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+        }
+
+        .card h3 {
+
+            font-size: 13px;
+
+            margin-bottom: 10px;
+
+            color: #cbd5e1;
+
+        }
+
+        .valor {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+        }
+
+        .verde {
+
+            color: #22c55e;
+
+        }
+
+        .azul {
+
+            color: #38bdf8;
+
+        }
+
+        .amarillo {
+
+            color: #facc15;
+
+        }
+
+        .rojo {
+
+            color: #fb7185;
+
+        }
+
+        .table-container {
+
+            flex: 1;
+
+            overflow: auto;
+
+            background: #111827;
+
+            border-radius: 10px;
+
+            border: 1px solid #1e293b;
+
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 12px;
+
+        }
+
+        thead {
+
+            background: #0f172a;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 2;
+
+        }
+
+        th {
+
+            padding: 10px;
+
+            border-bottom: 1px solid #334155;
+
+            text-align: left;
+
+        }
+
+        td {
+
+            padding: 8px;
+
+            border-bottom: 1px solid #233044;
+
+        }
+
+        tr:hover {
+
+            background: #172133;
+
+        }
+
+        .check {
+
+            width: 18px;
+            height: 18px;
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="sidebar">
+
+            <div class="logo">
+                CRM WEB
+            </div>
+
+            <div class="menu-item" onclick="location='index.html'">
+                🏠 INICIO
+            </div>
+
+            <div class="menu-item" onclick="location='clientes.html'">
+                👥 CLIENTES
+            </div>
+
+            <div class="menu-item" onclick="location='seguimientos.html'">
+                📅 SEGUIMIENTOS
+            </div>
+
+            <div class="menu-item" onclick="location='llamadas.html'">
+                📞 LLAMADAS
+            </div>
+
+            <div class="menu-item" onclick="location='cotizaciones.html'">
+                📄 COTIZACIONES
+            </div>
+
+            <div class="menu-item" onclick="location='pedidos.html'">
+                📦 PEDIDOS
+            </div>
+
+            <div class="menu-item active">
+                💰 COMISIONES
+            </div>
+
+        </div>
+
+        <main class="content">
+
+            <div class="topbar">
+
+                <div class="page-title">
+
+                    COMISIONES
+
+                </div>
+
+                <div class="user-info" id="userInfo"></div>
+
+            </div>
+
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>Fecha Inicial</label>
+
+                        <input type="date" id="fechaInicial">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Fecha Final</label>
+
+                        <input type="date" id="fechaFinal">
+
+                    </div>
+
+                    <div class="field" id="asesorBox">
+
+                        <label>Asesor</label>
+
+                        <select id="asesor">
+
+                            <option value="">TODOS</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>&nbsp;</label>
+
+                        <button class="btn btn-primary" onclick="consultar()">
+
+                            CONSULTAR
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        VENTA REAL
+                    </h3>
+
+                    <div class="valor azul" id="ventaReal">
+
+                        $0
+
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>
+
+                        COMISIÓN REAL (2.5%)
+
+                    </h3>
+
+                    <div class="valor verde" id="comisionReal">
+
+                        $0
+
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>
+
+                        VENTA PROYECTADA
+
+                    </h3>
+
+                    <div class="valor amarillo" id="ventaProyectada">
+
+                        $0
+
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>
+
+                        COMISIÓN PROYECTADA
+
+                    </h3>
+
+                    <div class="valor rojo" id="comisionProyectada">
+
+                        $0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="panel table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th></th>
+
+                            <th>TIPO</th>
+
+                            <th>DOCUMENTO</th>
+
+                            <th>FECHA</th>
+
+                            <th>CLIENTE</th>
+
+                            <th>ASESOR</th>
+
+                            <th>VENTA NETA</th>
+
+                            <th>COMISIÓN</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="tablaComisiones">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- =========================
+FILTROS
+========================= -->
+
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Fecha Inicial</label>
+                        <input type="date" id="fechaInicio">
+                    </div>
+
+                    <div class="field">
+                        <label>Fecha Final</label>
+                        <input type="date" id="fechaFin">
+                    </div>
+
+                    <div class="field" id="boxAsesor">
+                        <label>Asesor</label>
+                        <select id="asesorFiltro">
+                            <option value="">TODOS</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <button class="btn btn-primary" onclick="consultar()">
+                        CONSULTAR
+                    </button>
+
+                    <button class="btn btn-secondary" onclick="seleccionarTodo()">
+                        MARCAR TODAS
+                    </button>
+
+                    <button class="btn btn-secondary" onclick="quitarTodo()">
+                        DESMARCAR TODAS
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- =========================
+PEDIDOS
+========================= -->
+
+            <div class="panel">
+
+                <h3>Pedidos Facturados</h3>
+
+                <div class="table-header pedidosHeader">
+
+                    <div>Documento</div>
+                    <div>Fecha</div>
+                    <div>Cliente</div>
+                    <div>Venta Neta</div>
+                    <div>Comisión</div>
+
+                </div>
+
+                <div id="tablaPedidos"></div>
+
+            </div>
+
+            <!-- =========================
+PROYECCION
+========================= -->
+
+            <div class="panel">
+
+                <h3>Proyección desde Cotizaciones</h3>
+
+                <div class="table-header cotHeader">
+
+                    <div></div>
+                    <div>Cotización</div>
+                    <div>Fecha</div>
+                    <div>Cliente</div>
+                    <div>Venta Neta</div>
+                    <div>Comisión</div>
+
+                </div>
+
+                <div id="tablaCotizaciones"></div>
+
+            </div>
+
+            <script>
+
+                const API_PEDIDOS = "/api/pedidos"; const API_COTIZACIONES = "/api/cotizaciones"; let pedidos = []; let
+                    cotizaciones = []; const user = localStorage.getItem("user") || ""; const rol = localStorage.getItem("rol") || "";
+                document.getElementById("userInfo").innerHTML = user + "<br>" + rol;
+
+                if (rol === "ASESOR") {
+                    document.getElementById("boxAsesor").style.display = "none";
+                }
+
+                function money(v) {
+
+                    return Number(v || 0).toLocaleString("es-CO", {
+                        style: "currency",
+                        currency: "COP",
+                        minimumFractionDigits: 0
+                    });
+
+                }
+
+                function fechaHoy() {
+
+                    const h = new Date();
+
+                    fechaFin.value = h.toISOString().split("T")[0];
+
+                    h.setMonth(h.getMonth() - 1);
+
+                    fechaInicio.value = h.toISOString().split("T")[0];
+
+                }
+
+                async function consultar() {
+
+                    await Promise.all([
+                        cargarPedidos(),
+                        cargarCotizaciones()
+                    ]);
+
+                    calcularTotales();
+
+                }
+
+                async function cargarPedidos() {
+
+                    const r = await fetch(API_PEDIDOS, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                        }
+                    });
+
+                    const d = await r.json();
+
+                    pedidos = d.data || d;
+
+                    renderPedidos();
+
+                }
+
+                async function cargarCotizaciones() {
+
+                    const r = await fetch(API_COTIZACIONES, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                        }
+                    });
+
+                    const d = await r.json();
+
+                    cotizaciones = d.data || d;
+
+                    renderCotizaciones();
+
+                }
+
+                function renderPedidos() {
+
+                    let html = "";
+
+                    const fi = new Date(fechaInicio.value);
+                    const ff = new Date(fechaFin.value);
+
+                    let asesor = document.getElementById("asesorFiltro") ?
+                        asesorFiltro.value : "";
+
+                    pedidos.forEach(p => {
+
+                        let f = new Date(p.fecha);
+
+                        if (f < fi || f > ff) return;
+
+                        if (rol !== "ADMIN") {
+
+                            if ((p.asesor || "") !== user) return;
+
+                        } else {
+
+                            if (asesor && p.asesor !== asesor) return;
+
+                        }
+
+                        let comision = (Number(p.venta_neta) || 0) * 0.025;
+
+                        html += `
+
+                <div class="filaPedido">
+
+                    <div>${p.doc}</div>
+
+                    <div>${String(p.fecha).substring(0, 10)}</div>
+
+                    <div>${p.cliente}</div>
+
+                    <div>${money(p.venta_neta)}</div>
+
+                    <div>${money(comision)}</div>
+
+                </div>
+
+                `;
+
+                    });
+
+                    tablaPedidos.innerHTML = html;
+
+                }
+
+                function renderCotizaciones() {
+
+                    let html = "";
+
+                    const fi = new Date(fechaInicio.value);
+                    const ff = new Date(fechaFin.value);
+
+                    let asesor = document.getElementById("asesorFiltro") ?
+                        asesorFiltro.value : "";
+
+                    cotizaciones.forEach(c => {
+
+                        let f = new Date(c.fecha);
+
+                        if (f < fi || f > ff) return;
+
+                        if (rol !== "ADMIN") {
+
+                            if ((c.asesor || "") !== user) return;
+
+                        } else {
+
+                            if (asesor && c.asesor !== asesor) return;
+
+                        }
+
+                        let comision = (Number(c.venta_neta) || 0) * 0.025;
+
+                        html += `
+
+                    <div class="filaCot">
+
+                        <div>
+
+                            <input type="checkbox" class="chkCot" data-valor="${c.venta_neta}" checked
+                                onchange="calcularTotales()">
+
+                        </div>
+
+                        <div>${c.doc}</div>
+
+                        <div>${String(c.fecha).substring(0, 10)}</div>
+
+                        <div>${c.cliente}</div>
+
+                        <div>${money(c.venta_neta)}</div>
+
+                        <div>${money(comision)}</div>
+
+                    </div>
+
+                    `;
+
+                    });
+
+                    tablaCotizaciones.innerHTML = html;
+
+                }
+                function calcularTotales() {
+
+                    let ventaReal = 0;
+                    let comisionReal = 0;
+
+                    const fi = new Date(fechaInicio.value);
+                    const ff = new Date(fechaFin.value);
+
+                    let asesor = "";
+                    if (document.getElementById("asesorFiltro")) {
+                        asesor = asesorFiltro.value;
+                    }
+
+                    pedidos.forEach(p => {
+
+                        const f = new Date(p.fecha);
+
+                        if (f < fi || f > ff) return;
+
+                        if (rol !== "ADMIN") {
+                            if ((p.asesor || "") !== user) return;
+                        } else {
+                            if (asesor && p.asesor !== asesor) return;
+                        }
+
+                        const neta = Number(p.venta_neta) || 0;
+
+                        ventaReal += neta;
+                        comisionReal += neta * 0.025;
+
+                    });
+
+                    let ventaProyectada = 0;
+
+                    document.querySelectorAll(".chkCot").forEach(chk => {
+
+                        if (chk.checked) {
+
+                            ventaProyectada += Number(chk.dataset.valor) || 0;
+
+                        }
+
+                    });
+
+                    const comisionProyectada = ventaProyectada * 0.025;
+
+                    document.getElementById("kpiVentaReal").innerHTML = money(ventaReal);
+                    document.getElementById("kpiComisionReal").innerHTML = money(comisionReal);
+
+                    document.getElementById("kpiVentaProy").innerHTML = money(ventaProyectada);
+                    document.getElementById("kpiComisionProy").innerHTML = money(comisionProyectada);
+
+                }
+
+                function seleccionarTodo() {
+
+                    document.querySelectorAll(".chkCot").forEach(c => c.checked = true);
+
+                    calcularTotales();
+
+                }
+
+                function quitarTodo() {
+
+                    document.querySelectorAll(".chkCot").forEach(c => c.checked = false);
+
+                    calcularTotales();
+
+                }
+
+                async function cargarAsesores() {
+
+                    if (rol !== "ADMIN") return;
+
+                    const r = await fetch(API_PEDIDOS, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                        }
+                    });
+
+                    const d = await r.json();
+
+                    const datos = d.data || d;
+
+                    const lista = [...new Set(
+                        datos
+                            .map(x => x.asesor)
+                            .filter(x => x && x.trim() !== "")
+                    )].sort();
+
+                    asesorFiltro.innerHTML = '<option value="">TODOS</option>';
+
+                    lista.forEach(a => {
+
+                        asesorFiltro.innerHTML += `
+                        <option value="${a}">
+                            ${a}
+                        </option>
+                        `;
+
+                    });
+
+                }
+
+                fechaInicio.addEventListener("change", consultar);
+                fechaFin.addEventListener("change", consultar);
+
+                if (document.getElementById("asesorFiltro")) {
+                    asesorFiltro.addEventListener("change", consultar);
+                }
+
+                window.onload = async () => {
+
+                    fechaHoy();
+
+                    await cargarAsesores();
+
+                    await consultar();
+
+                };
+            </script>
+
+</body>
+
+</html>
