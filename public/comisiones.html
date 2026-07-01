@@ -460,76 +460,75 @@
         }
 
         function money(v) {
-
             return Number(v || 0).toLocaleString("es-CO", {
                 style: "currency",
                 currency: "COP",
                 minimumFractionDigits: 0
             });
-
         }
 
         function num(v) {
-
             return Number(v) || 0;
-
         }
 
         function fechaSQL(f) {
-
             return String(f).substring(0, 10);
-
         }
 
         function fechaHoy() {
 
-            const h = new Date();
+            const h1 = new Date();
+            fechaFinPedidos.value = h1.toISOString().substring(0, 10);
 
-            fechaFin.value = h.toISOString().substring(0, 10);
+            const h2 = new Date();
+            h2.setMonth(h2.getMonth() - 1);
+            fechaInicioPedidos.value = h2.toISOString().substring(0, 10);
 
-            h.setMonth(h.getMonth() - 1);
+            const c1 = new Date();
+            fechaFinCot.value = c1.toISOString().substring(0, 10);
 
-            fechaInicio.value = h.toISOString().substring(0, 10);
-
+            const c2 = new Date();
+            c2.setMonth(c2.getMonth() - 1);
+            fechaInicioCot.value = c2.toISOString().substring(0, 10);
         }
 
         async function consultar() {
 
-            const params = new URLSearchParams();
+            const paramsPedidos = new URLSearchParams();
+            const paramsCot = new URLSearchParams();
 
-            params.append("desde", fechaInicio.value);
-            params.append("hasta", fechaFin.value);
+            paramsPedidos.append("desde", fechaInicioPedidos.value);
+            paramsPedidos.append("hasta", fechaFinPedidos.value);
+
+            paramsCot.append("desde", fechaInicioCot.value);
+            paramsCot.append("hasta", fechaFinCot.value);
 
             if (ROL === "ASESOR") {
 
-                params.append("asesor", USER);
+                paramsPedidos.append("asesor", USER);
+                paramsCot.append("asesor", USER);
 
             } else if (asesorFiltro.value) {
 
-                params.append("asesor", asesorFiltro.value);
+                paramsPedidos.append("asesor", asesorFiltro.value);
+                paramsCot.append("asesor", asesorFiltro.value);
 
             }
 
             await Promise.all([
-
-                cargarPedidos(params),
-
-                cargarCotizaciones(params)
-
+                cargarPedidos(paramsPedidos),
+                cargarCotizaciones(paramsCot)
             ]);
 
             calcularResumen();
-
         }
 
-        async function cargarPedidos() {
+        async function cargarPedidos(params) {
 
-            const r = await fetch(API_PEDIDOS, {
-
+            const r = await fetch(API_PEDIDOS + "?" + params.toString(), {
                 headers: {
                     Authorization: "Bearer " + TOKEN
                 }
-
             });
 
             const j = await r.json();
@@ -537,21 +536,17 @@
             pedidos = j.data || j;
 
             renderPedidos();
-
         }
 
         async function cargarCotizaciones(params) {
 
             const r = await fetch(
-
                 API_COTIZACIONES + "?" + params.toString(),
-
                 {
                     headers: {
                         Authorization: "Bearer " + TOKEN
                     }
                 }
-
             );
 
             const j = await r.json();
@@ -559,43 +554,6 @@
             cotizaciones = j.data || [];
 
             renderCotizaciones();
-
-        }
-
-        async function cargarAsesores() {
-
-            if (ROL !== "ADMIN") return;
-
-            const lista = [
-
-                ...new Set(
-
-                    pedidos
-
-                        .map(x => x.asesor)
-
-                        .filter(Boolean)
-
-                )
-
-            ].sort();
-
-            asesorFiltro.innerHTML = "<option value=''>TODOS</option>";
-
-            lista.forEach(a => {
-
-                asesorFiltro.innerHTML += `
-
-        <option value="${a}">
-
-            ${a}
-
-        </option>
-
-        `;
-
-            });
-
         }
 
         function filtroPedidos(item) {
@@ -633,158 +591,46 @@
         function renderPedidos() {
 
             let html = "";
-
             let totalVenta = 0;
-
             let totalComision = 0;
 
             pedidos
                 .filter(filtroPedidos)
-                .sort((a, b) => {
-
-                    return new Date(b.fecha) - new Date(a.fecha);
-
-                })
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
                 .forEach(p => {
 
                     const venta = num(p.venta_neta);
-
                     const comision = venta * 0.025;
 
                     totalVenta += venta;
-
                     totalComision += comision;
 
                     html += `
+            <div class="filaPedido"
+                style="display:grid;grid-template-columns:120px 110px 1.8fr 140px 120px;gap:8px;padding:10px;border-bottom:1px solid #243244;align-items:center;font-size:12px;">
 
-        <div
-            class="filaPedido"
-            style="
-            display:grid;
-            grid-template-columns:
-            120px
-            110px
-            1.8fr
-            140px
-            120px;
-            gap:8px;
-            padding:10px;
-            border-bottom:1px solid #243244;
-            align-items:center;
-            font-size:12px;">
+                <div>${p.doc || ""}</div>
+                <div>${fechaSQL(p.fecha)}</div>
+                <div>${p.cliente || ""}</div>
 
-            <div>
+                <div style="text-align:right;">${money(venta)}</div>
 
-                ${p.doc || ""}
+                <div style="text-align:right;color:#22c55e;font-weight:bold;">
+                    ${money(comision)}
+                </div>
 
-            </div>
-
-            <div>
-
-                ${fechaSQL(p.fecha)}
-
-            </div>
-
-            <div>
-
-                ${p.cliente || ""}
-
-            </div>
-
-            <div style="text-align:right;">
-
-                ${money(venta)}
-
-            </div>
-
-            <div
-                style="
-                text-align:right;
-                color:#22c55e;
-                font-weight:bold;">
-
-                ${money(comision)}
-
-            </div>
-
-        </div>
-
-        `;
-
+            </div>`;
                 });
 
             if (html === "") {
-
                 html = `
-
-        <div
-            style="
-            padding:40px;
-            text-align:center;
-            color:#94a3b8;">
-
+        <div style="padding:40px;text-align:center;color:#94a3b8;">
             No existen pedidos para el rango seleccionado.
-
-        </div>
-
-        `;
-
+        </div>`;
             }
 
-            html += `
-
-    <div
-        style="
-        display:grid;
-        grid-template-columns:
-        120px
-        110px
-        1.8fr
-        140px
-        120px;
-        gap:8px;
-        padding:12px;
-        background:#0f172a;
-        font-weight:bold;
-        position:sticky;
-        bottom:0;">
-
-        <div></div>
-
-        <div></div>
-
-        <div style="text-align:right;">
-
-            TOTALES
-
-        </div>
-
-        <div style="text-align:right;">
-
-            ${money(totalVenta)}
-
-        </div>
-
-        <div
-            style="
-            text-align:right;
-            color:#22c55e;">
-
-            ${money(totalComision)}
-
-        </div>
-
-    </div>
-
-    `;
-
             tablaPedidos.innerHTML = html;
-
         }
-
-        /* ==========================================================
-RENDER COTIZACIONES
-========================================================== */
 
         function renderCotizaciones() {
 
@@ -799,211 +645,86 @@ RENDER COTIZACIONES
                     const comision = venta * 0.025;
 
                     html += `
+            <div style="display:grid;grid-template-columns:45px 120px 110px 1.8fr 140px 120px;gap:8px;padding:10px;border-bottom:1px solid #243244;align-items:center;font-size:12px;">
 
-<div
-style="
-display:grid;
-grid-template-columns:
-45px
-120px
-110px
-1.8fr
-140px
-120px;
-gap:8px;
-padding:10px;
-border-bottom:1px solid #243244;
-align-items:center;
-font-size:12px;">
+                <div style="text-align:center;">
+                    <input type="checkbox" class="chkProy" value="${venta}" onchange="calcularResumen()">
+                </div>
 
-<div style="text-align:center;">
+                <div>${c.doc || ""}</div>
+                <div>${fechaSQL(c.fecha)}</div>
+                <div>${c.cliente || ""}</div>
 
-<input
-type="checkbox"
-class="chkProy"
-value="${venta}"
-onchange="calcularResumen()">
+                <div style="text-align:right;">${money(venta)}</div>
 
-</div>
+                <div style="text-align:right;font-weight:bold;color:#60a5fa;">
+                    ${money(comision)}
+                </div>
 
-<div>
-
-${c.doc || ""}
-
-</div>
-
-<div>
-
-${fechaSQL(c.fecha)}
-
-</div>
-
-<div>
-
-${c.cliente || ""}
-
-</div>
-
-<div style="text-align:right;">
-
-${money(venta)}
-
-</div>
-
-<div
-style="
-text-align:right;
-font-weight:bold;
-color:#60a5fa;">
-
-${money(comision)}
-
-</div>
-
-</div>
-
-`;
-
+            </div>`;
                 });
 
             if (html === "") {
-
                 html = `
-
-<div
-style="
-padding:45px;
-text-align:center;
-color:#94a3b8;">
-
-No existen cotizaciones para el rango seleccionado.
-
-</div>
-
-`;
-
+        <div style="padding:45px;text-align:center;color:#94a3b8;">
+            No existen cotizaciones para el rango seleccionado.
+        </div>`;
             }
 
             tablaCotizaciones.innerHTML = html;
-
         }
-
-        /* ==========================================================
-        SELECCIONAR TODAS
-        ========================================================== */
 
         function seleccionarTodo() {
-
-            document
-                .querySelectorAll(".chkProy")
-                .forEach(c => c.checked = true);
-
+            document.querySelectorAll(".chkProy").forEach(c => c.checked = true);
             calcularResumen();
-
         }
-
-        /* ==========================================================
-        QUITAR TODAS
-        ========================================================== */
 
         function quitarTodo() {
-
-            document
-                .querySelectorAll(".chkProy")
-                .forEach(c => c.checked = false);
-
+            document.querySelectorAll(".chkProy").forEach(c => c.checked = false);
             calcularResumen();
-
         }
 
-        /* ==========================================================
-CALCULAR RESUMEN
-========================================================== */
-
         function calcularResumen() {
-
-            /* ===========================
-               PEDIDOS
-            =========================== */
 
             let ventaReal = 0;
 
             pedidos
-                .filter(cumpleFiltro)
+                .filter(filtroPedidos)
                 .forEach(p => {
-
                     ventaReal += num(p.venta_neta);
-
                 });
 
             const comisionReal = ventaReal * 0.025;
-
-
-            /* ===========================
-               PROYECCION
-            =========================== */
 
             let ventaProy = 0;
 
             document
                 .querySelectorAll(".chkProy:checked")
                 .forEach(c => {
-
                     ventaProy += num(c.value);
-
                 });
 
             const comisionProy = ventaProy * 0.025;
 
-
-            /* ===========================
-               KPI
-            =========================== */
-
             kpiVentaReal.innerHTML = money(ventaReal);
-
             kpiComisionReal.innerHTML = money(comisionReal);
-
             kpiVentaProy.innerHTML = money(ventaProy);
-
             kpiComisionProy.innerHTML = money(comisionProy);
 
-
-            /* ===========================
-               TAB RESUMEN
-            =========================== */
-
             rVenta.innerHTML = money(ventaReal);
-
             rComision.innerHTML = money(comisionReal);
-
             pVenta.innerHTML = money(ventaProy);
-
             pComision.innerHTML = money(comisionProy);
 
             granTotal.innerHTML = money(comisionReal + comisionProy);
-
         }
-
-
-        /* ==========================================================
-        CAMBIO DE ASESOR
-        ========================================================== */
 
         asesorFiltro.onchange = consultar;
 
-
-        /* ==========================================================
-        CAMBIO DE FECHAS
-        ========================================================== */
-
-        fechaInicio.onchange = consultar;
-
-        fechaFin.onchange = consultar;
-
-        /* ==========================================================
-INICIALIZACIÓN
-========================================================== */
+        fechaInicioPedidos.onchange = consultar;
+        fechaFinPedidos.onchange = consultar;
+        fechaInicioCot.onchange = consultar;
+        fechaFinCot.onchange = consultar;
 
         window.onload = async function () {
 
@@ -1012,99 +733,38 @@ INICIALIZACIÓN
             await consultar();
 
             await cargarAsesores();
-
         };
-
-
-        /* ==========================================================
-        CARGAR ASESORES
-        ========================================================== */
 
         async function cargarAsesores() {
 
             if (ROL === "ASESOR") return;
 
             const lista = [...new Set(
-
                 pedidos
                     .map(p => (p.asesor || "").trim())
                     .filter(a => a !== "")
-
             )].sort();
 
-            asesorFiltro.innerHTML = `
-        <option value="">TODOS</option>
-    `;
+            asesorFiltro.innerHTML = `<option value="">TODOS</option>`;
 
             lista.forEach(a => {
-
-                asesorFiltro.innerHTML += `
-            <option value="${a}">
-                ${a}
-            </option>
-        `;
-
+                asesorFiltro.innerHTML += `<option value="${a}">${a}</option>`;
             });
-
         }
-
-
-        /* ==========================================================
-        REFRESCAR CUANDO CAMBIA UN CHECK
-        ========================================================== */
 
         document.addEventListener("change", e => {
-
             if (e.target.classList.contains("chkProy")) {
-
                 calcularResumen();
-
             }
-
         });
-
-
-        /* ==========================================================
-        ENTER PARA CONSULTAR
-        ========================================================== */
 
         document.addEventListener("keydown", e => {
-
-            if (e.key === "Enter") {
-
-                consultar();
-
-            }
-
+            if (e.key === "Enter") consultar();
         });
 
-
-        /* ==========================================================
-        ACTUALIZAR AL CAMBIAR EL ASESOR
-        ========================================================== */
-
         if (ROL !== "ASESOR") {
-
             asesorFiltro.addEventListener("change", consultar);
-
         }
-
-
-        /* ==========================================================
-        ACTUALIZAR AL CAMBIAR FECHAS
-        ========================================================== */
-
-        fechaInicio.addEventListener("change", consultar);
-
-        fechaFin.addEventListener("change", consultar);
-
-
-        /* ==========================================================
-        CONSULTA CADA 5 MINUTOS (OPCIONAL)
-        ========================================================== */
-
-        // setInterval(consultar,300000);
-
 
     </script>
 
