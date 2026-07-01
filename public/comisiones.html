@@ -29,6 +29,8 @@
             padding: 14px;
             height: 100vh;
             overflow: hidden;
+            min-height: 0;
+            /* 🔥 CLAVE */
         }
 
         .topbar {
@@ -58,9 +60,9 @@
             border: 1px solid #243244;
             border-radius: 12px;
             padding: 14px;
-
             flex-shrink: 0;
-            /* 🔒 nunca crece ni se mueve */
+            min-height: 0;
+            /* 🔥 CLAVE */
         }
 
         .form-grid {
@@ -171,7 +173,7 @@
         }
 
         /* =========================
-       TABS (ÁREA FLEXIBLE)
+       TABS
     ========================= */
 
         .tabs {
@@ -195,14 +197,16 @@
         }
 
         /* =========================
-       CONTENIDO TABS (CLAVE)
+       TAB CONTENT (SCROLL FIX REAL)
     ========================= */
 
         .tab-content {
             display: none;
             flex: 1;
             min-height: 0;
-            /* 🔥 CLAVE PARA SCROLL */
+            /* 🔥 CLAVE CRÍTICA */
+            overflow: hidden;
+            /* 🔥 IMPORTANTE */
         }
 
         .tab-content.active {
@@ -210,13 +214,7 @@
             flex-direction: column;
             flex: 1;
             min-height: 0;
-        }
-
-        .tab-inner {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
+            overflow: hidden;
         }
 
         /* =========================
@@ -239,7 +237,6 @@
             flex: 1;
             overflow-y: auto;
             min-height: 0;
-            /* 🔥 CLAVE */
         }
 
         /* =========================
