@@ -15,9 +15,15 @@
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
         /* =========================
-       ESTRUCTURA GENERAL
-    ========================= */
+   LAYOUT PRINCIPAL
+========================= */
 
         .main-container {
             display: flex;
@@ -29,168 +35,61 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            min-height: 0;
+            /* 🔥 CRÍTICO */
+            overflow: hidden;
             gap: 14px;
             padding: 14px;
-            height: 100vh;
-            overflow: hidden;
-            min-height: 0;
-            /* 🔥 CLAVE GENERAL */
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
-        }
-
-        .user-info {
-            font-size: 11px;
-            color: #94a3b8;
-            text-align: right;
         }
 
         /* =========================
-       FILTROS (FIJOS)
-    ========================= */
+   BLOQUES FIJOS
+========================= */
+
+        .topbar {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
         .panel {
+            flex: 0 0 auto;
             background: #111827;
             border: 1px solid #243244;
             border-radius: 12px;
             padding: 14px;
-            flex-shrink: 0;
         }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            align-items: end;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .field label {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .field input,
-        .field select {
-            height: 34px;
-            border: none;
-            outline: none;
-            border-radius: 8px;
-            background: #1e293b;
-            color: white;
-            padding: 0 10px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            align-items: end;
-        }
-
-        /* =========================
-       BOTONES
-    ========================= */
-
-        .btn {
-            height: 34px;
-            padding: 0 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-        }
-
-        .btn-secondary {
-            background: #475569;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-        }
-
-        .btn:hover {
-            filter: brightness(1.15);
-        }
-
-        /* =========================
-       KPIs (FIJOS)
-    ========================= */
 
         .kpis {
+            flex: 0 0 auto;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            flex-shrink: 0;
-        }
-
-        .kpi {
-            background: #1e293b;
-            border-radius: 10px;
-            border-left: 5px solid #3b82f6;
-            padding: 12px;
-        }
-
-        .kpi:nth-child(2) {
-            border-left-color: #22c55e;
-        }
-
-        .kpi:nth-child(3) {
-            border-left-color: #f59e0b;
-        }
-
-        .kpi:nth-child(4) {
-            border-left-color: #ec4899;
-        }
-
-        .kpi-title {
-            color: #94a3b8;
-            font-size: 11px;
-            margin-bottom: 6px;
-        }
-
-        .kpi-value {
-            font-size: 16px;
-            font-weight: bold;
         }
 
         /* =========================
-       TABS CONTAINER (🔥 CLAVE REAL)
-    ========================= */
+   TAB WRAPPER (LO IMPORTANTE)
+========================= */
 
         .panel.tabs-wrapper {
-            display: flex;
-            flex-direction: column;
             flex: 1;
             min-height: 0;
-            /* 🔥 PERMITE SCROLL INTERNO */
+            /* 🔥 SIN ESTO NO HAY SCROLL */
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
 
+        /* =========================
+   TABS
+========================= */
+
         .tabs {
+            flex: 0 0 auto;
             display: flex;
             gap: 2px;
-            flex-shrink: 0;
         }
 
         .tab {
@@ -199,7 +98,6 @@
             background: #1e293b;
             color: #94a3b8;
             border-radius: 10px 10px 0 0;
-            user-select: none;
         }
 
         .tab.active {
@@ -208,29 +106,29 @@
         }
 
         /* =========================
-       TAB CONTENT (🔥 SCROLL FUNCIONAL)
-    ========================= */
+   CONTENIDO TAB (SCROLL AQUÍ)
+========================= */
 
         .tab-content {
-            display: none;
             flex: 1;
             min-height: 0;
+            /* 🔥 CLAVE ABSOLUTA */
+            display: none;
             overflow: hidden;
         }
 
         .tab-content.active {
             display: flex;
             flex-direction: column;
-            flex: 1;
             min-height: 0;
-            overflow: hidden;
         }
 
         /* =========================
-       TABLA
-    ========================= */
+   TABLA
+========================= */
 
         .table-header {
+            flex: 0 0 auto;
             display: grid;
             gap: 8px;
             padding: 10px;
@@ -238,32 +136,29 @@
             border-radius: 8px;
             font-weight: bold;
             font-size: 11px;
-            margin-bottom: 8px;
-            flex-shrink: 0;
         }
 
         .table-body {
             flex: 1;
             min-height: 0;
             overflow-y: auto;
-            /* 🔥 AQUÍ ESTÁ EL SCROLL REAL */
+            /* 🔥 SCROLL REAL AQUÍ */
         }
 
         /* =========================
-       FOOTER
-    ========================= */
+   FOOTER
+========================= */
 
         .footer-total {
+            flex: 0 0 auto;
             margin-top: 12px;
             background: #0f172a;
             border-radius: 8px;
             padding: 12px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             font-size: 18px;
             font-weight: bold;
-            flex-shrink: 0;
         }
     </style>
 
