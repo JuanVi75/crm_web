@@ -48,212 +48,134 @@
         }
 
         .panel {
-
             background: #111827;
-
             border: 1px solid #243244;
-
             border-radius: 12px;
-
             padding: 14px;
-
         }
 
         .form-grid {
-
             display: grid;
-
-            grid-template-columns:
-                160px 160px 220px auto;
-
+            grid-template-columns: 160px 160px 220px auto;
             gap: 10px;
-
             align-items: end;
-
         }
 
         .field {
-
             display: flex;
-
             flex-direction: column;
-
             gap: 5px;
-
         }
 
         .field label {
-
             font-size: 11px;
-
             color: #94a3b8;
-
         }
 
         .field input,
         .field select {
-
             height: 34px;
-
             border: none;
-
             outline: none;
-
             border-radius: 8px;
-
             background: #1e293b;
-
             color: white;
-
             padding: 0 10px;
-
         }
 
         .actions {
-
             display: flex;
-
             gap: 8px;
-
         }
 
         .btn {
-
             height: 34px;
-
             padding: 0 18px;
-
             border: none;
-
             border-radius: 8px;
-
             cursor: pointer;
-
             font-weight: bold;
-
             color: #fff;
-
         }
 
         .btn-primary {
-
             background: #2563eb;
-
         }
 
         .btn-secondary {
-
             background: #475569;
-
         }
 
         .btn-danger {
-
             background: #dc2626;
-
         }
 
         .btn:hover {
-
             filter: brightness(1.15);
-
         }
 
         .kpis {
-
             display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-
         }
 
         .kpi {
-
             background: #1e293b;
-
             border-radius: 10px;
-
             border-left: 5px solid #3b82f6;
-
             padding: 12px;
-
         }
 
         .kpi:nth-child(2) {
-
             border-left-color: #22c55e;
-
         }
 
         .kpi:nth-child(3) {
-
             border-left-color: #f59e0b;
-
         }
 
         .kpi:nth-child(4) {
-
             border-left-color: #ec4899;
-
         }
 
         .kpi-title {
-
             color: #94a3b8;
-
             font-size: 11px;
-
             margin-bottom: 6px;
-
         }
 
         .kpi-value {
-
             font-size: 22px;
-
             font-weight: bold;
-
         }
 
+        /* =========================
+       TABS
+    ========================= */
+
         .tabs {
-
             display: flex;
-
             gap: 2px;
-
         }
 
         .tab {
-
             padding: 12px 25px;
-
             cursor: pointer;
-
             background: #1e293b;
-
             color: #94a3b8;
-
             border-radius: 10px 10px 0 0;
-
             user-select: none;
-
         }
 
         .tab.active {
-
             background: #2563eb;
-
             color: #fff;
-
         }
 
+        /* 🔥 CLAVE: SOLO UNA TAB ACTIVA */
         .tab-content {
             display: none;
-            flex: 1;
-            overflow: hidden;
         }
 
         .tab-content.active {
@@ -262,53 +184,40 @@
             flex: 1;
         }
 
+        .tab-inner {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
         .table-header {
-
             display: grid;
-
             gap: 8px;
-
             padding: 10px;
-
             background: #0f172a;
-
             border-radius: 8px;
-
             font-weight: bold;
-
             font-size: 11px;
-
             margin-bottom: 8px;
-
         }
 
         .table-body {
             flex: 1;
             overflow-y: auto;
             min-height: 0;
-            max-height: 420px;
         }
 
         .footer-total {
-
             margin-top: 12px;
-
             background: #0f172a;
-
             border-radius: 8px;
-
             padding: 12px;
-
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
-
             font-size: 18px;
-
             font-weight: bold;
-
         }
     </style>
 
@@ -359,153 +268,42 @@
             <div class="topbar">
 
                 <div class="page-title">
-
                     Comisiones
-
                 </div>
 
-                <div class="user-info" id="userInfo">
-
-                </div>
+                <div class="user-info" id="userInfo"></div>
 
             </div>
+
+            <!-- =========================
+        FILTROS
+        ========================= -->
 
             <div class="panel">
 
                 <div class="form-grid">
 
                     <div class="field">
-
-                        <label>
-
-                            Fecha Inicial
-
-                        </label>
-
+                        <label>Fecha Inicial</label>
                         <input type="date" id="fechaInicio">
-
                     </div>
 
                     <div class="field">
-
-                        <label>
-
-                            Fecha Final
-
-                        </label>
-
+                        <label>Fecha Final</label>
                         <input type="date" id="fechaFin">
-
                     </div>
 
                     <div class="field" id="boxAsesor">
-
-                        <label>
-
-                            Asesor
-
-                        </label>
-
+                        <label>Asesor</label>
                         <select id="asesorFiltro">
-
-                            <option value="">
-
-                                TODOS
-
-                            </option>
-
+                            <option value="">TODOS</option>
                         </select>
-
                     </div>
 
                     <div class="actions">
-
-                        <button class="btn btn-primary" onclick="consultar()">
-
-                            CONSULTAR
-
-                        </button>
-
-                        <button class="btn btn-secondary" onclick="seleccionarTodo()">
-
-                            MARCAR TODAS
-
-                        </button>
-
-                        <button class="btn btn-danger" onclick="quitarTodo()">
-
-                            LIMPIAR
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="kpis">
-
-                <div class="kpi">
-
-                    <div class="kpi-title">
-
-                        VENTA REAL
-
-                    </div>
-
-                    <div class="kpi-value" id="kpiVentaReal">
-
-                        $0
-
-                    </div>
-
-                </div>
-
-                <div class="kpi">
-
-                    <div class="kpi-title">
-
-                        COMISIÓN REAL
-
-                    </div>
-
-                    <div class="kpi-value" id="kpiComisionReal">
-
-                        $0
-
-                    </div>
-
-                </div>
-
-                <div class="kpi">
-
-                    <div class="kpi-title">
-
-                        PROYECCIÓN
-
-                    </div>
-
-                    <div class="kpi-value" id="kpiVentaProy">
-
-                        $0
-
-                    </div>
-
-                </div>
-
-                <div class="kpi">
-
-                    <div class="kpi-title">
-
-                        COMISIÓN PROYECTADA
-
-                    </div>
-
-                    <div class="kpi-value" id="kpiComisionProy">
-
-                        $0
-
+                        <button class="btn btn-primary" onclick="consultar()">CONSULTAR</button>
+                        <button class="btn btn-secondary" onclick="seleccionarTodo()">MARCAR TODAS</button>
+                        <button class="btn btn-danger" onclick="quitarTodo()">LIMPIAR</button>
                     </div>
 
                 </div>
@@ -513,177 +311,129 @@
             </div>
 
             <!-- =========================
-TABS
-========================= -->
+        KPI
+        ========================= -->
 
-            <div class="panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+            <div class="kpis">
+
+                <div class="kpi">
+                    <div class="kpi-title">VENTA REAL</div>
+                    <div class="kpi-value" id="kpiVentaReal">$0</div>
+                </div>
+
+                <div class="kpi">
+                    <div class="kpi-title">COMISIÓN REAL</div>
+                    <div class="kpi-value" id="kpiComisionReal">$0</div>
+                </div>
+
+                <div class="kpi">
+                    <div class="kpi-title">PROYECCIÓN</div>
+                    <div class="kpi-value" id="kpiVentaProy">$0</div>
+                </div>
+
+                <div class="kpi">
+                    <div class="kpi-title">COMISIÓN PROYECTADA</div>
+                    <div class="kpi-value" id="kpiComisionProy">$0</div>
+                </div>
+
+            </div>
+
+            <!-- =========================
+        TABS CONTAINER
+        ========================= -->
+
+            <div class="panel tabs-container">
 
                 <div class="tabs">
-
-                    <div class="tab active" onclick="cambiarTab(0)">
-                        📦 Pedidos
-                    </div>
-
-                    <div class="tab" onclick="cambiarTab(1)">
-                        📄 Proyección
-                    </div>
-
-                    <div class="tab" onclick="cambiarTab(2)">
-                        📊 Resumen
-                    </div>
-
+                    <div class="tab active" onclick="cambiarTab(0)">📦 Pedidos</div>
+                    <div class="tab" onclick="cambiarTab(1)">📄 Proyección</div>
+                    <div class="tab" onclick="cambiarTab(2)">📊 Resumen</div>
                 </div>
 
-                <!-- ========================================= -->
+                <!-- ========================= TAB 1 ========================= -->
 
-                <div class="tab-content active" style="flex:1;display:flex;flex-direction:column;">
+                <div class="tab-content active">
 
-                    <div class="table-header" style="
-            grid-template-columns:
-            120px
-            110px
-            1.8fr
-            140px
-            120px;">
+                    <div class="tab-inner">
 
-                        <div>Documento</div>
-                        <div>Fecha</div>
-                        <div>Cliente</div>
-                        <div>Venta Neta</div>
-                        <div>Comisión</div>
+                        <div class="table-header" style="grid-template-columns:120px 110px 1.8fr 140px 120px;">
+                            <div>Documento</div>
+                            <div>Fecha</div>
+                            <div>Cliente</div>
+                            <div>Venta Neta</div>
+                            <div>Comisión</div>
+                        </div>
 
-                    </div>
-
-                    <div id="tablaPedidos" class="table-body" style="flex:1;">
+                        <div id="tablaPedidos" class="table-body"></div>
 
                     </div>
 
                 </div>
 
-                <!-- ========================================= -->
-
-                <div class="tab-content" style="flex:1;display:flex;flex-direction:column;">
-
-                    <div class="table-header" style="
-            grid-template-columns:
-            45px
-            120px
-            110px
-            1.8fr
-            140px
-            120px;">
-
-                        <div></div>
-
-                        <div>Cotización</div>
-
-                        <div>Fecha</div>
-
-                        <div>Cliente</div>
-
-                        <div>Venta Neta</div>
-
-                        <div>Comisión</div>
-
-                    </div>
-
-                    <div id="tablaCotizaciones" class="table-body" style="flex:1;">
-
-                    </div>
-
-                </div>
-
-                <!-- ========================================= -->
+                <!-- ========================= TAB 2 ========================= -->
 
                 <div class="tab-content">
 
-                    <div style="
-            display:grid;
-            grid-template-columns:repeat(2,1fr);
-            gap:14px;">
+                    <div class="tab-inner">
 
-                        <div class="panel">
+                        <div class="table-header" style="grid-template-columns:45px 120px 110px 1.8fr 140px 120px;">
 
-                            <h3>Ventas Reales</h3>
-
-                            <table style="width:100%;font-size:13px;">
-
-                                <tr>
-
-                                    <td>Total Venta</td>
-
-                                    <td id="rVenta" style="text-align:right;font-weight:bold;">
-
-                                        $0
-
-                                    </td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Comisión</td>
-
-                                    <td id="rComision" style="text-align:right;font-weight:bold;">
-
-                                        $0
-
-                                    </td>
-
-                                </tr>
-
-                            </table>
+                            <div></div>
+                            <div>Cotización</div>
+                            <div>Fecha</div>
+                            <div>Cliente</div>
+                            <div>Venta Neta</div>
+                            <div>Comisión</div>
 
                         </div>
 
-                        <div class="panel">
-
-                            <h3>Proyección</h3>
-
-                            <table style="width:100%;font-size:13px;">
-
-                                <tr>
-
-                                    <td>Venta</td>
-
-                                    <td id="pVenta" style="text-align:right;font-weight:bold;">
-
-                                        $0
-
-                                    </td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Comisión</td>
-
-                                    <td id="pComision" style="text-align:right;font-weight:bold;">
-
-                                        $0
-
-                                    </td>
-
-                                </tr>
-
-                            </table>
-
-                        </div>
+                        <div id="tablaCotizaciones" class="table-body"></div>
 
                     </div>
 
-                    <div class="footer-total">
+                </div>
 
-                        <div>
+                <!-- ========================= TAB 3 ========================= -->
 
-                            TOTAL ESPERADO DE COMISIONES
+                <div class="tab-content">
+
+                    <div class="tab-inner">
+
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+
+                            <div class="panel">
+                                <h3>Ventas Reales</h3>
+                                <table style="width:100%;font-size:13px;">
+                                    <tr>
+                                        <td>Total Venta</td>
+                                        <td id="rVenta" style="text-align:right;font-weight:bold;">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Comisión</td>
+                                        <td id="rComision" style="text-align:right;font-weight:bold;">$0</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="panel">
+                                <h3>Proyección</h3>
+                                <table style="width:100%;font-size:13px;">
+                                    <tr>
+                                        <td>Venta</td>
+                                        <td id="pVenta" style="text-align:right;font-weight:bold;">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Comisión</td>
+                                        <td id="pComision" style="text-align:right;font-weight:bold;">$0</td>
+                                    </tr>
+                                </table>
+                            </div>
 
                         </div>
 
-                        <div id="granTotal">
-
-                            $0
-
+                        <div class="footer-total">
+                            <div>TOTAL ESPERADO DE COMISIONES</div>
+                            <div id="granTotal">$0</div>
                         </div>
 
                     </div>
