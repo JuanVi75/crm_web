@@ -251,15 +251,15 @@
         }
 
         .tab-content {
-
             display: none;
-
+            flex: 1;
+            overflow: hidden;
         }
 
         .tab-content.active {
-
-            display: block;
-
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .table-header {
@@ -283,11 +283,10 @@
         }
 
         .table-body {
-
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
             max-height: 420px;
-
-            overflow: auto;
-
         }
 
         .footer-total {
